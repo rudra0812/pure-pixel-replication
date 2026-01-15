@@ -8,14 +8,15 @@ interface EntryEditorProps {
   onBack: () => void;
   onSave: (entry: { title: string; content: string }) => void;
   initialEntry?: { title: string; content: string };
+  selectedDate?: Date | null;
 }
 
-export const EntryEditor = ({ onBack, onSave, initialEntry }: EntryEditorProps) => {
+export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: EntryEditorProps) => {
   const [title, setTitle] = useState(initialEntry?.title || "");
   const [content, setContent] = useState(initialEntry?.content || "");
 
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString("en-US", {
+  const dateToShow = selectedDate || new Date();
+  const formattedDate = dateToShow.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
