@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Sphere, MeshDistortMaterial } from "@react-three/drei";
+import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
 import { motion } from "framer-motion";
 
@@ -11,13 +11,13 @@ interface Face3DProps {
   isAnalyzing?: boolean;
 }
 
-const moodColors: Record<MoodType, { main: string; accent: string; emissive: string }> = {
-  neutral: { main: "#FFE0B2", accent: "#FFCC80", emissive: "#FFA726" },
-  happy: { main: "#C8E6C9", accent: "#A5D6A7", emissive: "#66BB6A" },
-  sad: { main: "#BBDEFB", accent: "#90CAF9", emissive: "#42A5F5" },
-  excited: { main: "#FFE082", accent: "#FFD54F", emissive: "#FFCA28" },
-  anxious: { main: "#E1BEE7", accent: "#CE93D8", emissive: "#AB47BC" },
-  calm: { main: "#B2DFDB", accent: "#80CBC4", emissive: "#26A69A" },
+const moodColors: Record<MoodType, { glow: string; eyes: string }> = {
+  neutral: { glow: "#00d4ff", eyes: "#00d4ff" },
+  happy: { glow: "#4ade80", eyes: "#4ade80" },
+  sad: { glow: "#60a5fa", eyes: "#60a5fa" },
+  excited: { glow: "#fbbf24", eyes: "#fbbf24" },
+  anxious: { glow: "#c084fc", eyes: "#c084fc" },
+  calm: { glow: "#2dd4bf", eyes: "#2dd4bf" },
 };
 
 const moodLabels: Record<MoodType, string> = {
@@ -29,238 +29,229 @@ const moodLabels: Record<MoodType, string> = {
   calm: "Peaceful",
 };
 
-interface FaceProps {
+interface RobotFaceProps {
   mood: MoodType;
   mousePosition: { x: number; y: number };
   deviceOrientation: { beta: number; gamma: number } | null;
   isAnalyzing: boolean;
 }
 
-const Face = ({ mood, mousePosition, deviceOrientation, isAnalyzing }: FaceProps) => {
+const RobotFace = ({ mood, mousePosition, deviceOrientation, isAnalyzing }: RobotFaceProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const leftEyeRef = useRef<THREE.Mesh>(null);
   const rightEyeRef = useRef<THREE.Mesh>(null);
-  const leftPupilRef = useRef<THREE.Mesh>(null);
-  const rightPupilRef = useRef<THREE.Mesh>(null);
   
   const colors = moodColors[mood];
 
   useFrame((state) => {
     if (!groupRef.current) return;
 
-    // Calculate look direction from device orientation or mouse
     let lookX = 0;
     let lookY = 0;
 
     if (deviceOrientation) {
-      // Use device orientation (gyroscope)
-      lookX = (deviceOrientation.gamma / 45) * 0.3; // gamma is left/right tilt
-      lookY = ((deviceOrientation.beta - 45) / 45) * 0.3; // beta is front/back tilt
+      // Gyroscope: gamma = left/right tilt (-90 to 90), beta = front/back tilt (0 to 180)
+      // Invert gamma for correct side-eye behavior
+      lookX = (-deviceOrientation.gamma / 45) * 0.4;
+      // Invert beta for correct up/down behavior
+      lookY = -((deviceOrientation.beta - 60) / 45) * 0.4;
     } else {
-      // Use mouse position for desktop
-      lookX = mousePosition.x * 0.3;
-      lookY = -mousePosition.y * 0.3;
+      // Desktop: Mouse tracking - FIXED: removed negative on Y for correct direction
+      lookX = mousePosition.x * 0.4;
+      lookY = mousePosition.y * 0.4;
     }
 
     // Clamp values
-    lookX = Math.max(-0.4, Math.min(0.4, lookX));
-    lookY = Math.max(-0.4, Math.min(0.4, lookY));
+    lookX = Math.max(-0.5, Math.min(0.5, lookX));
+    lookY = Math.max(-0.5, Math.min(0.5, lookY));
 
-    // Smooth face rotation
     if (!isAnalyzing) {
+      // Smooth face rotation following look direction
       groupRef.current.rotation.y = THREE.MathUtils.lerp(
         groupRef.current.rotation.y,
-        lookX * 0.5,
-        0.1
+        lookX * 0.6,
+        0.08
       );
       groupRef.current.rotation.x = THREE.MathUtils.lerp(
         groupRef.current.rotation.x,
-        lookY * 0.3,
-        0.1
+        -lookY * 0.4,
+        0.08
       );
     } else {
       // Spin during analysis
-      groupRef.current.rotation.y += 0.02;
+      groupRef.current.rotation.y += 0.03;
     }
 
-    // Move pupils to look at viewer
-    const pupilOffset = { x: lookX * 0.08, y: -lookY * 0.08 };
+    // Move eyes to track
+    const eyeOffset = { x: lookX * 0.12, y: lookY * 0.1 };
     
-    if (leftPupilRef.current) {
-      leftPupilRef.current.position.x = -0.35 + pupilOffset.x;
-      leftPupilRef.current.position.y = 0.2 + pupilOffset.y;
+    if (leftEyeRef.current) {
+      leftEyeRef.current.position.x = -0.35 + eyeOffset.x;
+      leftEyeRef.current.position.y = 0.1 + eyeOffset.y;
     }
-    if (rightPupilRef.current) {
-      rightPupilRef.current.position.x = 0.35 + pupilOffset.x;
-      rightPupilRef.current.position.y = 0.2 + pupilOffset.y;
+    if (rightEyeRef.current) {
+      rightEyeRef.current.position.x = 0.35 + eyeOffset.x;
+      rightEyeRef.current.position.y = 0.1 + eyeOffset.y;
     }
 
     // Gentle floating animation
-    groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.05;
+    groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.03;
   });
 
-  // Mouth shape based on mood
-  const getMouthGeometry = () => {
-    const shape = new THREE.Shape();
-    
+  // Eye shape based on mood
+  const getEyeScale = () => {
     switch (mood) {
       case "happy":
       case "excited":
-        // Big smile
-        shape.moveTo(-0.35, -0.25);
-        shape.quadraticCurveTo(0, mood === "excited" ? -0.7 : -0.55, 0.35, -0.25);
-        shape.quadraticCurveTo(0, -0.3, -0.35, -0.25);
-        break;
+        return { width: 0.22, height: 0.18 }; // Wider, shorter = happy squint
       case "sad":
-        // Frown
-        shape.moveTo(-0.25, -0.35);
-        shape.quadraticCurveTo(0, -0.2, 0.25, -0.35);
-        shape.quadraticCurveTo(0, -0.4, -0.25, -0.35);
-        break;
+        return { width: 0.18, height: 0.15 };
       case "anxious":
-        // Wavy/uncertain
-        shape.moveTo(-0.2, -0.35);
-        shape.lineTo(0.2, -0.35);
-        shape.lineTo(0.2, -0.32);
-        shape.lineTo(-0.2, -0.32);
-        break;
-      case "calm":
-        // Gentle smile
-        shape.moveTo(-0.2, -0.3);
-        shape.quadraticCurveTo(0, -0.42, 0.2, -0.3);
-        shape.quadraticCurveTo(0, -0.35, -0.2, -0.3);
-        break;
+        return { width: 0.2, height: 0.25 }; // Taller = worried
       default:
-        // Neutral
-        shape.moveTo(-0.2, -0.35);
-        shape.quadraticCurveTo(0, -0.38, 0.2, -0.35);
-        shape.quadraticCurveTo(0, -0.33, -0.2, -0.35);
+        return { width: 0.2, height: 0.2 };
     }
-    
-    return new THREE.ShapeGeometry(shape);
   };
 
-  // Eye size based on mood
-  const eyeScale = mood === "excited" ? 1.3 : mood === "sad" ? 0.85 : 1;
-
-  // Eyebrow angle based on mood
-  const getEyebrowRotation = (isLeft: boolean) => {
+  // Mouth curve based on mood
+  const getMouthCurve = () => {
     switch (mood) {
-      case "sad":
-        return isLeft ? 0.3 : -0.3;
-      case "anxious":
-        return isLeft ? 0.4 : -0.4;
+      case "happy":
       case "excited":
-        return isLeft ? -0.2 : 0.2;
+        return 0.15; // Smile curve
+      case "sad":
+        return -0.08; // Frown curve
+      case "anxious":
+        return 0; // Straight
+      case "calm":
+        return 0.08; // Gentle smile
       default:
-        return 0;
+        return 0.05; // Slight smile
     }
   };
+
+  const eyeScale = getEyeScale();
+  const mouthCurve = getMouthCurve();
 
   return (
     <group ref={groupRef}>
-      {/* Main head - 3D sphere with distortion for gooey effect */}
-      <Sphere args={[1, 64, 64]}>
-        <MeshDistortMaterial
-          color={colors.main}
-          emissive={colors.emissive}
-          emissiveIntensity={0.1}
-          roughness={0.3}
-          metalness={0.1}
-          distort={isAnalyzing ? 0.3 : 0.1}
-          speed={isAnalyzing ? 4 : 1.5}
-        />
-      </Sphere>
-
-      {/* Highlight sphere for 3D effect */}
-      <Sphere args={[0.98, 32, 32]} position={[0.2, 0.3, 0.3]}>
+      {/* Main head - rounded rectangle like the reference robot */}
+      <RoundedBox args={[2, 1.6, 1.2]} radius={0.4} smoothness={4}>
         <meshStandardMaterial
-          color="#ffffff"
-          transparent
-          opacity={0.2}
+          color="#1a1a2e"
+          roughness={0.3}
+          metalness={0.6}
+        />
+      </RoundedBox>
+
+      {/* Outer frame/rim - silver/white like reference */}
+      <RoundedBox args={[2.1, 1.7, 1.1]} radius={0.45} smoothness={4} position={[0, 0, -0.05]}>
+        <meshStandardMaterial
+          color="#e8e8e8"
+          roughness={0.2}
+          metalness={0.8}
+        />
+      </RoundedBox>
+
+      {/* Inner screen area */}
+      <RoundedBox args={[1.8, 1.4, 0.1]} radius={0.35} smoothness={4} position={[0, 0, 0.56]}>
+        <meshStandardMaterial
+          color="#0a0a15"
+          roughness={0.1}
+          metalness={0.3}
+        />
+      </RoundedBox>
+
+      {/* Left Eye - glowing rounded square */}
+      <mesh ref={leftEyeRef} position={[-0.35, 0.1, 0.65]}>
+        <boxGeometry args={[eyeScale.width, eyeScale.height, 0.02]} />
+        <meshStandardMaterial
+          color={colors.eyes}
+          emissive={colors.eyes}
+          emissiveIntensity={isAnalyzing ? 2 : 0.8}
           roughness={0.1}
         />
-      </Sphere>
-
-      {/* Left Eye White */}
-      <mesh ref={leftEyeRef} position={[-0.35, 0.2, 0.85]} scale={[0.18 * eyeScale, 0.22 * eyeScale, 0.1]}>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.1} />
       </mesh>
 
-      {/* Left Pupil */}
-      <mesh ref={leftPupilRef} position={[-0.35, 0.2, 0.95]} scale={[0.08, 0.1, 0.05]}>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshStandardMaterial color="#2d1810" roughness={0.2} />
-      </mesh>
-
-      {/* Left Eye Shine */}
-      <mesh position={[-0.32, 0.24, 0.98]} scale={[0.025, 0.03, 0.02]}>
-        <sphereGeometry args={[1, 16, 16]} />
-        <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.5} />
-      </mesh>
-
-      {/* Right Eye White */}
-      <mesh ref={rightEyeRef} position={[0.35, 0.2, 0.85]} scale={[0.18 * eyeScale, 0.22 * eyeScale, 0.1]}>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.1} />
-      </mesh>
-
-      {/* Right Pupil */}
-      <mesh ref={rightPupilRef} position={[0.35, 0.2, 0.95]} scale={[0.08, 0.1, 0.05]}>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshStandardMaterial color="#2d1810" roughness={0.2} />
-      </mesh>
-
-      {/* Right Eye Shine */}
-      <mesh position={[0.38, 0.24, 0.98]} scale={[0.025, 0.03, 0.02]}>
-        <sphereGeometry args={[1, 16, 16]} />
-        <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.5} />
-      </mesh>
-
-      {/* Left Eyebrow */}
-      <mesh 
-        position={[-0.35, 0.48, 0.82]} 
-        rotation={[0, 0, getEyebrowRotation(true)]}
-        scale={[0.18, 0.03, 0.05]}
-      >
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#5D4037" roughness={0.5} />
-      </mesh>
-
-      {/* Right Eyebrow */}
-      <mesh 
-        position={[0.35, 0.48, 0.82]} 
-        rotation={[0, 0, getEyebrowRotation(false)]}
-        scale={[0.18, 0.03, 0.05]}
-      >
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#5D4037" roughness={0.5} />
-      </mesh>
-
-      {/* Mouth */}
-      <mesh position={[0, 0, 0.95]} rotation={[0, 0, 0]}>
-        <primitive object={getMouthGeometry()} attach="geometry" />
-        <meshStandardMaterial 
-          color={mood === "excited" ? "#E57373" : "#5D4037"} 
-          roughness={0.3}
-          side={THREE.DoubleSide}
+      {/* Right Eye - glowing rounded square */}
+      <mesh ref={rightEyeRef} position={[0.35, 0.1, 0.65]}>
+        <boxGeometry args={[eyeScale.width, eyeScale.height, 0.02]} />
+        <meshStandardMaterial
+          color={colors.eyes}
+          emissive={colors.eyes}
+          emissiveIntensity={isAnalyzing ? 2 : 0.8}
+          roughness={0.1}
         />
       </mesh>
 
-      {/* Blush spots for happy/excited */}
-      {(mood === "happy" || mood === "excited") && (
-        <>
-          <mesh position={[-0.6, 0, 0.7]} scale={[0.15, 0.08, 0.05]}>
-            <sphereGeometry args={[1, 16, 16]} />
-            <meshStandardMaterial color="#FFAB91" transparent opacity={0.6} />
-          </mesh>
-          <mesh position={[0.6, 0, 0.7]} scale={[0.15, 0.08, 0.05]}>
-            <sphereGeometry args={[1, 16, 16]} />
-            <meshStandardMaterial color="#FFAB91" transparent opacity={0.6} />
-          </mesh>
-        </>
-      )}
+      {/* Mouth - curved line */}
+      <mesh position={[0, -0.35, 0.62]} rotation={[0, 0, 0]}>
+        <tubeGeometry 
+          args={[
+            new THREE.QuadraticBezierCurve3(
+              new THREE.Vector3(-0.35, 0, 0),
+              new THREE.Vector3(0, mouthCurve, 0),
+              new THREE.Vector3(0.35, 0, 0)
+            ),
+            20,
+            0.03,
+            8,
+            false
+          ]} 
+        />
+        <meshStandardMaterial
+          color={colors.eyes}
+          emissive={colors.eyes}
+          emissiveIntensity={isAnalyzing ? 1.5 : 0.6}
+          roughness={0.1}
+        />
+      </mesh>
+
+      {/* Camera/sensor dot on top */}
+      <mesh position={[0, 0.65, 0.4]}>
+        <sphereGeometry args={[0.06, 16, 16]} />
+        <meshStandardMaterial color="#1a1a2e" roughness={0.2} metalness={0.8} />
+      </mesh>
+
+      {/* Headphones band */}
+      <mesh position={[0, 0.85, 0]} rotation={[0, 0, 0]}>
+        <torusGeometry args={[1.2, 0.08, 8, 32, Math.PI]} />
+        <meshStandardMaterial color="#4a4a6a" roughness={0.3} metalness={0.7} />
+      </mesh>
+
+      {/* Left headphone */}
+      <group position={[-1.15, 0, 0]}>
+        <mesh>
+          <cylinderGeometry args={[0.25, 0.25, 0.2, 16]} />
+          <meshStandardMaterial color="#4a4a6a" roughness={0.3} metalness={0.7} />
+        </mesh>
+        <mesh position={[0, 0, 0.12]}>
+          <cylinderGeometry args={[0.18, 0.18, 0.08, 16]} />
+          <meshStandardMaterial 
+            color={colors.glow} 
+            emissive={colors.glow}
+            emissiveIntensity={0.3}
+            roughness={0.2} 
+          />
+        </mesh>
+      </group>
+
+      {/* Right headphone */}
+      <group position={[1.15, 0, 0]}>
+        <mesh>
+          <cylinderGeometry args={[0.25, 0.25, 0.2, 16]} />
+          <meshStandardMaterial color="#4a4a6a" roughness={0.3} metalness={0.7} />
+        </mesh>
+        <mesh position={[0, 0, 0.12]}>
+          <cylinderGeometry args={[0.18, 0.18, 0.08, 16]} />
+          <meshStandardMaterial 
+            color={colors.glow} 
+            emissive={colors.glow}
+            emissiveIntensity={0.3}
+            roughness={0.2} 
+          />
+        </mesh>
+      </group>
     </group>
   );
 };
@@ -268,6 +259,7 @@ const Face = ({ mood, mousePosition, deviceOrientation, isAnalyzing }: FaceProps
 export const Face3D = ({ mood, isAnalyzing = false }: Face3DProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [deviceOrientation, setDeviceOrientation] = useState<{ beta: number; gamma: number } | null>(null);
+  const [permissionRequested, setPermissionRequested] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -298,47 +290,78 @@ export const Face3D = ({ mood, isAnalyzing = false }: Face3DProps) => {
     window.addEventListener("mousemove", handleMouseMove);
     
     // Request permission for device orientation on iOS
-    if (typeof DeviceOrientationEvent !== "undefined" && 
-        typeof (DeviceOrientationEvent as any).requestPermission === "function") {
-      (DeviceOrientationEvent as any).requestPermission()
-        .then((response: string) => {
+    const requestGyroscopePermission = async () => {
+      if (typeof DeviceOrientationEvent !== "undefined" && 
+          typeof (DeviceOrientationEvent as any).requestPermission === "function") {
+        try {
+          const response = await (DeviceOrientationEvent as any).requestPermission();
           if (response === "granted") {
             window.addEventListener("deviceorientation", handleOrientation);
           }
-        })
-        .catch(console.error);
-    } else {
-      window.addEventListener("deviceorientation", handleOrientation);
+        } catch (e) {
+          console.log("Gyroscope permission error:", e);
+        }
+      } else {
+        // Non-iOS devices
+        window.addEventListener("deviceorientation", handleOrientation);
+      }
+      setPermissionRequested(true);
+    };
+
+    // Auto-request on component mount
+    if (!permissionRequested) {
+      requestGyroscopePermission();
     }
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("deviceorientation", handleOrientation);
     };
-  }, []);
+  }, [permissionRequested]);
+
+  // Request permission on touch for iOS
+  const handleTouchStart = async () => {
+    if (typeof DeviceOrientationEvent !== "undefined" && 
+        typeof (DeviceOrientationEvent as any).requestPermission === "function" &&
+        !deviceOrientation) {
+      try {
+        const response = await (DeviceOrientationEvent as any).requestPermission();
+        if (response === "granted") {
+          window.addEventListener("deviceorientation", (e: DeviceOrientationEvent) => {
+            if (e.beta !== null && e.gamma !== null) {
+              setDeviceOrientation({ beta: e.beta, gamma: e.gamma });
+            }
+          });
+        }
+      } catch (e) {
+        console.log("Permission request error:", e);
+      }
+    }
+  };
 
   const colors = moodColors[mood];
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-4">
       <motion.div
         ref={containerRef}
         className="relative"
-        style={{ width: 250, height: 250 }}
+        style={{ width: 280, height: 240 }}
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        onTouchStart={handleTouchStart}
       >
         <Canvas
-          camera={{ position: [0, 0, 3], fov: 45 }}
+          camera={{ position: [0, 0, 4], fov: 40 }}
           style={{ background: "transparent" }}
         >
-          <ambientLight intensity={0.6} />
+          <ambientLight intensity={0.5} />
           <directionalLight position={[5, 5, 5]} intensity={0.8} />
           <directionalLight position={[-5, 5, 5]} intensity={0.4} />
-          <pointLight position={[0, 2, 3]} intensity={0.3} color="#fff5e6" />
+          <pointLight position={[0, 2, 3]} intensity={0.5} color={colors.glow} />
           
-          <Face
+          <RobotFace
             mood={mood}
             mousePosition={mousePosition}
             deviceOrientation={deviceOrientation}
@@ -348,8 +371,8 @@ export const Face3D = ({ mood, isAnalyzing = false }: Face3DProps) => {
 
         {/* Glow effect behind the face */}
         <div 
-          className="absolute inset-0 -z-10 rounded-full blur-3xl opacity-30"
-          style={{ backgroundColor: colors.emissive }}
+          className="absolute inset-0 -z-10 rounded-full blur-3xl opacity-40"
+          style={{ backgroundColor: colors.glow }}
         />
       </motion.div>
 
@@ -363,12 +386,12 @@ export const Face3D = ({ mood, isAnalyzing = false }: Face3DProps) => {
         <motion.span
           className="px-6 py-2 rounded-full text-lg font-medium"
           style={{
-            backgroundColor: `${colors.emissive}20`,
-            color: colors.emissive,
+            backgroundColor: `${colors.glow}20`,
+            color: colors.glow,
           }}
           animate={{ 
-            backgroundColor: `${colors.emissive}20`, 
-            color: colors.emissive 
+            backgroundColor: `${colors.glow}20`, 
+            color: colors.glow 
           }}
           transition={{ duration: 0.5 }}
         >
