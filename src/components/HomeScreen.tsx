@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { MoodScreen } from "./MoodScreen";
-import { CalendarScreen } from "./CalendarScreen";
+import { NewMoodScreen } from "./NewMoodScreen";
+import { NewCalendarScreen } from "./NewCalendarScreen";
+import { ProfileScreen } from "./ProfileScreen";
+import { BottomNav, NavTab } from "./BottomNav";
 
 interface Entry {
   id: string;
@@ -39,7 +41,7 @@ const sampleEntries: Entry[] = [
 
 export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
   const [entries, setEntries] = useState<Entry[]>(sampleEntries);
-  const [showCalendar, setShowCalendar] = useState(false);
+  const [activeTab, setActiveTab] = useState<NavTab>("mood");
 
   const handleSaveEntry = (entry: { title: string; content: string }, date: Date) => {
     const newEntry: Entry = {
@@ -51,22 +53,35 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
     setEntries([newEntry, ...entries]);
   };
 
+  const totalDays = new Set(entries.map(e => new Date(e.date).toDateString())).size;
+
   return (
-    <AnimatePresence mode="wait">
-      {showCalendar ? (
-        <CalendarScreen
-          key="calendar"
-          entries={entries}
-          onBack={() => setShowCalendar(false)}
-          onSaveEntry={handleSaveEntry}
-        />
-      ) : (
-        <MoodScreen
-          key="mood"
-          entries={entries}
-          onOpenCalendar={() => setShowCalendar(true)}
-        />
-      )}
-    </AnimatePresence>
+    <div className="relative min-h-screen bg-background">
+      <AnimatePresence mode="wait">
+        {activeTab === "mood" && (
+          <NewMoodScreen
+            key="mood"
+            entries={entries}
+          />
+        )}
+        {activeTab === "calendar" && (
+          <NewCalendarScreen
+            key="calendar"
+            entries={entries}
+            onSaveEntry={handleSaveEntry}
+          />
+        )}
+        {activeTab === "profile" && (
+          <ProfileScreen
+            key="profile"
+            onLogout={onLogout}
+            totalEntries={entries.length}
+            totalDays={totalDays}
+          />
+        )}
+      </AnimatePresence>
+
+      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+    </div>
   );
 };
