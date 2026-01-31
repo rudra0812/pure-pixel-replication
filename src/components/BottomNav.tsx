@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, CalendarDays, User } from "lucide-react";
+import { Home, CalendarDays, User } from "lucide-react";
 
 export type NavTab = "mood" | "calendar" | "profile";
 
@@ -9,7 +9,7 @@ interface BottomNavProps {
 }
 
 const tabs = [
-  { id: "mood" as NavTab, icon: Sparkles, label: "Mood" },
+  { id: "mood" as NavTab, icon: Home, label: "Home" },
   { id: "calendar" as NavTab, icon: CalendarDays, label: "Calendar" },
   { id: "profile" as NavTab, icon: User, label: "Profile" },
 ];

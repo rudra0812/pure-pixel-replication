@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import { NewMoodScreen } from "./NewMoodScreen";
+import { GardenHomeScreen } from "./GardenHomeScreen";
 import { NewCalendarScreen } from "./NewCalendarScreen";
 import { ProfileScreen } from "./ProfileScreen";
 import { BottomNav, NavTab } from "./BottomNav";
@@ -53,15 +53,21 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
     setEntries([newEntry, ...entries]);
   };
 
+  const handleRecordEntry = () => {
+    // Switch to calendar tab for today's date
+    setActiveTab("calendar");
+  };
+
   const totalDays = new Set(entries.map(e => new Date(e.date).toDateString())).size;
 
   return (
     <div className="relative min-h-screen bg-background">
       <AnimatePresence mode="wait">
         {activeTab === "mood" && (
-          <NewMoodScreen
+          <GardenHomeScreen
             key="mood"
             entries={entries}
+            onRecordEntry={handleRecordEntry}
           />
         )}
         {activeTab === "calendar" && (
