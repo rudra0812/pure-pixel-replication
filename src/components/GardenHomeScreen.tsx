@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Plus, ChevronDown } from "lucide-react";
+import { Sparkles, Plus, ChevronDown, Droplets } from "lucide-react";
 import { Button } from "./ui/button";
 import { GardenScene } from "./garden/GardenScene";
 import { GrowthStage } from "./garden/Plant";
@@ -88,6 +88,7 @@ const filterEntriesByPeriod = (entries: Entry[], period: AnalysisPeriod): Entry[
 export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenProps) => {
   const [weatherMood, setWeatherMood] = useState<WeatherMood>("cloudy");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isWatering, setIsWatering] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [hasPlantedSeed, setHasPlantedSeed] = useState(() => {
     return localStorage.getItem("garden_seed_planted") === "true";
@@ -115,6 +116,13 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
     localStorage.setItem("garden_plant_name", name);
     setPlantName(name);
     setHasPlantedSeed(true);
+  };
+
+  const handleWater = async () => {
+    if (isWatering) return;
+    setIsWatering(true);
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    setIsWatering(false);
   };
 
   const handleAnalyze = async (period: AnalysisPeriod) => {
@@ -155,7 +163,51 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
           growthStage={growthStage}
           plantName={plantName}
           isAnalyzing={isAnalyzing}
+          isWatering={isWatering}
         />
+
+        {/* Water Button - Right side */}
+        <motion.button
+          onClick={handleWater}
+          disabled={isWatering}
+          className="absolute right-4 top-1/3 z-30 p-3 rounded-full bg-card/80 backdrop-blur-sm border border-border/50 shadow-lg"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          animate={isWatering ? { 
+            rotate: [0, -10, 10, -10, 10, 0],
+            y: [0, -5, 0],
+          } : {}}
+          transition={{ duration: 0.5, repeat: isWatering ? Infinity : 0 }}
+        >
+          <Droplets 
+            className={`h-6 w-6 ${isWatering ? "text-blue-400" : "text-muted-foreground"}`} 
+          />
+          {/* Water drops effect from can */}
+          {isWatering && (
+            <motion.div
+              className="absolute -bottom-1 left-1/2 -translate-x-1/2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1.5 h-1.5 rounded-full bg-blue-400"
+                  style={{ left: (i - 1) * 6 }}
+                  animate={{
+                    y: [0, 20],
+                    opacity: [1, 0],
+                  }}
+                  transition={{
+                    duration: 0.6,
+                    repeat: Infinity,
+                    delay: i * 0.15,
+                  }}
+                />
+              ))}
+            </motion.div>
+          )}
+        </motion.button>
       </div>
 
       {/* Action Buttons - Fixed at bottom */}
