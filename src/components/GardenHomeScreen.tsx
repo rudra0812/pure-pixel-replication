@@ -4,6 +4,7 @@ import { Sparkles, Plus, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
 import { GardenScene } from "./garden/GardenScene";
 import { GrowthStage } from "./garden/Plant";
+import { SeedPlantingOnboarding } from "./garden/SeedPlantingOnboarding";
 
 interface Entry {
   id: string;
@@ -88,7 +89,12 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
   const [weatherMood, setWeatherMood] = useState<WeatherMood>("cloudy");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [plantName] = useState("My Journey"); // Could be customizable later
+  const [hasPlantedSeed, setHasPlantedSeed] = useState(() => {
+    return localStorage.getItem("garden_seed_planted") === "true";
+  });
+  const [plantName, setPlantName] = useState(() => {
+    return localStorage.getItem("garden_plant_name") || "My Journey";
+  });
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const growthStage = getGrowthStage(entries.length);
@@ -102,6 +108,14 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleSeedPlanted = (seedType: string, name: string) => {
+    localStorage.setItem("garden_seed_planted", "true");
+    localStorage.setItem("garden_seed_type", seedType);
+    localStorage.setItem("garden_plant_name", name);
+    setPlantName(name);
+    setHasPlantedSeed(true);
+  };
 
   const handleAnalyze = async (period: AnalysisPeriod) => {
     setShowDropdown(false);
@@ -120,6 +134,11 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
     setWeatherMood(detectedMood);
     setIsAnalyzing(false);
   };
+
+  // Show onboarding if seed not planted
+  if (!hasPlantedSeed) {
+    return <SeedPlantingOnboarding onComplete={handleSeedPlanted} />;
+  }
 
   return (
     <motion.div
