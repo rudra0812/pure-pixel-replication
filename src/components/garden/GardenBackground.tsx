@@ -5,20 +5,52 @@ interface GardenBackgroundProps {
 }
 
 export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
+  // Day/night cycle based on actual time
+  const getTimeOfDay = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 7) return "dawn";
+    if (hour >= 7 && hour < 17) return "day";
+    if (hour >= 17 && hour < 19) return "dusk";
+    return "night";
+  };
+
+  const timeOfDay = getTimeOfDay();
+
   const getSkyGradient = () => {
+    // Base sky by time of day
+    const timeGradients = {
+      dawn: "linear-gradient(180deg, hsl(270 40% 45%) 0%, hsl(20 80% 65%) 40%, hsl(45 90% 80%) 100%)",
+      day: "linear-gradient(180deg, hsl(200 85% 65%) 0%, hsl(195 80% 75%) 40%, hsl(45 85% 85%) 100%)",
+      dusk: "linear-gradient(180deg, hsl(260 45% 40%) 0%, hsl(20 75% 55%) 40%, hsl(40 80% 70%) 100%)",
+      night: "linear-gradient(180deg, hsl(230 50% 15%) 0%, hsl(225 45% 22%) 50%, hsl(220 40% 30%) 100%)",
+    };
+
+    // Weather overrides
     switch (weatherMood) {
       case "sunny":
-        return "linear-gradient(180deg, hsl(200 85% 65%) 0%, hsl(195 80% 75%) 40%, hsl(45 85% 85%) 100%)";
+        return timeOfDay === "night" 
+          ? "linear-gradient(180deg, hsl(230 50% 18%) 0%, hsl(225 45% 25%) 50%, hsl(220 40% 35%) 100%)"
+          : timeGradients[timeOfDay];
       case "cloudy":
-        return "linear-gradient(180deg, hsl(215 30% 70%) 0%, hsl(210 25% 80%) 50%, hsl(200 35% 85%) 100%)";
+        return timeOfDay === "night"
+          ? "linear-gradient(180deg, hsl(225 35% 18%) 0%, hsl(220 30% 28%) 50%, hsl(215 25% 35%) 100%)"
+          : "linear-gradient(180deg, hsl(215 30% 70%) 0%, hsl(210 25% 80%) 50%, hsl(200 35% 85%) 100%)";
       case "rainy":
-        return "linear-gradient(180deg, hsl(220 30% 50%) 0%, hsl(215 35% 65%) 50%, hsl(210 30% 75%) 100%)";
+        return timeOfDay === "night"
+          ? "linear-gradient(180deg, hsl(220 35% 12%) 0%, hsl(215 30% 20%) 50%, hsl(210 25% 28%) 100%)"
+          : "linear-gradient(180deg, hsl(220 30% 50%) 0%, hsl(215 35% 65%) 50%, hsl(210 30% 75%) 100%)";
       case "clearing":
-        return "linear-gradient(180deg, hsl(210 50% 65%) 0%, hsl(200 60% 75%) 40%, hsl(45 75% 80%) 100%)";
+        return timeOfDay === "night"
+          ? "linear-gradient(180deg, hsl(225 40% 18%) 0%, hsl(220 38% 25%) 40%, hsl(215 35% 32%) 100%)"
+          : "linear-gradient(180deg, hsl(210 50% 65%) 0%, hsl(200 60% 75%) 40%, hsl(45 75% 80%) 100%)";
       default:
-        return "linear-gradient(180deg, hsl(200 85% 65%) 0%, hsl(195 80% 75%) 40%, hsl(45 85% 85%) 100%)";
+        return timeGradients[timeOfDay];
     }
   };
+
+  const isNight = timeOfDay === "night";
+  const isDusk = timeOfDay === "dusk";
+  const isDawn = timeOfDay === "dawn";
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -30,8 +62,59 @@ export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
         transition={{ duration: 2 }}
       />
 
-      {/* Sun with rays */}
-      {(weatherMood === "sunny" || weatherMood === "clearing") && (
+      {/* Stars at night */}
+      {isNight && (
+        <div className="absolute inset-0 pointer-events-none">
+          {Array.from({ length: 30 }).map((_, i) => (
+            <motion.div
+              key={`star-${i}`}
+              className="absolute rounded-full"
+              style={{
+                left: `${5 + Math.random() * 90}%`,
+                top: `${3 + Math.random() * 40}%`,
+                width: 1.5 + Math.random() * 2,
+                height: 1.5 + Math.random() * 2,
+                background: "hsl(0 0% 95%)",
+              }}
+              animate={{
+                opacity: [0.3, 0.9, 0.3],
+                scale: [0.8, 1.2, 0.8],
+              }}
+              transition={{
+                duration: 2 + Math.random() * 3,
+                repeat: Infinity,
+                delay: Math.random() * 2,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Moon at night */}
+      {isNight && (
+        <motion.div
+          className="absolute top-10 right-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 2 }}
+        >
+          <svg width="50" height="50" viewBox="0 0 50 50">
+            <defs>
+              <filter id="moonGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <circle cx="25" cy="25" r="18" fill="hsl(50 30% 85%)" filter="url(#moonGlow)" />
+            <circle cx="32" cy="22" r="14" fill="hsl(230 50% 15%)" />
+          </svg>
+        </motion.div>
+      )}
+
+      {!isNight && (weatherMood === "sunny" || weatherMood === "clearing") && (
         <motion.div
           className="absolute top-8 right-8"
           initial={{ opacity: 0, scale: 0.5 }}
@@ -83,33 +166,33 @@ export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
         </motion.div>
       )}
 
-      {/* Animated fluffy clouds */}
+      {/* Animated fluffy clouds - dimmer at night */}
       <Cloud 
         className="absolute top-12 -left-8" 
         size={140} 
         speed={35} 
-        opacity={weatherMood === "sunny" ? 0.7 : 0.9}
+        opacity={isNight ? 0.2 : weatherMood === "sunny" ? 0.7 : 0.9}
         delay={0}
       />
       <Cloud 
         className="absolute top-6 left-1/4" 
         size={100} 
         speed={45} 
-        opacity={weatherMood === "sunny" ? 0.5 : 0.85}
+        opacity={isNight ? 0.15 : weatherMood === "sunny" ? 0.5 : 0.85}
         delay={2}
       />
       <Cloud 
         className="absolute top-20 right-1/4" 
         size={120} 
         speed={40} 
-        opacity={weatherMood === "sunny" ? 0.6 : 0.9}
+        opacity={isNight ? 0.18 : weatherMood === "sunny" ? 0.6 : 0.9}
         delay={5}
       />
       <Cloud 
         className="absolute top-8 -right-10" 
         size={130} 
         speed={50} 
-        opacity={weatherMood === "sunny" ? 0.5 : 0.85}
+        opacity={isNight ? 0.15 : weatherMood === "sunny" ? 0.5 : 0.85}
         delay={8}
       />
 

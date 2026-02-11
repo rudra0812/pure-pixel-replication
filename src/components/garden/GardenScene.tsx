@@ -8,6 +8,7 @@ interface GardenSceneProps {
   plantName?: string;
   isAnalyzing?: boolean;
   isWatering?: boolean;
+  waterGrowthPulse?: boolean;
 }
 
 export const GardenScene = ({ 
@@ -15,7 +16,8 @@ export const GardenScene = ({
   growthStage, 
   plantName,
   isAnalyzing,
-  isWatering 
+  isWatering,
+  waterGrowthPulse
 }: GardenSceneProps) => {
   return (
     <div className="relative w-full h-full min-h-[60vh]">
@@ -116,18 +118,21 @@ export const GardenScene = ({
         </div>
       )}
 
-      {/* Plant positioned at center-bottom */}
+      {/* Plant positioned at center-bottom, grounded on soil */}
       <motion.div
-        className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10"
+        className="absolute bottom-[6.5rem] left-1/2 -translate-x-1/2 z-10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ 
           opacity: 1, 
           y: 0,
-          scale: isAnalyzing ? [1, 1.02, 1] : isWatering ? [1, 1.03, 1] : 1,
+          scale: waterGrowthPulse 
+            ? [1, 1.08, 1.04, 1.06, 1] 
+            : isAnalyzing ? [1, 1.02, 1] 
+            : isWatering ? [1, 1.03, 1] : 1,
         }}
         transition={{ 
           duration: 0.8,
-          scale: { duration: 1, repeat: (isAnalyzing || isWatering) ? Infinity : 0 }
+          scale: { duration: waterGrowthPulse ? 1.5 : 1, repeat: (isAnalyzing || isWatering) && !waterGrowthPulse ? Infinity : 0 }
         }}
       >
         <Plant stage={growthStage} name={plantName} />
@@ -144,6 +149,45 @@ export const GardenScene = ({
             transition={{ duration: 1, repeat: Infinity }}
           />
         )}
+        
+        {/* Growth pulse glow when water reaches plant */}
+        {waterGrowthPulse && (
+          <motion.div
+            className="absolute inset-0 -z-10"
+            initial={{ opacity: 0, scale: 1 }}
+            animate={{ 
+              opacity: [0, 0.8, 0],
+              scale: [1, 2.5, 3],
+            }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            style={{
+              background: "radial-gradient(circle, hsl(120 70% 55% / 0.5) 0%, hsl(50 80% 60% / 0.3) 40%, transparent 70%)",
+            }}
+          />
+        )}
+        
+        {/* Sparkle particles on growth */}
+        {waterGrowthPulse && Array.from({ length: 8 }).map((_, i) => (
+          <motion.div
+            key={`growth-sparkle-${i}`}
+            className="absolute rounded-full"
+            style={{
+              width: 4,
+              height: 4,
+              background: "hsl(50 100% 70%)",
+              left: "50%",
+              top: "50%",
+            }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{
+              scale: [0, 1.5, 0],
+              opacity: [0, 1, 0],
+              x: Math.cos(i * Math.PI / 4) * 50,
+              y: Math.sin(i * Math.PI / 4) * 50,
+            }}
+            transition={{ duration: 1, delay: i * 0.05 }}
+          />
+        ))}
       </motion.div>
 
       {/* Subtle particles for magic feel */}
