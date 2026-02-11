@@ -118,9 +118,9 @@ export const GardenScene = ({
         </div>
       )}
 
-      {/* Plant positioned at center-bottom, grounded on soil */}
+      {/* Plant positioned at exact center */}
       <motion.div
-        className="absolute bottom-[6.5rem] left-1/2 -translate-x-1/2 z-10"
+        className="absolute bottom-[6.5rem] left-0 right-0 flex justify-center z-10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ 
           opacity: 1, 
