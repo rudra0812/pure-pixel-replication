@@ -142,12 +142,7 @@ const RootedStage = () => (
     animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 0.8 }}
   >
-    {/* Underground section */}
-    <motion.rect
-      x="0" y="100" width="100" height="40"
-      fill="hsl(25 40% 22%)"
-      opacity="0.6"
-    />
+    {/* Roots - no background rect */}
     
     {/* Animated roots */}
     <motion.path
@@ -249,8 +244,7 @@ const SproutingStage = () => (
     animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 0.8 }}
   >
-    {/* Underground */}
-    <motion.rect x="0" y="130" width="120" height="40" fill="hsl(25 40% 20%)" opacity="0.5" />
+    {/* Roots */}
     
     {/* Roots - more developed */}
     <motion.path d="M60 138 Q42 150 25 165" stroke="hsl(30 35% 42%)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
@@ -334,8 +328,7 @@ const GrowingStage = () => (
     animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 0.8 }}
   >
-    {/* Underground */}
-    <motion.rect x="0" y="160" width="140" height="40" fill="hsl(25 40% 18%)" opacity="0.4" />
+    {/* Root system */}
     
     {/* Extended root system */}
     <motion.path d="M70 168 Q45 180 20 198" stroke="hsl(30 35% 40%)" strokeWidth="3" fill="none" />
@@ -434,8 +427,7 @@ const BloomingStage = () => (
     animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 0.8 }}
   >
-    {/* Underground */}
-    <motion.rect x="0" y="180" width="160" height="40" fill="hsl(25 40% 18%)" opacity="0.35" />
+    {/* Root system */}
     
     {/* Extensive root system */}
     <motion.path d="M80 188 Q50 200 15 218" stroke="hsl(30 35% 38%)" strokeWidth="3" fill="none" />
