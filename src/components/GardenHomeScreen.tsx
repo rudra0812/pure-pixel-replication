@@ -118,11 +118,16 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
     setHasPlantedSeed(true);
   };
 
+  const [waterGrowthPulse, setWaterGrowthPulse] = useState(false);
+
   const handleWater = async () => {
     if (isWatering) return;
     setIsWatering(true);
+    // Trigger growth pulse after water reaches the plant
+    setTimeout(() => setWaterGrowthPulse(true), 1500);
     await new Promise(resolve => setTimeout(resolve, 3000));
     setIsWatering(false);
+    setWaterGrowthPulse(false);
   };
 
   const handleAnalyze = async (period: AnalysisPeriod) => {
@@ -164,6 +169,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
           plantName={plantName}
           isAnalyzing={isAnalyzing}
           isWatering={isWatering}
+          waterGrowthPulse={waterGrowthPulse}
         />
 
         {/* Water Button - Right side */}
