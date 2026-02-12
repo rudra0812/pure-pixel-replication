@@ -324,8 +324,44 @@ export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
         </div>
       )}
 
+      {/* Fireflies at night */}
+      {isNight && (
+        <div className="absolute inset-0 pointer-events-none z-20">
+          {Array.from({ length: 18 }).map((_, i) => {
+            const startX = 10 + Math.random() * 80;
+            const startY = 25 + Math.random() * 50;
+            return (
+              <motion.div
+                key={`firefly-${i}`}
+                className="absolute rounded-full"
+                style={{
+                  left: `${startX}%`,
+                  top: `${startY}%`,
+                  width: 4 + Math.random() * 3,
+                  height: 4 + Math.random() * 3,
+                  background: "hsl(60 100% 70%)",
+                  boxShadow: "0 0 8px 3px hsl(55 100% 65% / 0.6), 0 0 16px 6px hsl(50 100% 60% / 0.3)",
+                }}
+                animate={{
+                  opacity: [0, 0.9, 0.1, 0.8, 0, 0.7, 0],
+                  scale: [0.5, 1.2, 0.6, 1, 0.5],
+                  x: [0, (Math.random() - 0.5) * 60, (Math.random() - 0.5) * 40, (Math.random() - 0.5) * 50, 0],
+                  y: [0, -20 + Math.random() * 30, 15 - Math.random() * 25, -10 + Math.random() * 20, 0],
+                }}
+                transition={{
+                  duration: 4 + Math.random() * 4,
+                  repeat: Infinity,
+                  delay: Math.random() * 5,
+                  ease: "easeInOut",
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
+
       {/* Floating particles / pollen */}
-      {weatherMood === "sunny" && (
+      {weatherMood === "sunny" && !isNight && (
         <div className="absolute inset-0 pointer-events-none">
           {Array.from({ length: 15 }).map((_, i) => (
             <motion.div
@@ -354,7 +390,7 @@ export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
   );
 };
 
-// Fluffy cloud component
+// Fluffy cloud component - drifts across the screen
 const Cloud = ({ className, size, speed, opacity, delay }: { 
   className?: string; 
   size: number; 
@@ -365,8 +401,8 @@ const Cloud = ({ className, size, speed, opacity, delay }: {
   <motion.div
     className={className}
     style={{ width: size, height: size * 0.4 }}
-    animate={{ x: [0, 30, 0] }}
-    transition={{ duration: speed, repeat: Infinity, ease: "easeInOut", delay }}
+    animate={{ x: [-size, typeof window !== 'undefined' ? window.innerWidth + size : 500] }}
+    transition={{ duration: speed, repeat: Infinity, ease: "linear", delay }}
   >
     <svg viewBox="0 0 100 40" className="w-full h-full">
       <motion.ellipse cx="25" cy="28" rx="20" ry="12" fill={`hsl(0 0% 98% / ${opacity})`} 
