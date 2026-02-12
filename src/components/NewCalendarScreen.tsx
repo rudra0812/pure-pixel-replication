@@ -7,9 +7,11 @@ import { AnimatedGradient } from "./AnimatedGradient";
 
 interface Entry {
   id: string;
-  date: Date;
+  date: string; // ISO string
   title?: string;
   content: string;
+  wordCount?: number;
+  quality?: 'short' | 'medium' | 'long';
   hasMedia?: boolean;
 }
 
