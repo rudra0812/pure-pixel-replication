@@ -136,65 +136,31 @@ const SeedStage = () => (
 const RootedStage = () => (
   <motion.svg
     width="100"
-    height="140"
-    viewBox="0 0 100 140"
+    height="100"
+    viewBox="0 0 100 100"
     initial={{ scale: 0.8, opacity: 0 }}
     animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 0.8 }}
   >
-    {/* Roots - no background rect */}
-    
-    {/* Animated roots */}
-    <motion.path
-      d="M50 108 Q38 118 28 130"
-      stroke="hsl(30 35% 45%)"
-      strokeWidth="2.5"
-      fill="none"
-      strokeLinecap="round"
-      initial={{ pathLength: 0 }}
-      animate={{ pathLength: 1 }}
-      transition={{ duration: 1.5, ease: "easeOut" }}
-    />
-    <motion.path
-      d="M50 108 Q62 120 72 132"
-      stroke="hsl(30 35% 45%)"
-      strokeWidth="2.5"
-      fill="none"
-      strokeLinecap="round"
-      initial={{ pathLength: 0 }}
-      animate={{ pathLength: 1 }}
-      transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
-    />
-    <motion.path
-      d="M50 108 Q50 120 50 135"
-      stroke="hsl(30 35% 42%)"
-      strokeWidth="2"
-      fill="none"
-      strokeLinecap="round"
-      initial={{ pathLength: 0 }}
-      animate={{ pathLength: 1 }}
-      transition={{ duration: 1.2, delay: 0.5 }}
-    />
-    
-    {/* Soil surface */}
+    {/* Soil surface at bottom */}
     <motion.ellipse 
-      cx="50" cy="100" rx="45" ry="16" 
+      cx="50" cy="88" rx="45" ry="16" 
       fill="hsl(25 45% 25%)"
     />
     <motion.ellipse 
-      cx="50" cy="98" rx="40" ry="14" 
+      cx="50" cy="86" rx="40" ry="14" 
       fill="hsl(30 50% 30%)"
     />
     
     {/* Small mound */}
     <motion.path
-      d="M32 98 Q50 82 68 98"
+      d="M32 86 Q50 70 68 86"
       fill="hsl(30 50% 32%)"
     />
     
     {/* Sprout stem */}
     <motion.path
-      d="M50 96 L50 72"
+      d="M50 84 L50 55"
       stroke="hsl(125 55% 38%)"
       strokeWidth="5"
       strokeLinecap="round"
@@ -207,26 +173,26 @@ const RootedStage = () => (
     <motion.g
       animate={{ rotate: [-2, 2, -2] }}
       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      style={{ transformOrigin: "50px 75px" }}
+      style={{ transformOrigin: "50px 60px" }}
     >
       <motion.ellipse
         cx="42"
-        cy="75"
+        cy="60"
         rx="10"
         ry="5"
         fill="hsl(130 55% 45%)"
-        transform="rotate(-35 42 75)"
+        transform="rotate(-35 42 60)"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 1.5, type: "spring" }}
       />
       <motion.ellipse
         cx="58"
-        cy="73"
+        cy="58"
         rx="11"
         ry="5.5"
         fill="hsl(128 52% 42%)"
-        transform="rotate(30 58 73)"
+        transform="rotate(30 58 58)"
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 1.7, type: "spring" }}
@@ -238,23 +204,15 @@ const RootedStage = () => (
 const SproutingStage = () => (
   <motion.svg
     width="120"
-    height="170"
-    viewBox="0 0 120 170"
+    height="140"
+    viewBox="0 0 120 140"
     initial={{ scale: 0.8, opacity: 0 }}
     animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 0.8 }}
   >
-    {/* Roots */}
-    
-    {/* Roots - more developed */}
-    <motion.path d="M60 138 Q42 150 25 165" stroke="hsl(30 35% 42%)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-    <motion.path d="M60 138 Q78 152 95 168" stroke="hsl(30 35% 42%)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-    <motion.path d="M60 138 Q55 155 52 170" stroke="hsl(30 35% 40%)" strokeWidth="2" fill="none" strokeLinecap="round" />
-    <motion.path d="M60 138 Q65 155 68 170" stroke="hsl(30 35% 40%)" strokeWidth="2" fill="none" strokeLinecap="round" />
-    
     {/* Soil */}
-    <ellipse cx="60" cy="130" rx="50" ry="18" fill="hsl(25 45% 25%)" />
-    <ellipse cx="60" cy="128" rx="45" ry="15" fill="hsl(30 50% 30%)" />
+    <ellipse cx="60" cy="128" rx="50" ry="18" fill="hsl(25 45% 25%)" />
+    <ellipse cx="60" cy="126" rx="45" ry="15" fill="hsl(30 50% 30%)" />
     
     {/* Main stem with sway animation */}
     <motion.path
@@ -322,24 +280,15 @@ const SproutingStage = () => (
 const GrowingStage = () => (
   <motion.svg
     width="140"
-    height="200"
-    viewBox="0 0 140 200"
+    height="170"
+    viewBox="0 0 140 170"
     initial={{ scale: 0.8, opacity: 0 }}
     animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 0.8 }}
   >
-    {/* Root system */}
-    
-    {/* Extended root system */}
-    <motion.path d="M70 168 Q45 180 20 198" stroke="hsl(30 35% 40%)" strokeWidth="3" fill="none" />
-    <motion.path d="M70 168 Q95 182 120 198" stroke="hsl(30 35% 40%)" strokeWidth="3" fill="none" />
-    <motion.path d="M70 168 Q60 185 55 200" stroke="hsl(30 35% 38%)" strokeWidth="2" fill="none" />
-    <motion.path d="M70 168 Q80 185 85 200" stroke="hsl(30 35% 38%)" strokeWidth="2" fill="none" />
-    <motion.path d="M70 168 Q70 185 70 200" stroke="hsl(30 35% 36%)" strokeWidth="2.5" fill="none" />
-    
     {/* Soil */}
-    <ellipse cx="70" cy="160" rx="55" ry="20" fill="hsl(25 45% 25%)" />
-    <ellipse cx="70" cy="158" rx="50" ry="17" fill="hsl(30 50% 30%)" />
+    <ellipse cx="70" cy="158" rx="55" ry="20" fill="hsl(25 45% 25%)" />
+    <ellipse cx="70" cy="156" rx="50" ry="17" fill="hsl(30 50% 30%)" />
     
     {/* Main stem - thicker, more established */}
     <motion.path
@@ -421,24 +370,15 @@ const GrowingStage = () => (
 const BloomingStage = () => (
   <motion.svg
     width="160"
-    height="220"
-    viewBox="0 0 160 220"
+    height="190"
+    viewBox="0 0 160 190"
     initial={{ scale: 0.8, opacity: 0 }}
     animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 0.8 }}
   >
-    {/* Root system */}
-    
-    {/* Extensive root system */}
-    <motion.path d="M80 188 Q50 200 15 218" stroke="hsl(30 35% 38%)" strokeWidth="3" fill="none" />
-    <motion.path d="M80 188 Q110 202 145 218" stroke="hsl(30 35% 38%)" strokeWidth="3" fill="none" />
-    <motion.path d="M80 188 Q65 205 55 220" stroke="hsl(30 35% 36%)" strokeWidth="2.5" fill="none" />
-    <motion.path d="M80 188 Q95 205 105 220" stroke="hsl(30 35% 36%)" strokeWidth="2.5" fill="none" />
-    <motion.path d="M80 188 Q80 205 80 220" stroke="hsl(30 35% 34%)" strokeWidth="3" fill="none" />
-    
     {/* Soil */}
-    <ellipse cx="80" cy="180" rx="60" ry="22" fill="hsl(25 45% 25%)" />
-    <ellipse cx="80" cy="178" rx="55" ry="19" fill="hsl(30 50% 30%)" />
+    <ellipse cx="80" cy="178" rx="60" ry="22" fill="hsl(25 45% 25%)" />
+    <ellipse cx="80" cy="176" rx="55" ry="19" fill="hsl(30 50% 30%)" />
     
     {/* Main stem */}
     <motion.path
