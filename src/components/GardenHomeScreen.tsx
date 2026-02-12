@@ -8,9 +8,11 @@ import { SeedPlantingOnboarding } from "./garden/SeedPlantingOnboarding";
 
 interface Entry {
   id: string;
-  date: Date;
+  date: string; // ISO string
   title?: string;
   content: string;
+  wordCount?: number;
+  quality?: 'short' | 'medium' | 'long';
   hasMedia?: boolean;
 }
 
@@ -29,12 +31,15 @@ const periodLabels: Record<AnalysisPeriod, string> = {
   year: "This Year",
 };
 
-// Determine growth stage based on entry count
-const getGrowthStage = (entryCount: number): GrowthStage => {
-  if (entryCount === 0) return "seed";
-  if (entryCount < 3) return "rooted";
-  if (entryCount < 7) return "sprouting";
-  if (entryCount < 15) return "growing";
+// Determine growth stage based on entry count (fixed to prevent spam)
+const getGrowthStage = (entries: Entry[]): GrowthStage => {
+  // Count unique days with entries for meaningful growth
+  const uniqueDays = new Set(entries.map(e => new Date(e.date).toDateString())).size;
+  
+  if (uniqueDays === 0) return "seed";
+  if (uniqueDays < 3) return "rooted";
+  if (uniqueDays < 7) return "sprouting";
+  if (uniqueDays < 15) return "growing";
   return "blooming";
 };
 
@@ -63,22 +68,25 @@ const filterEntriesByPeriod = (entries: Entry[], period: AnalysisPeriod): Entry[
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   
   return entries.filter(entry => {
+    // Parse ISO string date
     const entryDate = new Date(entry.date);
+    const entryDateOnly = new Date(entryDate.getFullYear(), entryDate.getMonth(), entryDate.getDate());
+    
     switch (period) {
       case "today":
-        return entryDate >= startOfToday;
+        return entryDateOnly.getTime() === startOfToday.getTime();
       case "week":
         const weekAgo = new Date(startOfToday);
         weekAgo.setDate(weekAgo.getDate() - 7);
-        return entryDate >= weekAgo;
+        return entryDateOnly >= weekAgo;
       case "month":
         const monthAgo = new Date(startOfToday);
         monthAgo.setMonth(monthAgo.getMonth() - 1);
-        return entryDate >= monthAgo;
+        return entryDateOnly >= monthAgo;
       case "year":
         const yearAgo = new Date(startOfToday);
         yearAgo.setFullYear(yearAgo.getFullYear() - 1);
-        return entryDate >= yearAgo;
+        return entryDateOnly >= yearAgo;
       default:
         return true;
     }
@@ -98,7 +106,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
   });
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const growthStage = getGrowthStage(entries.length);
+  const growthStage = getGrowthStage(entries);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -176,7 +184,9 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
         <motion.button
           onClick={handleWater}
           disabled={isWatering}
-          className="absolute right-4 top-1/3 z-30 p-3 rounded-full bg-card/80 backdrop-blur-sm border border-border/50 shadow-lg"
+          aria-label={isWatering ? "Watering plant" : "Water your plant"}
+          aria-pressed={isWatering}
+          className="absolute right-4 top-1/3 z-30 p-3 rounded-full bg-card/80 backdrop-blur-sm border border-border/50 shadow-lg hover:bg-card/90 transition-colors"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           animate={isWatering ? { 
@@ -186,7 +196,8 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
           transition={{ duration: 0.5, repeat: isWatering ? Infinity : 0 }}
         >
           <Droplets 
-            className={`h-6 w-6 ${isWatering ? "text-blue-400" : "text-muted-foreground"}`} 
+            className={`h-6 w-6 ${isWatering ? "text-blue-400" : "text-muted-foreground"}`}
+            aria-hidden="true"
           />
           {/* Water drops effect from can */}
           {isWatering && (
@@ -222,12 +233,13 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
           {/* Primary CTA - Record Journal */}
           <Button
             onClick={onRecordEntry}
-            className="w-full h-14 text-lg font-medium rounded-2xl shadow-lg"
+            aria-label="Record today's journal entry"
+            className="w-full h-14 text-lg font-medium rounded-2xl shadow-lg hover:shadow-xl transition-shadow"
             style={{
               background: "linear-gradient(135deg, hsl(130 50% 40%), hsl(140 45% 35%))",
             }}
           >
-            <Plus className="mr-2 h-5 w-5" />
+            <Plus className="mr-2 h-5 w-5" aria-hidden="true" />
             Record Today's Journal
           </Button>
 
@@ -236,6 +248,9 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
             <Button
               onClick={() => setShowDropdown(!showDropdown)}
               disabled={isAnalyzing}
+              aria-label="Analyze my journal"
+              aria-expanded={showDropdown}
+              aria-haspopup="menu"
               variant="outline"
               className="w-full h-12 font-medium rounded-2xl bg-card/80 backdrop-blur-sm border-border/50"
             >
@@ -244,14 +259,16 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
                   animate={{ opacity: [1, 0.5, 1] }}
                   transition={{ duration: 1, repeat: Infinity }}
                   className="text-foreground"
+                  role="status"
+                  aria-live="polite"
                 >
                   Analysing...
                 </motion.span>
               ) : (
                 <>
-                  <Sparkles className="mr-2 h-4 w-4 text-foreground" />
+                  <Sparkles className="mr-2 h-4 w-4 text-foreground" aria-hidden="true" />
                   <span className="text-foreground">Analyse My Journal</span>
-                  <ChevronDown className={`ml-2 h-4 w-4 text-muted-foreground transition-transform ${showDropdown ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`ml-2 h-4 w-4 text-muted-foreground transition-transform ${showDropdown ? "rotate-180" : ""}`} aria-hidden="true" />
                 </>
               )}
             </Button>
@@ -260,6 +277,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
             <AnimatePresence>
               {showDropdown && (
                 <motion.div
+                  role="menu"
                   className="absolute bottom-full mb-2 w-full bg-card border border-border rounded-2xl shadow-xl overflow-hidden z-50"
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -269,6 +287,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
                   {(Object.keys(periodLabels) as AnalysisPeriod[]).map((period, index) => (
                     <motion.button
                       key={period}
+                      role="menuitem"
                       onClick={() => handleAnalyze(period)}
                       className="w-full px-4 py-3 text-left hover:bg-muted transition-colors text-foreground font-medium flex items-center justify-between"
                       initial={{ opacity: 0, x: -10 }}
@@ -276,7 +295,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
                       transition={{ delay: index * 0.05 }}
                     >
                       <span>{periodLabels[period]}</span>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-sm text-muted-foreground" aria-label={`${filterEntriesByPeriod(entries, period).length} entries`}>
                         {filterEntriesByPeriod(entries, period).length} entries
                       </span>
                     </motion.button>

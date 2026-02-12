@@ -21,6 +21,7 @@ export const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
       initial={{ y: 100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.2 }}
+      aria-label="Main navigation"
     >
       <div className="mx-4 mb-4 rounded-2xl bg-card/80 backdrop-blur-xl border border-border shadow-lg">
         <div className="flex items-center justify-around py-2">
@@ -32,7 +33,9 @@ export const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
               <motion.button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className="relative flex flex-col items-center gap-1 px-6 py-2 rounded-xl touch-target"
+                aria-label={tab.label}
+                aria-current={isActive ? "page" : undefined}
+                className="relative flex flex-col items-center gap-1 px-6 py-2 rounded-xl touch-target hover:bg-muted/50 transition-colors"
                 whileTap={{ scale: 0.95 }}
               >
                 {isActive && (
@@ -54,6 +57,7 @@ export const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
                     className={`h-6 w-6 transition-colors ${
                       isActive ? "text-primary" : "text-muted-foreground"
                     }`}
+                    aria-hidden="true"
                   />
                 </motion.div>
                 

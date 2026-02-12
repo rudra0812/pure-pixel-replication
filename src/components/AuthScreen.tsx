@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { AnimatedGradient } from "./AnimatedGradient";
-import { ArrowLeft, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
+import { authFormSchema } from "@/lib/validation";
 
 interface AuthScreenProps {
   onBack: () => void;
@@ -15,12 +17,61 @@ export const AuthScreen = ({ onBack, onAuthenticated }: AuthScreenProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const { signUp, signIn, error: authError } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate auth - in production this would connect to backend
-    onAuthenticated();
-  };
+  // Validate form fields
+  const validateForm = useCallback((): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    try {
+      authFormSchema.parse({
+        name: isSignUp ? name : undefined,
+        email,
+        password,
+      });
+      setErrors({});
+      return true;
+    } catch (error: any) {
+      if (error.errors) {
+        error.errors.forEach((err: any) => {
+          const path = err.path[0] || 'general';
+          newErrors[path] = err.message;
+        });
+      }
+      setErrors(newErrors);
+      return false;
+    }
+  }, [isSignUp, name, email, password]);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setErrors({});
+
+      if (!validateForm()) {
+        return;
+      }
+
+      setIsSubmitting(true);
+      try {
+        if (isSignUp) {
+          await signUp(email, password, name);
+        } else {
+          await signIn(email, password);
+        }
+        onAuthenticated();
+      } catch (error) {
+        console.error('[Auth] Error:', error);
+        // Error is handled by useAuth hook and displayed via authError
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [isSignUp, email, password, name, validateForm, signUp, signIn, onAuthenticated]
+  );
 
   return (
     <AnimatedGradient variant="calm">
@@ -95,57 +146,126 @@ export const AuthScreen = ({ onBack, onAuthenticated }: AuthScreenProps) => {
               <div className="h-px flex-1 bg-white/30" />
             </div>
 
+            {/* Error Alert */}
+            {(authError || Object.keys(errors).length > 0) && (
+              <motion.div
+                className="mb-4 flex items-start gap-3 rounded-lg bg-red-100 p-3"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-600" />
+                <div className="text-sm">
+                  {authError && <p className="font-medium text-red-700">{authError}</p>}
+                  {Object.entries(errors).map(([key, message]) => (
+                    <p key={key} className="text-red-600">
+                      {message}
+                    </p>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
             {/* Email Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               {isSignUp && (
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Full Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="h-12 rounded-xl border-white/20 bg-white/95 pl-10 text-foreground placeholder:text-muted-foreground"
-                  />
+                <div>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Full Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      aria-label="Full Name"
+                      aria-describedby={errors.name ? "name-error" : undefined}
+                      className={`h-12 rounded-xl border-white/20 bg-white/95 pl-10 text-foreground placeholder:text-muted-foreground ${
+                        errors.name ? 'border-red-500 border-2' : ''
+                      }`}
+                    />
+                  </div>
+                  {errors.name && (
+                    <p id="name-error" className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" />
+                      {errors.name}
+                    </p>
+                  )}
                 </div>
               )}
 
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 rounded-xl border-white/20 bg-white/95 pl-10 text-foreground placeholder:text-muted-foreground"
-                />
+              <div>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    aria-label="Email address"
+                    aria-describedby={errors.email ? "email-error" : undefined}
+                    className={`h-12 rounded-xl border-white/20 bg-white/95 pl-10 text-foreground placeholder:text-muted-foreground ${
+                      errors.email ? 'border-red-500 border-2' : ''
+                    }`}
+                  />
+                </div>
+                {errors.email && (
+                  <p id="email-error" className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.email}
+                  </p>
+                )}
               </div>
 
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 rounded-xl border-white/20 bg-white/95 pl-10 pr-10 text-foreground placeholder:text-muted-foreground"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground touch-target"
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
+              <div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    aria-label="Password"
+                    aria-describedby={errors.password ? "password-error" : undefined}
+                    className={`h-12 rounded-xl border-white/20 bg-white/95 pl-10 pr-10 text-foreground placeholder:text-muted-foreground ${
+                      errors.password ? 'border-red-500 border-2' : ''
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground touch-target"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p id="password-error" className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" />
+                    {errors.password}
+                  </p>
+                )}
               </div>
 
               <motion.button
                 type="submit"
-                className="auth-button-primary w-full font-semibold"
+                disabled={isSubmitting || Object.keys(errors).length > 0}
+                className="auth-button-primary w-full font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
               >
-                {isSignUp ? "Create Account" : "Sign In"}
+                {isSubmitting ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    >
+                      <div className="h-4 w-4 rounded-full border-2 border-white border-t-transparent" />
+                    </motion.div>
+                    Loading...
+                  </span>
+                ) : (
+                  isSignUp ? "Create Account" : "Sign In"
+                )}
               </motion.button>
             </form>
 

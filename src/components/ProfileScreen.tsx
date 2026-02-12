@@ -1,8 +1,17 @@
-import { motion } from "framer-motion";
-import { User, Settings, Bell, Moon, LogOut, ChevronRight, Feather } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { User, Settings, Bell, Moon, LogOut, ChevronRight, Feather, AlertCircle } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { useState } from "react";
 import { AnimatedGradient } from "./AnimatedGradient";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 
 interface ProfileScreenProps {
   onLogout: () => void;
@@ -13,6 +22,7 @@ interface ProfileScreenProps {
 export const ProfileScreen = ({ onLogout, totalEntries, totalDays }: ProfileScreenProps) => {
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   return (
     <AnimatedGradient variant="calm" className="min-h-screen">
@@ -125,13 +135,38 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays }: ProfileScre
           transition={{ delay: 0.3 }}
         >
           <button
-            onClick={onLogout}
+            onClick={() => setShowLogoutDialog(true)}
+            aria-label="Sign out from your account"
             className="w-full flex items-center justify-center gap-2 p-4 rounded-2xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
           >
-            <LogOut className="h-5 w-5" />
+            <LogOut className="h-5 w-5" aria-hidden="true" />
             <span className="font-medium">Sign Out</span>
           </button>
         </motion.div>
+
+        {/* Logout Confirmation Dialog */}
+        <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-destructive" />
+                Sign Out?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to sign out? You'll need to sign back in to access your journal entries.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="flex gap-3">
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={onLogout}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Sign Out
+              </AlertDialogAction>
+            </div>
+          </AlertDialogContent>
+        </AlertDialog>
       </motion.div>
     </AnimatedGradient>
   );
