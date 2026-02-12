@@ -166,34 +166,41 @@ export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
         </motion.div>
       )}
 
-      {/* Animated fluffy clouds - dimmer at night */}
+      {/* Animated fluffy clouds - random speeds & start positions */}
       <Cloud 
-        className="absolute top-12 -left-8" 
+        className="absolute top-12" 
         size={140} 
-        speed={35} 
+        speed={55} 
         opacity={isNight ? 0.2 : weatherMood === "sunny" ? 0.7 : 0.9}
-        delay={0}
+        startOffset={-20}
       />
       <Cloud 
-        className="absolute top-6 left-1/4" 
+        className="absolute top-6" 
         size={100} 
-        speed={45} 
+        speed={70} 
         opacity={isNight ? 0.15 : weatherMood === "sunny" ? 0.5 : 0.85}
-        delay={2}
+        startOffset={30}
       />
       <Cloud 
-        className="absolute top-20 right-1/4" 
+        className="absolute top-20" 
         size={120} 
-        speed={40} 
+        speed={45} 
         opacity={isNight ? 0.18 : weatherMood === "sunny" ? 0.6 : 0.9}
-        delay={5}
+        startOffset={60}
       />
       <Cloud 
-        className="absolute top-8 -right-10" 
+        className="absolute top-8" 
         size={130} 
-        speed={50} 
+        speed={80} 
         opacity={isNight ? 0.15 : weatherMood === "sunny" ? 0.5 : 0.85}
-        delay={8}
+        startOffset={80}
+      />
+      <Cloud 
+        className="absolute top-16" 
+        size={90} 
+        speed={60} 
+        opacity={isNight ? 0.12 : weatherMood === "sunny" ? 0.45 : 0.75}
+        startOffset={45}
       />
 
       {/* Distant mountains */}
@@ -390,28 +397,25 @@ export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
   );
 };
 
-// Fluffy cloud component - drifts across the screen
-const Cloud = ({ className, size, speed, opacity, delay }: { 
+// Fluffy cloud component - drifts across screen at random intervals
+const Cloud = ({ className, size, speed, opacity, startOffset }: { 
   className?: string; 
   size: number; 
   speed: number;
   opacity: number;
-  delay: number;
+  startOffset: number;
 }) => (
   <motion.div
     className={className}
-    style={{ width: size, height: size * 0.4 }}
-    animate={{ x: [-size, typeof window !== 'undefined' ? window.innerWidth + size : 500] }}
-    transition={{ duration: speed, repeat: Infinity, ease: "linear", delay }}
+    style={{ width: size, height: size * 0.4, left: `${startOffset}%` }}
+    animate={{ x: [-(size + 100), typeof window !== 'undefined' ? window.innerWidth + size + 100 : 600] }}
+    transition={{ duration: speed, repeat: Infinity, ease: "linear", repeatDelay: Math.random() * 8 }}
   >
     <svg viewBox="0 0 100 40" className="w-full h-full">
-      <motion.ellipse cx="25" cy="28" rx="20" ry="12" fill={`hsl(0 0% 98% / ${opacity})`} 
-        animate={{ cy: [28, 26, 28] }} transition={{ duration: 3, repeat: Infinity, delay: delay * 0.1 }} />
-      <motion.ellipse cx="45" cy="22" rx="25" ry="15" fill={`hsl(0 0% 100% / ${opacity})`}
-        animate={{ cy: [22, 20, 22] }} transition={{ duration: 3.5, repeat: Infinity, delay: delay * 0.2 }} />
-      <motion.ellipse cx="70" cy="25" rx="22" ry="14" fill={`hsl(0 0% 97% / ${opacity})`}
-        animate={{ cy: [25, 23, 25] }} transition={{ duration: 4, repeat: Infinity, delay: delay * 0.3 }} />
-      <motion.ellipse cx="50" cy="32" rx="30" ry="10" fill={`hsl(0 0% 99% / ${opacity})`} />
+      <ellipse cx="25" cy="28" rx="20" ry="12" fill={`hsl(0 0% 98% / ${opacity})`} />
+      <ellipse cx="45" cy="22" rx="25" ry="15" fill={`hsl(0 0% 100% / ${opacity})`} />
+      <ellipse cx="70" cy="25" rx="22" ry="14" fill={`hsl(0 0% 97% / ${opacity})`} />
+      <ellipse cx="50" cy="32" rx="30" ry="10" fill={`hsl(0 0% 99% / ${opacity})`} />
     </svg>
   </motion.div>
 );

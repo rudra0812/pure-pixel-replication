@@ -172,48 +172,67 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
           waterGrowthPulse={waterGrowthPulse}
         />
 
-        {/* Water Button - Right side */}
-        <motion.button
-          onClick={handleWater}
-          disabled={isWatering}
-          className="absolute right-4 top-1/3 z-30 p-3 rounded-full bg-card/80 backdrop-blur-sm border border-border/50 shadow-lg"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          animate={isWatering ? { 
-            rotate: [0, -10, 10, -10, 10, 0],
-            y: [0, -5, 0],
-          } : {}}
-          transition={{ duration: 0.5, repeat: isWatering ? Infinity : 0 }}
+        {/* Water Button - Right side, styled and interactive */}
+        <motion.div
+          className="absolute right-4 top-1/3 z-30"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.5, type: "spring" }}
         >
-          <Droplets 
-            className={`h-6 w-6 ${isWatering ? "text-blue-400" : "text-muted-foreground"}`} 
-          />
-          {/* Water drops effect from can */}
-          {isWatering && (
+          <motion.button
+            onClick={handleWater}
+            disabled={isWatering}
+            className="relative p-3.5 rounded-full shadow-xl border-2 overflow-hidden"
+            style={{
+              background: isWatering 
+                ? "linear-gradient(135deg, hsl(200 80% 55%), hsl(210 85% 45%))" 
+                : "linear-gradient(135deg, hsl(200 70% 60%), hsl(210 75% 50%))",
+              borderColor: isWatering ? "hsl(200 80% 70%)" : "hsl(200 60% 75%)",
+            }}
+            whileHover={{ scale: 1.2, boxShadow: "0 0 20px hsl(200 80% 60% / 0.5)" }}
+            whileTap={{ scale: 0.9 }}
+            animate={isWatering ? { 
+              rotate: [0, -15, 15, -15, 15, 0],
+              y: [0, -5, 0],
+            } : {}}
+            transition={{ duration: 0.5, repeat: isWatering ? Infinity : 0 }}
+          >
+            <Droplets 
+              className="h-6 w-6 text-white drop-shadow-sm" 
+            />
+            {/* Ripple ring on hover/active */}
             <motion.div
-              className="absolute -bottom-1 left-1/2 -translate-x-1/2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-1.5 h-1.5 rounded-full bg-blue-400"
-                  style={{ left: (i - 1) * 6 }}
-                  animate={{
-                    y: [0, 20],
-                    opacity: [1, 0],
-                  }}
-                  transition={{
-                    duration: 0.6,
-                    repeat: Infinity,
-                    delay: i * 0.15,
-                  }}
-                />
-              ))}
-            </motion.div>
-          )}
-        </motion.button>
+              className="absolute inset-0 rounded-full border-2 border-white/30"
+              animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            {/* Water drops effect */}
+            {isWatering && (
+              <motion.div
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+              >
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-1.5 h-1.5 rounded-full"
+                    style={{ left: (i - 1) * 6, background: "hsl(200 80% 75%)" }}
+                    animate={{
+                      y: [0, 20],
+                      opacity: [1, 0],
+                    }}
+                    transition={{
+                      duration: 0.6,
+                      repeat: Infinity,
+                      delay: i * 0.15,
+                    }}
+                  />
+                ))}
+              </motion.div>
+            )}
+          </motion.button>
+        </motion.div>
       </div>
 
       {/* Action Buttons - Fixed at bottom */}
