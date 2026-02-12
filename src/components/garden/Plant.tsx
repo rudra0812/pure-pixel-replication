@@ -50,86 +50,81 @@ const breatheAnimation = {
 
 const SeedStage = () => (
   <motion.svg
-    width="100"
-    height="120"
-    viewBox="0 0 100 120"
+    width="120"
+    height="130"
+    viewBox="0 0 120 130"
     initial={{ scale: 0.8, opacity: 0 }}
     animate={{ scale: 1, opacity: 1 }}
     transition={{ duration: 0.8 }}
   >
-    {/* Soil base - grounded */}
+    {/* Soil base - rich and grounded */}
     <motion.ellipse 
-      cx="50" cy="90" rx="45" ry="18" 
+      cx="60" cy="100" rx="50" ry="20" 
       fill="hsl(25 45% 25%)"
       initial={{ scaleX: 0 }}
       animate={{ scaleX: 1 }}
       transition={{ duration: 0.5 }}
     />
     <motion.ellipse 
-      cx="50" cy="88" rx="40" ry="15" 
+      cx="60" cy="98" rx="45" ry="17" 
       fill="hsl(30 50% 30%)"
       initial={{ scaleX: 0 }}
       animate={{ scaleX: 1 }}
       transition={{ duration: 0.5, delay: 0.1 }}
     />
     
-    {/* Soil details */}
-    <motion.ellipse cx="35" cy="85" rx="4" ry="2" fill="hsl(30 45% 35%)" 
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} />
-    <motion.ellipse cx="65" cy="87" rx="3" ry="1.5" fill="hsl(30 45% 35%)" 
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} />
+    {/* Soil texture */}
+    <motion.ellipse cx="40" cy="95" rx="5" ry="2" fill="hsl(30 45% 35%)" opacity="0.6" />
+    <motion.ellipse cx="75" cy="97" rx="4" ry="1.5" fill="hsl(30 45% 35%)" opacity="0.5" />
     
     {/* Seed mound */}
     <motion.path
-      d="M35 88 Q50 72 65 88"
+      d="M35 98 Q60 78 85 98"
       fill="hsl(30 50% 32%)"
-      initial={{ pathLength: 0, opacity: 0 }}
-      animate={{ pathLength: 1, opacity: 1 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.8, delay: 0.2 }}
     />
     
-    {/* Seed visible */}
-    <motion.ellipse
-      cx="50"
-      cy="80"
-      rx="8"
-      ry="6"
-      fill="hsl(35 55% 42%)"
-      animate={{ 
-        scale: [1, 1.08, 1],
-        y: [0, -1, 0],
-      }}
-      transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-    />
-    
-    {/* Tiny crack/sprout hint */}
+    {/* Tiny sprout stem */}
     <motion.path
-      d="M50 75 Q52 72 50 69"
-      stroke="hsl(120 55% 45%)"
-      strokeWidth="2.5"
+      d="M60 88 Q60 78 58 68"
+      stroke="hsl(125 55% 42%)"
+      strokeWidth="3.5"
       fill="none"
       strokeLinecap="round"
       initial={{ pathLength: 0 }}
-      animate={{ pathLength: [0, 1, 0.8, 1] }}
-      transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+      animate={{ pathLength: 1 }}
+      transition={{ duration: 1.5, delay: 0.5 }}
     />
+    
+    {/* Two tiny unfurling leaves */}
+    <motion.g
+      animate={{ rotate: [-2, 2, -2] }}
+      transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+      style={{ transformOrigin: "58px 70px" }}
+    >
+      <motion.ellipse cx="52" cy="70" rx="7" ry="4" fill="hsl(130 60% 50%)" transform="rotate(-40 52 70)"
+        initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.8, type: "spring" }} />
+      <motion.ellipse cx="64" cy="68" rx="8" ry="4.5" fill="hsl(128 55% 46%)" transform="rotate(35 64 68)"
+        initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2, type: "spring" }} />
+      <motion.path d="M55 72 L50 68" stroke="hsl(130 45% 38%)" strokeWidth="0.8" opacity="0.5" />
+      <motion.path d="M62 70 L67 66" stroke="hsl(128 45% 36%)" strokeWidth="0.8" opacity="0.5" />
+    </motion.g>
 
-    {/* Subtle glow around seed */}
-    <motion.ellipse
-      cx="50"
-      cy="80"
-      rx="12"
-      ry="10"
-      fill="none"
-      stroke="hsl(50 80% 70%)"
-      strokeWidth="1"
-      opacity="0.3"
-      animate={{ 
-        scale: [1, 1.3, 1],
-        opacity: [0.3, 0.1, 0.3],
-      }}
-      transition={{ duration: 2, repeat: Infinity }}
+    {/* Warm glow */}
+    <motion.ellipse cx="60" cy="75" rx="18" ry="15" fill="none" stroke="hsl(50 80% 70%)" strokeWidth="1.5" opacity="0.2"
+      animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.08, 0.2] }}
+      transition={{ duration: 3, repeat: Infinity }}
     />
+    
+    {/* Sparkles */}
+    {[0, 1, 2].map((i) => (
+      <motion.circle key={i} cx={52 + i * 8} cy={62 + (i % 2) * 6} r="1.5" fill="hsl(50 100% 75%)"
+        animate={{ opacity: [0, 0.8, 0], scale: [0.5, 1.2, 0.5] }}
+        transition={{ duration: 2, repeat: Infinity, delay: i * 0.7 }}
+      />
+    ))}
   </motion.svg>
 );
 
