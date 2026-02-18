@@ -12,7 +12,20 @@ interface ProfileScreenProps {
 
 export const ProfileScreen = ({ onLogout, totalEntries, totalDays }: ProfileScreenProps) => {
   const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    return document.documentElement.classList.contains("dark");
+  });
+
+  const handleDarkModeToggle = (checked: boolean) => {
+    setDarkMode(checked);
+    if (checked) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   return (
     <AnimatedGradient variant="calm" className="min-h-screen">
@@ -98,7 +111,7 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays }: ProfileScre
                   <p className="text-sm text-muted-foreground">Switch theme</p>
                 </div>
               </div>
-              <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+              <Switch checked={darkMode} onCheckedChange={handleDarkModeToggle} />
             </div>
 
             {/* Account Settings */}

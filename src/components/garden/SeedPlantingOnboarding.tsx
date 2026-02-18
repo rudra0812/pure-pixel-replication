@@ -95,19 +95,19 @@ export const SeedPlantingOnboarding = ({ onComplete }: SeedPlantingOnboardingPro
           transition={{ duration: 2 }}
         />
 
-        {/* Animated clouds */}
+        {/* Animated clouds - drifting across screen */}
         {[
-          { left: "5%", top: "8%", size: 120, speed: 25 },
-          { left: "30%", top: "5%", size: 100, speed: 30 },
-          { left: "60%", top: "10%", size: 110, speed: 28 },
-          { left: "85%", top: "6%", size: 90, speed: 35 },
+          { top: "8%", size: 120, speed: 40, startOffset: -10 },
+          { top: "5%", size: 100, speed: 55, startOffset: 25 },
+          { top: "10%", size: 110, speed: 45, startOffset: 50 },
+          { top: "6%", size: 90, speed: 60, startOffset: 75 },
         ].map((cloud, i) => (
           <motion.div
             key={i}
             className="absolute"
-            style={{ left: cloud.left, top: cloud.top, width: cloud.size, height: cloud.size * 0.4 }}
-            animate={{ x: [0, 20, 0] }}
-            transition={{ duration: cloud.speed, repeat: Infinity, ease: "easeInOut" }}
+            style={{ top: cloud.top, width: cloud.size, height: cloud.size * 0.4, left: `${cloud.startOffset}%` }}
+            animate={{ x: [-(cloud.size + 100), typeof window !== 'undefined' ? window.innerWidth + cloud.size + 100 : 600] }}
+            transition={{ duration: cloud.speed, repeat: Infinity, ease: "linear", repeatDelay: Math.random() * 8 }}
           >
             <svg viewBox="0 0 100 40" className="w-full h-full">
               <ellipse cx="25" cy="28" rx="20" ry="12" fill="hsl(0 0% 98% / 0.85)" />
@@ -135,23 +135,28 @@ export const SeedPlantingOnboarding = ({ onComplete }: SeedPlantingOnboardingPro
           />
           {/* Grass */}
           <svg viewBox="0 0 400 30" className="absolute top-0 left-0 w-full h-8" preserveAspectRatio="none">
-            {Array.from({ length: 50 }).map((_, i) => (
-              <motion.path
-                key={i}
-                d={`M${i * 8 + 2} 30 Q${i * 8 + 4} ${12 + Math.random() * 8} ${i * 8 + 6} 30`}
-                fill="none"
-                stroke={`hsl(${125 + Math.random() * 10} ${45 + Math.random() * 10}% ${35 + Math.random() * 8}%)`}
-                strokeWidth="1.5"
-                animate={{ 
-                  d: [
-                    `M${i * 8 + 2} 30 Q${i * 8 + 4} ${12 + Math.random() * 8} ${i * 8 + 6} 30`,
-                    `M${i * 8 + 2} 30 Q${i * 8 + 5} ${10 + Math.random() * 8} ${i * 8 + 6} 30`,
-                    `M${i * 8 + 2} 30 Q${i * 8 + 4} ${12 + Math.random() * 8} ${i * 8 + 6} 30`,
-                  ]
-                }}
-                transition={{ duration: 2 + Math.random(), repeat: Infinity }}
-              />
-            ))}
+            {Array.from({ length: 50 }).map((_, i) => {
+              const x = i * 8 + 2;
+              const qy1 = 12 + (i * 13 % 8);
+              const qy2 = 10 + (i * 11 % 8);
+              return (
+                <motion.path
+                  key={i}
+                  d={`M${x} 30 Q${x + 2} ${qy1} ${x + 4} 30`}
+                  fill="none"
+                  stroke={`hsl(${125 + (i * 7 % 10)} ${45 + (i * 11 % 10)}% ${35 + (i * 13 % 8)}%)`}
+                  strokeWidth="1.5"
+                  animate={{ 
+                    d: [
+                      `M${x} 30 Q${x + 2} ${qy1} ${x + 4} 30`,
+                      `M${x} 30 Q${x + 3} ${qy2} ${x + 4} 30`,
+                      `M${x} 30 Q${x + 2} ${qy1} ${x + 4} 30`,
+                    ]
+                  }}
+                  transition={{ duration: 2 + (i % 3), repeat: Infinity }}
+                />
+              );
+            })}
           </svg>
         </div>
 
