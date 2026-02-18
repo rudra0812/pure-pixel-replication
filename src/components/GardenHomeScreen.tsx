@@ -155,14 +155,14 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
 
   return (
     <motion.div
-      className="flex min-h-screen flex-col safe-area-top pb-28 overflow-hidden"
+      className="relative min-h-screen safe-area-top overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Garden Scene */}
-      <div className="flex-1 relative">
+      {/* Garden Scene - Full height */}
+      <div className="absolute inset-0">
         <GardenScene
           weatherMood={weatherMood}
           growthStage={growthStage}
@@ -235,8 +235,8 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
         </motion.div>
       </div>
 
-      {/* Action Buttons - Fixed at bottom */}
-      <div className="absolute bottom-28 left-0 right-0 px-6 z-20">
+      {/* Action Buttons - Overlaid on garden bottom */}
+      <div className="absolute bottom-[6.5rem] left-0 right-0 px-6 z-20">
         <div className="flex flex-col gap-3 max-w-sm mx-auto">
           {/* Primary CTA - Record Journal */}
           <Button

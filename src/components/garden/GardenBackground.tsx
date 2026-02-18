@@ -4,6 +4,19 @@ interface GardenBackgroundProps {
   weatherMood: "sunny" | "cloudy" | "rainy" | "clearing";
 }
 
+// Pre-computed grass blade data to avoid Math.random() on each render
+const grassBlades = Array.from({ length: 60 }).map((_, i) => ({
+  x: i * 6.8 + (i * 7 % 3),
+  qx: i * 6.8 + 3,
+  qy: 20 + (i * 13 % 15),
+  qx2: i * 6.8 + 5,
+  qy2: 18 + (i * 11 % 15),
+  hue: 120 + (i * 7 % 15),
+  sat: 45 + (i * 11 % 15),
+  light: 32 + (i * 13 % 10),
+  sw: 1.5 + (i % 3) * 0.5,
+}));
+
 export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
   // Day/night cycle based on actual time
   const getTimeOfDay = () => {
@@ -270,21 +283,21 @@ export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
         {/* Grass texture layer */}
         <svg viewBox="0 0 400 50" className="absolute top-0 left-0 w-full h-14" preserveAspectRatio="none">
           {/* Multiple grass blade layers for depth */}
-          {Array.from({ length: 60 }).map((_, i) => (
+          {grassBlades.map(({ x, qx, qy, qx2, qy2, hue, sat, light, sw }, i) => (
             <motion.path
               key={i}
-              d={`M${i * 6.8 + Math.random() * 3} 50 Q${i * 6.8 + 3} ${20 + Math.random() * 15} ${i * 6.8 + 5} 50`}
+              d={`M${x} 50 Q${qx} ${qy} ${x + 5} 50`}
               fill="none"
-              stroke={`hsl(${120 + Math.random() * 15} ${45 + Math.random() * 15}% ${32 + Math.random() * 10}%)`}
-              strokeWidth={1.5 + Math.random()}
+              stroke={`hsl(${hue} ${sat}% ${light}%)`}
+              strokeWidth={sw}
               animate={{ 
                 d: [
-                  `M${i * 6.8 + Math.random() * 3} 50 Q${i * 6.8 + 3} ${20 + Math.random() * 15} ${i * 6.8 + 5} 50`,
-                  `M${i * 6.8 + Math.random() * 3} 50 Q${i * 6.8 + 5} ${18 + Math.random() * 15} ${i * 6.8 + 5} 50`,
-                  `M${i * 6.8 + Math.random() * 3} 50 Q${i * 6.8 + 3} ${20 + Math.random() * 15} ${i * 6.8 + 5} 50`,
+                  `M${x} 50 Q${qx} ${qy} ${x + 5} 50`,
+                  `M${x} 50 Q${qx2} ${qy2} ${x + 5} 50`,
+                  `M${x} 50 Q${qx} ${qy} ${x + 5} 50`,
                 ]
               }}
-              transition={{ duration: 2 + Math.random() * 2, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2 + (i % 3), repeat: Infinity, ease: "easeInOut" }}
             />
           ))}
         </svg>
