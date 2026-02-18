@@ -30,7 +30,7 @@ export const Plant = ({ stage, name }: PlantProps) => {
       {getPlantContent()}
       {name && (
         <motion.p
-          className="absolute -bottom-8 text-xs font-medium text-foreground/70 bg-card/60 px-3 py-1 rounded-full backdrop-blur-sm"
+          className="mt-1 text-xs font-medium text-foreground/80 bg-card/70 px-3 py-1 rounded-full backdrop-blur-sm shadow-sm"
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}

@@ -235,20 +235,65 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
         </motion.div>
       </div>
 
-      {/* Action Buttons - Overlaid on garden bottom */}
+      {/* Action Buttons - Plant sits on top of this area */}
       <div className="absolute bottom-[6.5rem] left-0 right-0 px-6 z-20">
         <div className="flex flex-col gap-3 max-w-sm mx-auto">
-          {/* Primary CTA - Record Journal */}
-          <Button
-            onClick={onRecordEntry}
-            className="w-full h-14 text-lg font-medium rounded-2xl shadow-lg"
-            style={{
-              background: "linear-gradient(135deg, hsl(130 50% 40%), hsl(140 45% 35%))",
-            }}
-          >
-            <Plus className="mr-2 h-5 w-5" />
-            Record Today's Journal
-          </Button>
+          {/* Roots behind the button */}
+          <div className="relative">
+            <svg 
+              className="absolute -top-4 left-1/2 -translate-x-1/2 w-48 h-12 z-0 pointer-events-none" 
+              viewBox="0 0 200 50"
+            >
+              <motion.path
+                d="M100 0 Q95 15 80 30 Q70 40 55 48"
+                stroke="hsl(25 40% 28%)"
+                strokeWidth="3"
+                fill="none"
+                strokeLinecap="round"
+                animate={{ d: ["M100 0 Q95 15 80 30 Q70 40 55 48", "M100 0 Q95 15 82 32 Q72 42 58 48", "M100 0 Q95 15 80 30 Q70 40 55 48"] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.path
+                d="M100 0 Q105 15 120 30 Q130 40 145 48"
+                stroke="hsl(25 40% 28%)"
+                strokeWidth="3"
+                fill="none"
+                strokeLinecap="round"
+                animate={{ d: ["M100 0 Q105 15 120 30 Q130 40 145 48", "M100 0 Q105 15 118 32 Q128 42 142 48", "M100 0 Q105 15 120 30 Q130 40 145 48"] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              />
+              <motion.path
+                d="M100 0 Q98 18 90 35 Q85 45 75 48"
+                stroke="hsl(30 35% 24%)"
+                strokeWidth="2"
+                fill="none"
+                strokeLinecap="round"
+              />
+              <motion.path
+                d="M100 0 Q102 18 110 35 Q115 45 125 48"
+                stroke="hsl(30 35% 24%)"
+                strokeWidth="2"
+                fill="none"
+                strokeLinecap="round"
+              />
+              {/* Small root tips */}
+              <motion.path d="M100 0 Q100 20 100 48" stroke="hsl(25 38% 26%)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            </svg>
+
+            {/* Primary CTA - Record Journal with earthy tones */}
+            <Button
+              onClick={onRecordEntry}
+              className="relative w-full h-14 text-lg font-medium rounded-2xl shadow-lg z-10 border-2"
+              style={{
+                background: "linear-gradient(135deg, hsl(30 50% 28%), hsl(25 45% 22%), hsl(30 40% 25%))",
+                borderColor: "hsl(30 40% 35%)",
+                color: "hsl(45 80% 85%)",
+              }}
+            >
+              <Plus className="mr-2 h-5 w-5" />
+              Record Today's Journal
+            </Button>
+          </div>
 
           {/* Secondary CTA - Analyse */}
           <div className="relative" ref={dropdownRef}>
