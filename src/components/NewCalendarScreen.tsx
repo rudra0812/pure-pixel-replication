@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { 
   Plus, 
   Feather, 
@@ -16,7 +16,8 @@ import {
   Lock,
   Unlock,
   Target,
-  Trophy
+  Trophy,
+  Edit3
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, differenceInDays, startOfDay, isToday } from "date-fns";
 import { EntryEditor } from "./EntryEditor";
@@ -33,7 +34,8 @@ interface Entry {
 
 interface NewCalendarScreenProps {
   entries: Entry[];
-  onSaveEntry: (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date) => void;
+  onSaveEntry: (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date, entryId?: string) => void;
+  onEditorStateChange?: (isOpen: boolean) => void;
 }
 
 // Enhanced mood colors with gradients
@@ -147,12 +149,17 @@ const getEntriesWithMood = (entries: Entry[]): Entry[] => {
   }));
 };
 
-export const NewCalendarScreen = ({ entries, onSaveEntry }: NewCalendarScreenProps) => {
+export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange }: NewCalendarScreenProps) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [viewingEntry, setViewingEntry] = useState<Entry | null>(null);
   const [viewMode, setViewMode] = useState<"calendar" | "today">("today");
+
+  // Notify parent when editor state changes
+  useEffect(() => {
+    onEditorStateChange?.(showEditor);
+  }, [showEditor, onEditorStateChange]);
 
   const enhancedEntries = useMemo(() => getEntriesWithMood(entries), [entries]);
   
@@ -192,8 +199,10 @@ export const NewCalendarScreen = ({ entries, onSaveEntry }: NewCalendarScreenPro
   const handleSaveEntry = (entry: { title: string; content: string }) => {
     if (selectedDate) {
       const mood = detectMood(entry.content, entry.title);
-      onSaveEntry({ ...entry, mood }, selectedDate);
+      const entryId = viewingEntry?.id;
+      onSaveEntry({ ...entry, mood }, selectedDate, entryId);
       setShowEditor(false);
+      setViewingEntry(null);
       setSelectedDate(null);
     }
   };
@@ -219,10 +228,14 @@ export const NewCalendarScreen = ({ entries, onSaveEntry }: NewCalendarScreenPro
           <EntryEditor
             onBack={() => {
               setShowEditor(false);
+              if (viewingEntry) {
+                setViewingEntry(null);
+              }
               setSelectedDate(null);
             }}
             onSave={handleSaveEntry}
             selectedDate={selectedDate}
+            initialEntry={viewingEntry || undefined}
           />
         </AnimatedGradient>
       ) : viewingEntry ? (
@@ -248,7 +261,14 @@ export const NewCalendarScreen = ({ entries, onSaveEntry }: NewCalendarScreenPro
               <span className="text-sm font-medium text-muted-foreground">
                 {format(new Date(viewingEntry.date), "EEEE, MMMM d")}
               </span>
-              <div className="w-11" />
+              <motion.button
+                onClick={() => setShowEditor(true)}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground touch-target"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Edit3 className="h-5 w-5" />
+              </motion.button>
             </header>
 
             <div className="flex-1 px-6 py-4">

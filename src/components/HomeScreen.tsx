@@ -46,16 +46,27 @@ const sampleEntries: Entry[] = [
 export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
   const [entries, setEntries] = useState<Entry[]>(sampleEntries);
   const [activeTab, setActiveTab] = useState<NavTab>("mood");
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
-  const handleSaveEntry = (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date) => {
-    const newEntry: Entry = {
-      id: Date.now().toString(),
-      date: date,
-      title: entry.title || undefined,
-      content: entry.content,
-      mood: entry.mood,
-    };
-    setEntries([newEntry, ...entries]);
+  const handleSaveEntry = (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date, entryId?: string) => {
+    if (entryId) {
+      // Edit existing entry
+      setEntries(prev => prev.map(e => 
+        e.id === entryId 
+          ? { ...e, title: entry.title || undefined, content: entry.content, mood: entry.mood }
+          : e
+      ));
+    } else {
+      // Create new entry
+      const newEntry: Entry = {
+        id: Date.now().toString(),
+        date: date,
+        title: entry.title || undefined,
+        content: entry.content,
+        mood: entry.mood,
+      };
+      setEntries([newEntry, ...entries]);
+    }
   };
 
   const handleRecordEntry = () => {
@@ -80,6 +91,7 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
             key="calendar"
             entries={entries}
             onSaveEntry={handleSaveEntry}
+            onEditorStateChange={setIsEditorOpen}
           />
         )}
         {activeTab === "profile" && (
@@ -92,7 +104,7 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
         )}
       </AnimatePresence>
 
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      {!isEditorOpen && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />}
     </div>
   );
 };

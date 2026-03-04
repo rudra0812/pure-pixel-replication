@@ -135,7 +135,67 @@ export const GardenScene = ({
           scale: { duration: waterGrowthPulse ? 1.5 : 1, repeat: (isAnalyzing || isWatering) && !waterGrowthPulse ? Infinity : 0 }
         }}
       >
-        <Plant stage={growthStage} name={plantName} />
+        {/* Interactive Plant Container */}
+        <motion.div
+          className="relative cursor-pointer"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          animate={{
+            y: [0, -3, 0],
+          }}
+          transition={{
+            y: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+          }}
+        >
+          <Plant stage={growthStage} name={plantName} />
+          
+          {/* Breathing Aura Effect */}
+          <motion.div
+            className="absolute inset-0 -z-10 pointer-events-none"
+            style={{
+              background: `radial-gradient(circle, ${
+                weatherMood === "sunny" ? "hsl(45 100% 70% / 0.2)" :
+                weatherMood === "rainy" ? "hsl(200 80% 60% / 0.15)" :
+                weatherMood === "clearing" ? "hsl(170 60% 65% / 0.2)" :
+                "hsl(210 40% 70% / 0.15)"
+              } 0%, transparent 70%)`,
+              transform: "scale(2.5)",
+            }}
+            animate={{
+              scale: [2, 2.5, 2],
+              opacity: [0.3, 0.6, 0.3],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+          
+          {/* Outer Glow Ring */}
+          <motion.div
+            className="absolute inset-0 -z-20 pointer-events-none rounded-full"
+            style={{
+              border: `2px solid ${
+                weatherMood === "sunny" ? "hsl(45 100% 70% / 0.3)" :
+                weatherMood === "rainy" ? "hsl(200 80% 70% / 0.3)" :
+                weatherMood === "clearing" ? "hsl(170 60% 70% / 0.3)" :
+                "hsl(210 40% 70% / 0.3)"
+              }`,
+              transform: "scale(2)",
+            }}
+            animate={{
+              scale: [1.8, 2.2, 1.8],
+              opacity: [0.2, 0.5, 0.2],
+              rotate: [0, 180, 360],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+        </motion.div>
         
         {/* Glow effect when watering */}
         {isWatering && (
