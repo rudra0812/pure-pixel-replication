@@ -23,40 +23,56 @@ export const GardenScene = ({
     <div className="relative w-full h-full min-h-[60vh]">
       <GardenBackground weatherMood={weatherMood} />
       
-      {/* Decorative side plants - Left */}
+      {/* Decorative side plants - Left cluster */}
       <motion.div
-        className="absolute bottom-24 left-4 z-5"
+        className="absolute bottom-[7rem] left-1 z-5"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <SidePlant variant="tall" direction="left" />
+        <SidePlant variant="tall" direction="left" size="large" />
       </motion.div>
       <motion.div
-        className="absolute bottom-28 left-12 z-5"
+        className="absolute bottom-[6.5rem] left-14 z-5"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.5 }}
       >
-        <SidePlant variant="bush" direction="left" />
+        <SidePlant variant="bush" direction="left" size="large" />
+      </motion.div>
+      <motion.div
+        className="absolute bottom-[8rem] left-8 z-[3]"
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.7 }}
+      >
+        <SidePlant variant="flower" direction="left" size="medium" />
       </motion.div>
       
-      {/* Decorative side plants - Right */}
+      {/* Decorative side plants - Right cluster */}
       <motion.div
-        className="absolute bottom-24 right-4 z-5"
+        className="absolute bottom-[7rem] right-1 z-5"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <SidePlant variant="tall" direction="right" />
+        <SidePlant variant="tall" direction="right" size="large" />
       </motion.div>
       <motion.div
-        className="absolute bottom-28 right-12 z-5"
+        className="absolute bottom-[6.5rem] right-14 z-5"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <SidePlant variant="flower" direction="right" />
+        <SidePlant variant="flower" direction="right" size="large" />
+      </motion.div>
+      <motion.div
+        className="absolute bottom-[8rem] right-8 z-[3]"
+        initial={{ opacity: 0, x: 10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.8 }}
+      >
+        <SidePlant variant="bush" direction="right" size="medium" />
       </motion.div>
 
       {/* Water droplets when watering */}
@@ -118,9 +134,9 @@ export const GardenScene = ({
         </div>
       )}
 
-      {/* Plant positioned at ground level - just above buttons */}
+      {/* Plant positioned on the ground */}
       <motion.div
-        className="absolute bottom-[15.5rem] left-0 right-0 flex justify-center z-10"
+        className="absolute bottom-[6.5rem] left-0 right-0 flex justify-center z-10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ 
           opacity: 1, 
@@ -291,14 +307,15 @@ export const GardenScene = ({
 };
 
 // Side decorative plants
-const SidePlant = ({ variant, direction }: { variant: "tall" | "bush" | "flower"; direction: "left" | "right" }) => {
+const SidePlant = ({ variant, direction, size = "medium" }: { variant: "tall" | "bush" | "flower"; direction: "left" | "right"; size?: "medium" | "large" }) => {
   const flip = direction === "right" ? -1 : 1;
+  const scale = size === "large" ? 1.8 : 1.3;
   
   if (variant === "tall") {
     return (
       <motion.svg
-        width="45"
-        height="90"
+        width={60 * scale}
+        height={120 * scale}
         viewBox="0 0 45 90"
         style={{ transform: `scaleX(${flip})` }}
         animate={{ rotate: [-2 * flip, 2 * flip, -2 * flip] }}
@@ -326,8 +343,8 @@ const SidePlant = ({ variant, direction }: { variant: "tall" | "bush" | "flower"
   if (variant === "bush") {
     return (
       <motion.svg
-        width="55"
-        height="50"
+        width={55 * scale}
+        height={50 * scale}
         viewBox="0 0 55 50"
         style={{ transform: `scaleX(${flip})` }}
         animate={{ scale: [1, 1.03, 1] }}
@@ -344,8 +361,8 @@ const SidePlant = ({ variant, direction }: { variant: "tall" | "bush" | "flower"
   // Flower variant
   return (
     <motion.svg
-      width="40"
-      height="70"
+      width={40 * scale}
+      height={70 * scale}
       viewBox="0 0 40 70"
       style={{ transform: `scaleX(${flip})` }}
       animate={{ rotate: [-3 * flip, 3 * flip, -3 * flip] }}

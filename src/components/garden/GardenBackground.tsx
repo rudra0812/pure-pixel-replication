@@ -261,14 +261,14 @@ export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
       </div>
 
       {/* Background trees - left side */}
-      <BackgroundTree x={8} bottom={115} height={60} delay={0} />
-      <BackgroundTree x={18} bottom={110} height={50} delay={0.5} variant="pine" />
-      <BackgroundTree x={28} bottom={112} height={55} delay={1} />
+      <BackgroundTree x={5} bottom={115} height={95} delay={0} />
+      <BackgroundTree x={15} bottom={110} height={80} delay={0.5} variant="pine" />
+      <BackgroundTree x={25} bottom={112} height={85} delay={1} />
       
       {/* Background trees - right side */}
-      <BackgroundTree x={72} bottom={112} height={55} delay={0.3} variant="pine" />
-      <BackgroundTree x={82} bottom={108} height={48} delay={0.8} />
-      <BackgroundTree x={92} bottom={115} height={58} delay={1.2} variant="pine" />
+      <BackgroundTree x={70} bottom={112} height={85} delay={0.3} variant="pine" />
+      <BackgroundTree x={80} bottom={108} height={75} delay={0.8} />
+      <BackgroundTree x={90} bottom={115} height={90} delay={1.2} variant="pine" />
 
       {/* Ground - Grass layers */}
       <div className="absolute bottom-0 left-0 right-0 h-28">
