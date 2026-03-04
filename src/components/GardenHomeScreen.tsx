@@ -162,6 +162,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
     localStorage.setItem("garden_seed_planted", "true");
     localStorage.setItem("garden_seed_type", seedType);
     localStorage.setItem("garden_plant_name", name);
+    localStorage.setItem("garden_seed_planted_date", new Date().toISOString());
     setPlantName(name);
     setHasPlantedSeed(true);
   };
