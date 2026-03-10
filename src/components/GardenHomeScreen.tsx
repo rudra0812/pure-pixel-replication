@@ -161,12 +161,13 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
   const currentWeather = weatherConfig[weatherMood];
   const WeatherIcon = currentWeather.icon;
 
-  const handleSeedPlanted = (seedType: string, name: string) => {
+  const handleSeedPlanted = (seedTypeStr: string, name: string) => {
     localStorage.setItem("garden_seed_planted", "true");
-    localStorage.setItem("garden_seed_type", seedType);
+    localStorage.setItem("garden_seed_type", seedTypeStr);
     localStorage.setItem("garden_plant_name", name);
     localStorage.setItem("garden_seed_planted_date", new Date().toISOString());
     setPlantName(name);
+    setSeedType(seedTypeStr);
     setHasPlantedSeed(true);
   };
 
