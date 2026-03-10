@@ -22,7 +22,7 @@ export const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30, delay: 0.2 }}
     >
-      <div className="mx-4 mb-4 rounded-2xl bg-card/80 backdrop-blur-xl border border-border shadow-lg">
+      <div className="mx-4 mb-4 rounded-2xl bg-card/80 backdrop-blur-xl border border-border/40 shadow-xl shadow-foreground/5">
         <div className="flex items-center justify-around py-2">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;

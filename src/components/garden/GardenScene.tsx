@@ -8,6 +8,7 @@ interface GardenSceneProps {
   weatherMood: "sunny" | "cloudy" | "rainy" | "clearing";
   growthStage: GrowthStage;
   plantName?: string;
+  seedType?: string;
   isAnalyzing?: boolean;
   isWatering?: boolean;
   waterGrowthPulse?: boolean;
@@ -33,13 +34,15 @@ export const GardenScene = ({
   weatherMood, 
   growthStage, 
   plantName,
+  seedType,
   isAnalyzing,
   isWatering,
   waterGrowthPulse
 }: GardenSceneProps) => {
   const [showPlantInfo, setShowPlantInfo] = useState(false);
 
-  const seedType = typeof window !== "undefined" ? localStorage.getItem("garden_seed_type") || "Hope" : "Hope";
+  const storedSeedType = typeof window !== "undefined" ? localStorage.getItem("garden_seed_type") || "Hope" : "Hope";
+  const resolvedSeedType = seedType || storedSeedType;
   const plantedDate = typeof window !== "undefined" ? localStorage.getItem("garden_seed_planted_date") : null;
   const age = plantedDate
     ? Math.max(1, Math.floor((Date.now() - new Date(plantedDate).getTime()) / 86400000))
@@ -124,7 +127,7 @@ export const GardenScene = ({
           whileTap={{ scale: 0.96 }}
           onClick={() => setShowPlantInfo(true)}
         >
-          <Plant stage={growthStage} name={plantName} />
+          <Plant stage={growthStage} name={plantName} seedType={seedType} />
           
           {/* Subtle breathing aura - no ring */}
           <motion.div
@@ -237,7 +240,7 @@ export const GardenScene = ({
                   <div>
                     <h3 className="text-lg font-bold text-foreground">{plantName || "My Plant"}</h3>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Sprout className="h-3 w-3" /> {seedType} Seed · {stageLabels[growthStage]}
+                      <Sprout className="h-3 w-3" /> {resolvedSeedType} Seed · {stageLabels[growthStage]}
                     </p>
                   </div>
 

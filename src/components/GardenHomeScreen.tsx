@@ -149,6 +149,9 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
   const [plantName, setPlantName] = useState(() => {
     return localStorage.getItem("garden_plant_name") || "My Journey";
   });
+  const [seedType, setSeedType] = useState(() => {
+    return localStorage.getItem("garden_seed_type") || "hope";
+  });
   const [waterGrowthPulse, setWaterGrowthPulse] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<AnalysisPeriod>("today");
 
@@ -158,12 +161,13 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
   const currentWeather = weatherConfig[weatherMood];
   const WeatherIcon = currentWeather.icon;
 
-  const handleSeedPlanted = (seedType: string, name: string) => {
+  const handleSeedPlanted = (seedTypeStr: string, name: string) => {
     localStorage.setItem("garden_seed_planted", "true");
-    localStorage.setItem("garden_seed_type", seedType);
+    localStorage.setItem("garden_seed_type", seedTypeStr);
     localStorage.setItem("garden_plant_name", name);
     localStorage.setItem("garden_seed_planted_date", new Date().toISOString());
     setPlantName(name);
+    setSeedType(seedTypeStr);
     setHasPlantedSeed(true);
   };
 
@@ -428,6 +432,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
           weatherMood={weatherMood}
           growthStage={growthStage}
           plantName={plantName}
+          seedType={seedType}
           isAnalyzing={isAnalyzing}
           isWatering={isWatering}
           waterGrowthPulse={waterGrowthPulse}

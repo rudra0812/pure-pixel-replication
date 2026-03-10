@@ -6,19 +6,33 @@ import { HomeScreen } from "@/components/HomeScreen";
 
 type AppScreen = "splash" | "auth" | "home";
 
+const pageVariants = {
+  initial: { opacity: 0, scale: 0.98, y: 10 },
+  animate: { opacity: 1, scale: 1, y: 0 },
+  exit: { opacity: 0, scale: 0.98, y: -10 },
+};
+
+const pageTransition = {
+  type: "spring" as const,
+  stiffness: 300,
+  damping: 30,
+  mass: 0.8,
+};
+
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash");
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-hidden">
       <AnimatePresence mode="wait">
         {currentScreen === "splash" && (
           <motion.div
             key="splash"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={pageTransition}
           >
             <SplashScreen onGetStarted={() => setCurrentScreen("auth")} />
           </motion.div>
@@ -27,10 +41,11 @@ const Index = () => {
         {currentScreen === "auth" && (
           <motion.div
             key="auth"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={pageTransition}
           >
             <AuthScreen
               onBack={() => setCurrentScreen("splash")}
@@ -42,10 +57,11 @@ const Index = () => {
         {currentScreen === "home" && (
           <motion.div
             key="home"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={pageTransition}
           >
             <HomeScreen onLogout={() => setCurrentScreen("splash")} />
           </motion.div>
