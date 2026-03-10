@@ -149,6 +149,9 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
   const [plantName, setPlantName] = useState(() => {
     return localStorage.getItem("garden_plant_name") || "My Journey";
   });
+  const [seedType, setSeedType] = useState(() => {
+    return localStorage.getItem("garden_seed_type") || "hope";
+  });
   const [waterGrowthPulse, setWaterGrowthPulse] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<AnalysisPeriod>("today");
 
