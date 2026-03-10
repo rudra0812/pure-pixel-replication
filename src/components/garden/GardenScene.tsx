@@ -43,6 +43,7 @@ export const GardenScene = ({
 
   const storedSeedType = typeof window !== "undefined" ? localStorage.getItem("garden_seed_type") || "Hope" : "Hope";
   const resolvedSeedType = seedType || storedSeedType;
+  const plantedDate = typeof window !== "undefined" ? localStorage.getItem("garden_seed_planted_date") : null;
   const age = plantedDate
     ? Math.max(1, Math.floor((Date.now() - new Date(plantedDate).getTime()) / 86400000))
     : 1;
