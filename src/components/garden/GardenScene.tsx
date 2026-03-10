@@ -126,7 +126,7 @@ export const GardenScene = ({
           whileTap={{ scale: 0.96 }}
           onClick={() => setShowPlantInfo(true)}
         >
-          <Plant stage={growthStage} name={plantName} />
+          <Plant stage={growthStage} name={plantName} seedType={seedType} />
           
           {/* Subtle breathing aura - no ring */}
           <motion.div
