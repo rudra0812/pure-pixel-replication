@@ -14,7 +14,7 @@ const pageVariants = {
 
 const pageTransition = {
   duration: 0.15,
-  ease: "easeOut",
+  ease: "easeOut" as const,
 };
 
 const Index = () => {
