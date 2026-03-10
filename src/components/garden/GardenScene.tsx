@@ -448,9 +448,11 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
           ))}
           <circle cx="20" cy="18" r="4" fill="hsl(45 90% 60%)" />
         </motion.svg>
-    )}
-  </motion.div>
-);
+      )}
+      </motion.div>
+    </motion.div>
+  );
+};
 
 // Butterfly component
 const Butterfly = ({ x, y, delay }: { x: number; y: number; delay: number }) => (
