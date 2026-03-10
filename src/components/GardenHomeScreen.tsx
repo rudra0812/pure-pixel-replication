@@ -431,6 +431,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
           weatherMood={weatherMood}
           growthStage={growthStage}
           plantName={plantName}
+          seedType={seedType}
           isAnalyzing={isAnalyzing}
           isWatering={isWatering}
           waterGrowthPulse={waterGrowthPulse}
