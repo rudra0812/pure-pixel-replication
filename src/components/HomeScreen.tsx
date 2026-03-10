@@ -80,27 +80,25 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
     <div className="relative min-h-screen bg-background">
       <AnimatePresence mode="wait">
         {activeTab === "mood" && (
-          <GardenHomeScreen
-            key="mood"
-            entries={entries}
-            onRecordEntry={handleRecordEntry}
-          />
+          <motion.div key="mood"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}>
+            <GardenHomeScreen entries={entries} onRecordEntry={handleRecordEntry} />
+          </motion.div>
         )}
         {activeTab === "calendar" && (
-          <NewCalendarScreen
-            key="calendar"
-            entries={entries}
-            onSaveEntry={handleSaveEntry}
-            onEditorStateChange={setIsEditorOpen}
-          />
+          <motion.div key="calendar"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}>
+            <NewCalendarScreen entries={entries} onSaveEntry={handleSaveEntry} onEditorStateChange={setIsEditorOpen} />
+          </motion.div>
         )}
         {activeTab === "profile" && (
-          <ProfileScreen
-            key="profile"
-            onLogout={onLogout}
-            totalEntries={entries.length}
-            totalDays={totalDays}
-          />
+          <motion.div key="profile"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}>
+            <ProfileScreen onLogout={onLogout} totalEntries={entries.length} totalDays={totalDays} />
+          </motion.div>
         )}
       </AnimatePresence>
 
