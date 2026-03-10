@@ -7,16 +7,14 @@ import { HomeScreen } from "@/components/HomeScreen";
 type AppScreen = "splash" | "auth" | "home";
 
 const pageVariants = {
-  initial: { opacity: 0, scale: 0.98, y: 10 },
-  animate: { opacity: 1, scale: 1, y: 0 },
-  exit: { opacity: 0, scale: 0.98, y: -10 },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
 const pageTransition = {
-  type: "spring" as const,
-  stiffness: 300,
-  damping: 30,
-  mass: 0.8,
+  duration: 0.15,
+  ease: "easeOut" as const,
 };
 
 const Index = () => {

@@ -317,7 +317,16 @@ export const GardenScene = ({
   );
 };
 
-// Unified scene plant component with multiple varieties
+// Plant names by type
+const plantNames: Record<string, string> = {
+  tallLeafy: "Fern Willow",
+  roundBush: "Berry Bush",
+  pine: "Little Pine",
+  fern: "Wild Fern",
+  flowerPlant: "Meadow Bloom",
+};
+
+// Unified scene plant component with multiple varieties - now interactive
 const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
   type: "tallLeafy" | "roundBush" | "pine" | "fern" | "flowerPlant";
   x: number;
@@ -325,98 +334,125 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
   size: number;
   delay: number;
   flip: number;
-}) => (
-  <motion.div
-    className="absolute z-[5]"
-    style={{ left: `${x}%`, bottom }}
-    initial={{ opacity: 0, y: 15 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay }}
-  >
-    {type === "tallLeafy" && (
-      <motion.svg
-        width={50 * size} height={110 * size} viewBox="0 0 50 110"
-        style={{ transform: `scaleX(${flip})` }}
-        animate={{ rotate: [-1.5, 1.5, -1.5] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+}) => {
+  const [tapped, setTapped] = useState(false);
+
+  return (
+    <motion.div
+      className="absolute z-[5] cursor-pointer"
+      style={{ left: `${x}%`, bottom }}
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      onClick={() => { setTapped(true); setTimeout(() => setTapped(false), 1800); }}
+    >
+      {/* Name tooltip */}
+      <AnimatePresence>
+        {tapped && (
+          <motion.div
+            className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap z-50"
+            initial={{ opacity: 0, y: 5, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -5, scale: 0.8 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          >
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-card/90 backdrop-blur-sm shadow-md text-foreground border border-border/30">
+              {plantNames[type]}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        animate={tapped ? { scale: [1, 1.15, 0.95, 1.05, 1], rotate: [0, -5, 5, -3, 0] } : {}}
+        transition={{ duration: 0.5 }}
       >
-        <path d="M25 110 Q23 70 25 20" stroke="hsl(125 45% 30%)" strokeWidth="5" fill="none" strokeLinecap="round" />
-        <ellipse cx="13" cy="70" rx="12" ry="7" fill="hsl(130 52% 36%)" transform="rotate(-35 13 70)" />
-        <ellipse cx="37" cy="58" rx="13" ry="7" fill="hsl(128 50% 38%)" transform="rotate(30 37 58)" />
-        <ellipse cx="15" cy="42" rx="11" ry="6" fill="hsl(132 55% 40%)" transform="rotate(-28 15 42)" />
-        <ellipse cx="35" cy="28" rx="10" ry="6" fill="hsl(135 58% 43%)" transform="rotate(22 35 28)" />
-        <ellipse cx="25" cy="16" rx="9" ry="7" fill="hsl(138 55% 45%)" />
-      </motion.svg>
-    )}
-    {type === "roundBush" && (
-      <motion.svg
-        width={55 * size} height={45 * size} viewBox="0 0 55 45"
-        style={{ transform: `scaleX(${flip})` }}
-        animate={{ scale: [1, 1.03, 1] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <ellipse cx="14" cy="35" rx="13" ry="10" fill="hsl(130 45% 30%)" />
-        <ellipse cx="42" cy="36" rx="12" ry="9" fill="hsl(128 42% 33%)" />
-        <ellipse cx="28" cy="24" rx="20" ry="16" fill="hsl(132 50% 36%)" />
-        <ellipse cx="22" cy="18" rx="10" ry="8" fill="hsl(135 52% 40%)" opacity="0.8" />
-        <ellipse cx="34" cy="20" rx="8" ry="6" fill="hsl(138 48% 42%)" opacity="0.6" />
-      </motion.svg>
-    )}
-    {type === "pine" && (
-      <motion.svg
-        width={30 * size} height={65 * size} viewBox="0 0 30 65"
-        style={{ transform: `scaleX(${flip})` }}
-        animate={{ rotate: [-1, 1, -1] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <rect x="13" y="48" width="4" height="17" fill="hsl(25 42% 30%)" />
-        <polygon points="15,5 2,50 28,50" fill="hsl(140 42% 30%)" />
-        <polygon points="15,15 5,45 25,45" fill="hsl(135 38% 36%)" opacity="0.8" />
-      </motion.svg>
-    )}
-    {type === "fern" && (
-      <motion.svg
-        width={35 * size} height={50 * size} viewBox="0 0 40 50"
-        style={{ transform: `scaleX(${flip})` }}
-        animate={{ rotate: [-2, 2, -2] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      >
-        {[-20, -10, 0, 10, 20].map((angle, i) => (
-          <motion.path
-            key={i}
-            d={`M20 50 Q${20 + angle * 0.5} 28 ${20 + angle} ${8 + Math.abs(angle) * 0.3}`}
-            stroke={`hsl(${130 + i * 3} ${45 + i * 2}% ${35 + i * 3}%)`}
-            strokeWidth="3"
-            fill="none"
-            strokeLinecap="round"
-          />
-        ))}
-      </motion.svg>
-    )}
-    {type === "flowerPlant" && (
-      <motion.svg
-        width={35 * size} height={65 * size} viewBox="0 0 40 70"
-        style={{ transform: `scaleX(${flip})` }}
-        animate={{ rotate: [-2, 2, -2] }}
-        transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <path d="M20 70 Q18 48 20 22" stroke="hsl(125 45% 33%)" strokeWidth="3" fill="none" />
-        <ellipse cx="12" cy="52" rx="8" ry="4" fill="hsl(130 50% 38%)" transform="rotate(-35 12 52)" />
-        <ellipse cx="28" cy="44" rx="7" ry="4" fill="hsl(132 48% 40%)" transform="rotate(30 28 44)" />
-        {[0, 72, 144, 216, 288].map((angle, i) => (
-          <motion.ellipse
-            key={i} cx="20" cy="14" rx="5" ry="9"
-            fill={`hsl(${340 + i * 12} 65% ${72 + i * 2}%)`}
-            transform={`rotate(${angle} 20 18)`}
-            animate={{ scale: [1, 1.06, 1] }}
-            transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.1 }}
-          />
-        ))}
-        <circle cx="20" cy="18" r="4" fill="hsl(45 90% 60%)" />
-      </motion.svg>
-    )}
-  </motion.div>
-);
+      {type === "tallLeafy" && (
+        <motion.svg
+          width={50 * size} height={110 * size} viewBox="0 0 50 110"
+          style={{ transform: `scaleX(${flip})` }}
+          animate={{ rotate: [-1.5, 1.5, -1.5] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <path d="M25 110 Q23 70 25 20" stroke="hsl(125 45% 30%)" strokeWidth="5" fill="none" strokeLinecap="round" />
+          <ellipse cx="13" cy="70" rx="12" ry="7" fill="hsl(130 52% 36%)" transform="rotate(-35 13 70)" />
+          <ellipse cx="37" cy="58" rx="13" ry="7" fill="hsl(128 50% 38%)" transform="rotate(30 37 58)" />
+          <ellipse cx="15" cy="42" rx="11" ry="6" fill="hsl(132 55% 40%)" transform="rotate(-28 15 42)" />
+          <ellipse cx="35" cy="28" rx="10" ry="6" fill="hsl(135 58% 43%)" transform="rotate(22 35 28)" />
+          <ellipse cx="25" cy="16" rx="9" ry="7" fill="hsl(138 55% 45%)" />
+        </motion.svg>
+      )}
+      {type === "roundBush" && (
+        <motion.svg
+          width={55 * size} height={45 * size} viewBox="0 0 55 45"
+          style={{ transform: `scaleX(${flip})` }}
+          animate={{ scale: [1, 1.03, 1] }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <ellipse cx="14" cy="35" rx="13" ry="10" fill="hsl(130 45% 30%)" />
+          <ellipse cx="42" cy="36" rx="12" ry="9" fill="hsl(128 42% 33%)" />
+          <ellipse cx="28" cy="24" rx="20" ry="16" fill="hsl(132 50% 36%)" />
+          <ellipse cx="22" cy="18" rx="10" ry="8" fill="hsl(135 52% 40%)" opacity="0.8" />
+          <ellipse cx="34" cy="20" rx="8" ry="6" fill="hsl(138 48% 42%)" opacity="0.6" />
+        </motion.svg>
+      )}
+      {type === "pine" && (
+        <motion.svg
+          width={30 * size} height={65 * size} viewBox="0 0 30 65"
+          style={{ transform: `scaleX(${flip})` }}
+          animate={{ rotate: [-1, 1, -1] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <rect x="13" y="48" width="4" height="17" fill="hsl(25 42% 30%)" />
+          <polygon points="15,5 2,50 28,50" fill="hsl(140 42% 30%)" />
+          <polygon points="15,15 5,45 25,45" fill="hsl(135 38% 36%)" opacity="0.8" />
+        </motion.svg>
+      )}
+      {type === "fern" && (
+        <motion.svg
+          width={35 * size} height={50 * size} viewBox="0 0 40 50"
+          style={{ transform: `scaleX(${flip})` }}
+          animate={{ rotate: [-2, 2, -2] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          {[-20, -10, 0, 10, 20].map((angle, i) => (
+            <motion.path
+              key={i}
+              d={`M20 50 Q${20 + angle * 0.5} 28 ${20 + angle} ${8 + Math.abs(angle) * 0.3}`}
+              stroke={`hsl(${130 + i * 3} ${45 + i * 2}% ${35 + i * 3}%)`}
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+            />
+          ))}
+        </motion.svg>
+      )}
+      {type === "flowerPlant" && (
+        <motion.svg
+          width={35 * size} height={65 * size} viewBox="0 0 40 70"
+          style={{ transform: `scaleX(${flip})` }}
+          animate={{ rotate: [-2, 2, -2] }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <path d="M20 70 Q18 48 20 22" stroke="hsl(125 45% 33%)" strokeWidth="3" fill="none" />
+          <ellipse cx="12" cy="52" rx="8" ry="4" fill="hsl(130 50% 38%)" transform="rotate(-35 12 52)" />
+          <ellipse cx="28" cy="44" rx="7" ry="4" fill="hsl(132 48% 40%)" transform="rotate(30 28 44)" />
+          {[0, 72, 144, 216, 288].map((angle, i) => (
+            <motion.ellipse
+              key={i} cx="20" cy="14" rx="5" ry="9"
+              fill={`hsl(${340 + i * 12} 65% ${72 + i * 2}%)`}
+              transform={`rotate(${angle} 20 18)`}
+              animate={{ scale: [1, 1.06, 1] }}
+              transition={{ duration: 2.5, repeat: Infinity, delay: i * 0.1 }}
+            />
+          ))}
+          <circle cx="20" cy="18" r="4" fill="hsl(45 90% 60%)" />
+        </motion.svg>
+      )}
+      </motion.div>
+    </motion.div>
+  );
+};
 
 // Butterfly component
 const Butterfly = ({ x, y, delay }: { x: number; y: number; delay: number }) => (
