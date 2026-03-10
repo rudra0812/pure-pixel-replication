@@ -8,6 +8,7 @@ interface GardenSceneProps {
   weatherMood: "sunny" | "cloudy" | "rainy" | "clearing";
   growthStage: GrowthStage;
   plantName?: string;
+  seedType?: string;
   isAnalyzing?: boolean;
   isWatering?: boolean;
   waterGrowthPulse?: boolean;
