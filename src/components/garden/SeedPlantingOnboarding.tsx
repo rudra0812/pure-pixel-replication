@@ -67,8 +67,7 @@ export const SeedPlantingOnboarding = ({ onComplete }: SeedPlantingOnboardingPro
 
   const handlePlant = async () => {
     setIsPlanting(true);
-    // Wait for planting animation
-    await new Promise(resolve => setTimeout(resolve, 4000));
+    await new Promise(resolve => setTimeout(resolve, 3200));
     onComplete(selectedSeed!.id, seedName);
   };
 
