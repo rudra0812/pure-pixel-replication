@@ -34,6 +34,7 @@ export const GardenScene = ({
   weatherMood, 
   growthStage, 
   plantName,
+  seedType,
   isAnalyzing,
   isWatering,
   waterGrowthPulse
