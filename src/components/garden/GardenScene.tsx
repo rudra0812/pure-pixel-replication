@@ -240,7 +240,7 @@ export const GardenScene = ({
                   <div>
                     <h3 className="text-lg font-bold text-foreground">{plantName || "My Plant"}</h3>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Sprout className="h-3 w-3" /> {seedType} Seed · {stageLabels[growthStage]}
+                      <Sprout className="h-3 w-3" /> {resolvedSeedType} Seed · {stageLabels[growthStage]}
                     </p>
                   </div>
 
