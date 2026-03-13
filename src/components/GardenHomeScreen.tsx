@@ -154,6 +154,9 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
   });
   const [waterGrowthPulse, setWaterGrowthPulse] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<AnalysisPeriod>("today");
+  const [holdDrizzle, setHoldDrizzle] = useState(false);
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const holdActiveRef = useRef(false);
 
   const growthStage = getGrowthStage(entries.length);
   const stageLabel = getStageLabel(growthStage);
@@ -170,6 +173,39 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
     setSeedType(seedTypeStr);
     setHasPlantedSeed(true);
   };
+
+  // Hold-to-drizzle: start on long press anywhere on garden
+  const startHoldDrizzle = useCallback(() => {
+    holdActiveRef.current = true;
+    holdTimerRef.current = setTimeout(() => {
+      if (holdActiveRef.current && !isWatering) {
+        setHoldDrizzle(true);
+        setIsWatering(true);
+        setTimeout(() => setWaterGrowthPulse(true), 1500);
+      }
+    }, 400); // 400ms threshold for hold
+  }, [isWatering]);
+
+  const stopHoldDrizzle = useCallback(() => {
+    holdActiveRef.current = false;
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    if (holdDrizzle) {
+      setHoldDrizzle(false);
+      setTimeout(() => {
+        setIsWatering(false);
+        setWaterGrowthPulse(false);
+      }, 500);
+    }
+  }, [holdDrizzle]);
+
+  useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) clearTimeout(holdTimerRef.current);
+    };
+  }, []);
 
   const handleWater = async () => {
     if (isWatering) return;
