@@ -238,11 +238,17 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
 
   return (
     <motion.div
-      className="relative min-h-screen safe-area-top overflow-hidden bg-gradient-to-b from-sky-100 via-sky-50 to-white"
+      className="relative min-h-screen safe-area-top overflow-hidden bg-gradient-to-b from-sky-100 via-sky-50 to-white select-none"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.18 }}
+      onMouseDown={startHoldDrizzle}
+      onMouseUp={stopHoldDrizzle}
+      onMouseLeave={stopHoldDrizzle}
+      onTouchStart={startHoldDrizzle}
+      onTouchEnd={stopHoldDrizzle}
+      onTouchCancel={stopHoldDrizzle}
     >
       {/* Dynamic Sky Background */}
       <motion.div 
