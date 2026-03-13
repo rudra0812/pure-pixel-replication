@@ -650,6 +650,25 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
           </div>
         </div>
       </motion.div>
+
+      {/* Hold-to-drizzle indicator */}
+      <AnimatePresence>
+        {holdDrizzle && (
+          <motion.div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+          >
+            <div className="px-5 py-2.5 rounded-full backdrop-blur-xl bg-blue-500/20 border border-blue-300/40 shadow-lg">
+              <div className="flex items-center gap-2">
+                <Droplets className="h-4 w-4 text-blue-400" />
+                <span className="text-sm font-medium text-blue-100">Drizzling...</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
