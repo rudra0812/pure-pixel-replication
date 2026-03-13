@@ -21,11 +21,12 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash");
 
   return (
-    <div className="min-h-screen overflow-hidden">
-      <AnimatePresence mode="wait">
+    <div className="relative min-h-screen overflow-hidden bg-background">
+      <AnimatePresence>
         {currentScreen === "splash" && (
           <motion.div
             key="splash"
+            className="absolute inset-0"
             variants={pageVariants}
             initial="initial"
             animate="animate"
@@ -39,6 +40,7 @@ const Index = () => {
         {currentScreen === "auth" && (
           <motion.div
             key="auth"
+            className="absolute inset-0"
             variants={pageVariants}
             initial="initial"
             animate="animate"
@@ -55,6 +57,7 @@ const Index = () => {
         {currentScreen === "home" && (
           <motion.div
             key="home"
+            className="absolute inset-0"
             variants={pageVariants}
             initial="initial"
             animate="animate"
