@@ -13,8 +13,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-  duration: 0.15,
-  ease: "easeOut" as const,
+  duration: 0.25,
+  ease: [0.4, 0, 0.2, 1],
 };
 
 const Index = () => {
