@@ -32,16 +32,6 @@ export const Plant = ({ stage, name, seedType = "hope" }: PlantProps) => {
   return (
     <div className="relative flex flex-col items-center">
       {getPlantContent()}
-      {name && (
-        <motion.p
-          className="mt-1 text-xs font-medium text-foreground/80 bg-card/70 px-3 py-1 rounded-full backdrop-blur-sm shadow-sm"
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          {name}
-        </motion.p>
-      )}
     </div>
   );
 };
