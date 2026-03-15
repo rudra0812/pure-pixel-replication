@@ -163,6 +163,15 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, o
     onEditorStateChange?.(showEditor);
   }, [showEditor, onEditorStateChange]);
 
+  // Open editor for today when triggered from garden
+  useEffect(() => {
+    if (openEditorForToday) {
+      setSelectedDate(new Date());
+      setShowEditor(true);
+      onOpenEditorForTodayHandled?.();
+    }
+  }, [openEditorForToday, onOpenEditorForTodayHandled]);
+
   const enhancedEntries = useMemo(() => getEntriesWithMood(entries), [entries]);
   
   const streak = useMemo(() => calculateStreak(enhancedEntries), [enhancedEntries]);
