@@ -21,7 +21,7 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<AppScreen>("splash");
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div className="relative min-h-screen bg-background">
       <AnimatePresence>
         {currentScreen === "splash" && (
           <motion.div
