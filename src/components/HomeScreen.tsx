@@ -47,6 +47,7 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
   const [entries, setEntries] = useState<Entry[]>(sampleEntries);
   const [activeTab, setActiveTab] = useState<NavTab>("mood");
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [openEditorForToday, setOpenEditorForToday] = useState(false);
 
   const handleSaveEntry = (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date, entryId?: string) => {
     if (entryId) {
