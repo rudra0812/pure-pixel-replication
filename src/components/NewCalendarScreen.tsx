@@ -36,6 +36,8 @@ interface NewCalendarScreenProps {
   entries: Entry[];
   onSaveEntry: (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date, entryId?: string) => void;
   onEditorStateChange?: (isOpen: boolean) => void;
+  openEditorForToday?: boolean;
+  onOpenEditorForTodayHandled?: () => void;
 }
 
 // Enhanced mood colors with gradients
