@@ -238,7 +238,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
 
   return (
     <motion.div
-      className="relative min-h-screen safe-area-top overflow-y-auto bg-gradient-to-b from-sky-100 via-sky-50 to-white select-none"
+      className="relative h-screen safe-area-top overflow-hidden bg-gradient-to-b from-sky-100 via-sky-50 to-white select-none"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
