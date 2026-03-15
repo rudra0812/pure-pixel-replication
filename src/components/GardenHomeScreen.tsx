@@ -238,7 +238,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
 
   return (
     <motion.div
-      className="relative min-h-screen safe-area-top overflow-y-auto bg-gradient-to-b from-sky-100 via-sky-50 to-white select-none"
+      className="relative h-screen safe-area-top overflow-hidden bg-gradient-to-b from-sky-100 via-sky-50 to-white select-none"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -549,7 +549,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
       </AnimatePresence>
 
       {/* Floating Action Button (FAB) */}
-      <div className="absolute bottom-8 right-6 z-50">
+      <div className="absolute bottom-24 right-6 z-50">
         <AnimatePresence>
           {showFabMenu && (
             <>
@@ -629,7 +629,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
 
       {/* Bottom Info Bar */}
       <motion.div
-        className="absolute bottom-8 left-6 z-40"
+        className="absolute bottom-24 left-6 z-40"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
