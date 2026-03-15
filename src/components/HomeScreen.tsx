@@ -96,7 +96,7 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
           </motion.div>
         )}
         {activeTab === "profile" && (
-          <motion.div key="profile" className="absolute inset-0"
+          <motion.div key="profile" className="absolute inset-0 overflow-y-auto"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
             <ProfileScreen onLogout={onLogout} totalEntries={entries.length} totalDays={totalDays} />
