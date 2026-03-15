@@ -209,12 +209,12 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
 
   const handleWater = async () => {
     if (isWatering) return;
+    setShowFabMenu(false);
     setIsWatering(true);
     setTimeout(() => setWaterGrowthPulse(true), 1500);
     await new Promise(resolve => setTimeout(resolve, 3000));
     setIsWatering(false);
     setWaterGrowthPulse(false);
-    setShowFabMenu(false);
   };
 
   const handleAnalyze = async () => {

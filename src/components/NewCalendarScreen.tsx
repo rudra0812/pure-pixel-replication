@@ -36,6 +36,8 @@ interface NewCalendarScreenProps {
   entries: Entry[];
   onSaveEntry: (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date, entryId?: string) => void;
   onEditorStateChange?: (isOpen: boolean) => void;
+  openEditorForToday?: boolean;
+  onOpenEditorForTodayHandled?: () => void;
 }
 
 // Enhanced mood colors with gradients
@@ -149,7 +151,7 @@ const getEntriesWithMood = (entries: Entry[]): Entry[] => {
   }));
 };
 
-export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange }: NewCalendarScreenProps) => {
+export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, openEditorForToday, onOpenEditorForTodayHandled }: NewCalendarScreenProps) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showEditor, setShowEditor] = useState(false);
@@ -160,6 +162,15 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange }:
   useEffect(() => {
     onEditorStateChange?.(showEditor);
   }, [showEditor, onEditorStateChange]);
+
+  // Open editor for today when triggered from garden
+  useEffect(() => {
+    if (openEditorForToday) {
+      setSelectedDate(new Date());
+      setShowEditor(true);
+      onOpenEditorForTodayHandled?.();
+    }
+  }, [openEditorForToday, onOpenEditorForTodayHandled]);
 
   const enhancedEntries = useMemo(() => getEntriesWithMood(entries), [entries]);
   

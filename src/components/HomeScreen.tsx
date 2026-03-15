@@ -47,6 +47,7 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
   const [entries, setEntries] = useState<Entry[]>(sampleEntries);
   const [activeTab, setActiveTab] = useState<NavTab>("mood");
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [openEditorForToday, setOpenEditorForToday] = useState(false);
 
   const handleSaveEntry = (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date, entryId?: string) => {
     if (entryId) {
@@ -70,8 +71,9 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
   };
 
   const handleRecordEntry = () => {
-    // Switch to calendar tab for today's date
+    // Switch to calendar tab and signal to open editor for today
     setActiveTab("calendar");
+    setOpenEditorForToday(true);
   };
 
   const totalDays = new Set(entries.map(e => new Date(e.date).toDateString())).size;
@@ -87,14 +89,14 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
           </motion.div>
         )}
         {activeTab === "calendar" && (
-          <motion.div key="calendar" className="absolute inset-0"
+          <motion.div key="calendar" className="absolute inset-0 overflow-y-auto"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
-            <NewCalendarScreen entries={entries} onSaveEntry={handleSaveEntry} onEditorStateChange={setIsEditorOpen} />
+            <NewCalendarScreen entries={entries} onSaveEntry={handleSaveEntry} onEditorStateChange={setIsEditorOpen} openEditorForToday={openEditorForToday} onOpenEditorForTodayHandled={() => setOpenEditorForToday(false)} />
           </motion.div>
         )}
         {activeTab === "profile" && (
-          <motion.div key="profile" className="absolute inset-0"
+          <motion.div key="profile" className="absolute inset-0 overflow-y-auto"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
             <ProfileScreen onLogout={onLogout} totalEntries={entries.length} totalDays={totalDays} />
