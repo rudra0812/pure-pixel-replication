@@ -629,7 +629,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
 
       {/* Bottom Info Bar */}
       <motion.div
-        className="absolute bottom-8 left-6 z-40"
+        className="absolute bottom-24 left-6 z-40"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
