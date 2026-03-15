@@ -549,7 +549,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
       </AnimatePresence>
 
       {/* Floating Action Button (FAB) */}
-      <div className="absolute bottom-8 right-6 z-50">
+      <div className="absolute bottom-24 right-6 z-50">
         <AnimatePresence>
           {showFabMenu && (
             <>
