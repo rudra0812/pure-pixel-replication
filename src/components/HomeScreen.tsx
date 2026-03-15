@@ -70,8 +70,9 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
   };
 
   const handleRecordEntry = () => {
-    // Switch to calendar tab for today's date
+    // Switch to calendar tab and signal to open editor for today
     setActiveTab("calendar");
+    setOpenEditorForToday(true);
   };
 
   const totalDays = new Set(entries.map(e => new Date(e.date).toDateString())).size;
