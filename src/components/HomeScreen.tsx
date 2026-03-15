@@ -92,7 +92,7 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
           <motion.div key="calendar" className="absolute inset-0"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
-            <NewCalendarScreen entries={entries} onSaveEntry={handleSaveEntry} onEditorStateChange={setIsEditorOpen} />
+            <NewCalendarScreen entries={entries} onSaveEntry={handleSaveEntry} onEditorStateChange={setIsEditorOpen} openEditorForToday={openEditorForToday} onOpenEditorForTodayHandled={() => setOpenEditorForToday(false)} />
           </motion.div>
         )}
         {activeTab === "profile" && (
