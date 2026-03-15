@@ -151,7 +151,7 @@ const getEntriesWithMood = (entries: Entry[]): Entry[] => {
   }));
 };
 
-export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange }: NewCalendarScreenProps) => {
+export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, openEditorForToday, onOpenEditorForTodayHandled }: NewCalendarScreenProps) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showEditor, setShowEditor] = useState(false);
