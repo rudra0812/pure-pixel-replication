@@ -386,15 +386,36 @@ export const SeedPlantingOnboarding = ({ onComplete }: SeedPlantingOnboardingPro
 };
 
 const EnhancedPlantingAnimation = ({ seedEmoji, seedName }: { seedEmoji: string; seedName: string }) => {
+  // Pre-computed dirt particles
+  const dirtParticles = Array.from({ length: 12 }).map((_, i) => ({
+    offsetX: (i - 6) * 10,
+    size: 3 + (i % 3) * 2,
+    hue: 25 + i * 3,
+    lightness: 28 + i * 2,
+    yTravel: -25 - i * 6,
+    xTravel: (i - 6) * 8,
+    delay: 0.3 + i * 0.025,
+  }));
+
+  // Pre-computed magic burst particles
+  const magicParticles = Array.from({ length: 14 }).map((_, i) => ({
+    angle: (i / 14) * Math.PI * 2,
+    dist: 35 + (i * 5 % 25),
+    size: 3 + (i % 3) * 2,
+    hue: 120 + i * 8,
+    lightness: 55 + i * 3,
+    delay: 2.3 + i * 0.035,
+  }));
+
   return (
     <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-      {/* Full scene sky darkens slightly for drama */}
+      {/* Atmospheric darkening for drama */}
       <motion.div
         className="absolute inset-0"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        style={{ background: "linear-gradient(180deg, hsl(220 30% 25% / 0.3) 0%, transparent 60%)" }}
-        transition={{ duration: 1.5 }}
+        animate={{ opacity: [0, 0.6, 0.3] }}
+        style={{ background: "linear-gradient(180deg, hsl(220 30% 15% / 0.4) 0%, transparent 70%)" }}
+        transition={{ duration: 2, times: [0, 0.4, 1] }}
       />
 
       {/* Ground layer */}
@@ -404,43 +425,49 @@ const EnhancedPlantingAnimation = ({ seedEmoji, seedName }: { seedEmoji: string;
           background: "linear-gradient(180deg, hsl(125 50% 42%) 0%, hsl(120 45% 35%) 40%, hsl(30 50% 28%) 100%)",
         }}
       >
-        {/* Soil hole opens */}
+        {/* Soil hole opens with a smooth scale */}
         <motion.div
           className="absolute top-6 left-1/2 -translate-x-1/2"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.4, type: "spring", stiffness: 200 }}
+          transition={{ delay: 0.4, duration: 0.5, type: "spring", stiffness: 180, damping: 15 }}
         >
           <svg width="100" height="50" viewBox="0 0 100 50">
             <motion.ellipse cx="50" cy="25" rx="40" ry="20" fill="hsl(25 40% 18%)"
               initial={{ rx: 0, ry: 0 }} animate={{ rx: 40, ry: 20 }}
-              transition={{ delay: 0.3, duration: 0.4 }} />
+              transition={{ delay: 0.4, duration: 0.5, ease: "easeOut" }} />
             <motion.ellipse cx="50" cy="22" rx="30" ry="14" fill="hsl(20 35% 12%)"
               initial={{ rx: 0, ry: 0 }} animate={{ rx: 30, ry: 14 }}
-              transition={{ delay: 0.5, duration: 0.3 }} />
+              transition={{ delay: 0.6, duration: 0.4, ease: "easeOut" }} />
           </svg>
         </motion.div>
 
-        {/* Dirt particles */}
-        {Array.from({ length: 8 }).map((_, i) => (
+        {/* Dirt particles fly out smoothly */}
+        {dirtParticles.map((p, i) => (
           <motion.div key={i} className="absolute rounded-full"
             style={{
-              left: `calc(50% + ${(i - 4) * 12}px)`, top: "24px",
-              width: 3 + (i % 3) * 2, height: 3 + (i % 3) * 2,
-              background: `hsl(${25 + i * 3} ${45}% ${28 + i * 2}%)`,
+              left: `calc(50% + ${p.offsetX}px)`, top: "24px",
+              width: p.size, height: p.size,
+              background: `hsl(${p.hue} 45% ${p.lightness}%)`,
             }}
-            initial={{ y: 0, opacity: 0 }}
-            animate={{ y: [-30 - i * 8, 15], x: [(i - 4) * 10, (i - 4) * 5], opacity: [0, 1, 0], rotate: [0, 180 + i * 30] }}
-            transition={{ duration: 0.6, delay: 0.3 + i * 0.03, ease: "easeOut" }}
+            initial={{ y: 0, opacity: 0, scale: 0 }}
+            animate={{
+              y: [0, p.yTravel, p.yTravel * 0.3],
+              x: [0, p.xTravel, p.xTravel * 0.6],
+              opacity: [0, 0.9, 0],
+              scale: [0, 1.2, 0.3],
+              rotate: [0, 180 + i * 30],
+            }}
+            transition={{ duration: 0.7, delay: p.delay, ease: [0.22, 1, 0.36, 1] }}
           />
         ))}
 
-        {/* Soil covers seed */}
+        {/* Soil mound covers seed smoothly */}
         <motion.div
           className="absolute top-3 left-1/2 -translate-x-1/2 z-30"
           initial={{ scaleY: 0, opacity: 0 }}
           animate={{ scaleY: 1, opacity: 1 }}
-          transition={{ delay: 1.6, duration: 0.3, type: "spring" }}
+          transition={{ delay: 1.6, duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
           style={{ transformOrigin: "bottom" }}
         >
           <svg width="90" height="40" viewBox="0 0 90 40">
@@ -449,85 +476,89 @@ const EnhancedPlantingAnimation = ({ seedEmoji, seedName }: { seedEmoji: string;
           </svg>
         </motion.div>
 
-        {/* Tiny sprout emerging! */}
+        {/* Sprout emerging with natural growth curve */}
         <motion.svg
           className="absolute top-0 left-1/2 -translate-x-1/2 z-40"
           width="60" height="60" viewBox="0 0 60 60"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2.2 }}
+          transition={{ delay: 2.0 }}
         >
           <motion.path d="M30 55 Q30 45 28 30" stroke="hsl(130 55% 42%)" strokeWidth="3" fill="none" strokeLinecap="round"
-            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 2.2, duration: 0.8 }} />
+            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 2.0, duration: 1, ease: [0.4, 0, 0.2, 1] }} />
           <motion.ellipse cx="23" cy="32" rx="7" ry="4" fill="hsl(135 60% 50%)" transform="rotate(-35 23 32)"
-            initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.8, type: "spring", stiffness: 300 }} />
+            initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 2.7, duration: 0.4, type: "spring", stiffness: 250, damping: 12 }} />
           <motion.ellipse cx="35" cy="30" rx="8" ry="4.5" fill="hsl(130 55% 46%)" transform="rotate(30 35 30)"
-            initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 2.9, type: "spring", stiffness: 300 }} />
+            initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 2.85, duration: 0.4, type: "spring", stiffness: 250, damping: 12 }} />
         </motion.svg>
       </motion.div>
 
-      {/* Seed falls from above */}
+      {/* Seed falls gracefully from above */}
       <motion.div
         className="absolute text-5xl z-20"
-        style={{ filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.25))" }}
-        initial={{ top: "10%", scale: 1.2, opacity: 0 }}
+        style={{ filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.3))" }}
+        initial={{ top: "8%", scale: 1.3, opacity: 0 }}
         animate={{
-          top: ["10%", "30%", "calc(100% - 185px)"],
+          top: ["8%", "25%", "calc(100% - 185px)"],
           opacity: [0, 1, 1, 0],
-          rotate: [0, 120, 360],
-          scale: [1.2, 1, 0.7],
+          rotate: [0, 90, 280],
+          scale: [1.3, 1.1, 0.6],
         }}
         transition={{
-          duration: 1.2,
+          duration: 1.4,
           delay: 0.5,
-          times: [0, 0.4, 1],
+          times: [0, 0.35, 1],
           ease: [0.45, 0, 0.55, 1],
-          opacity: { times: [0, 0.1, 0.85, 1], duration: 1.2, delay: 0.5 },
+          opacity: { times: [0, 0.08, 0.82, 1], duration: 1.4, delay: 0.5 },
         }}
       >
         {seedEmoji}
       </motion.div>
 
       {/* Green magic burst when sprout appears */}
-      {Array.from({ length: 10 }).map((_, i) => (
+      {magicParticles.map((p, i) => (
         <motion.div key={i} className="absolute rounded-full z-30"
           style={{
             left: "50%", bottom: "155px",
-            width: 3 + (i % 3) * 2, height: 3 + (i % 3) * 2,
-            background: `hsl(${120 + i * 8} ${70}% ${60 + i * 3}%)`,
+            width: p.size, height: p.size,
+            background: `hsl(${p.hue} 70% ${p.lightness}%)`,
+            boxShadow: `0 0 6px 2px hsl(${p.hue} 60% ${p.lightness}% / 0.4)`,
           }}
           initial={{ scale: 0, x: 0, y: 0 }}
           animate={{
-            scale: [0, 1.2, 0],
-            x: [0, Math.cos(i * 0.63) * (40 + i * 8)],
-            y: [0, Math.sin(i * 0.63) * (40 + i * 8) - 20],
-            opacity: [0, 1, 0],
+            scale: [0, 1.3, 0],
+            x: [0, Math.cos(p.angle) * p.dist],
+            y: [0, Math.sin(p.angle) * p.dist - 15],
+            opacity: [0, 0.9, 0],
           }}
-          transition={{ duration: 0.8, delay: 2.3 + i * 0.04 }}
+          transition={{ duration: 0.9, delay: p.delay, ease: [0.22, 1, 0.36, 1] }}
         />
       ))}
 
-      {/* Gentle expanding ring */}
-      <motion.div
-        className="absolute left-1/2 -translate-x-1/2 rounded-full border-2 z-10"
-        style={{ bottom: "140px", borderColor: "hsl(130 60% 60% / 0.5)" }}
-        initial={{ width: 0, height: 0, opacity: 0 }}
-        animate={{ width: 160, height: 160, opacity: [0, 0.6, 0] }}
-        transition={{ duration: 1, delay: 2.4 }}
-      />
+      {/* Double expanding rings for polish */}
+      {[0, 0.15].map((extraDelay, idx) => (
+        <motion.div
+          key={idx}
+          className="absolute left-1/2 -translate-x-1/2 rounded-full border-2 z-10"
+          style={{ bottom: "140px", borderColor: `hsl(130 60% ${55 + idx * 10}% / ${0.5 - idx * 0.15})` }}
+          initial={{ width: 0, height: 0, opacity: 0 }}
+          animate={{ width: 160 + idx * 40, height: 160 + idx * 40, opacity: [0, 0.5, 0] }}
+          transition={{ duration: 1.1, delay: 2.4 + extraDelay, ease: "easeOut" }}
+        />
+      ))}
 
-      {/* Success text */}
+      {/* Success text with smoother entrance */}
       <motion.div
         className="absolute top-[18%] left-0 right-0 text-center z-50 px-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2.6, duration: 0.5, type: "spring", stiffness: 200 }}
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ delay: 2.5, duration: 0.6, type: "spring", stiffness: 180, damping: 18 }}
       >
         <h2 className="text-2xl font-bold text-foreground mb-1">
           🌱 "{seedName}" planted!
         </h2>
         <motion.p className="text-muted-foreground text-sm"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.9 }}>
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.8, duration: 0.4 }}>
           Your garden journey begins now...
         </motion.p>
       </motion.div>
