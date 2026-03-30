@@ -30,6 +30,23 @@ const stageFeeling: Record<GrowthStage, string> = {
   blooming: "Absolutely radiant! 🌸",
 };
 
+// Pre-computed water droplet data for smooth animation
+const waterDroplets = Array.from({ length: 24 }).map((_, i) => ({
+  x: 38 + (i * 7.3 % 24),
+  w: 3 + (i * 3 % 4),
+  h: 10 + (i * 5 % 8),
+  driftX: (i % 2 === 0 ? 1 : -1) * (5 + (i * 3 % 15)),
+  duration: 0.9 + (i * 7 % 5) * 0.12,
+  delay: (i * 0.08) % 1.2,
+}));
+
+const waterSplashes = Array.from({ length: 6 }).map((_, i) => ({
+  x: 40 + (i * 13 % 20),
+  size: 12 + (i * 5 % 10),
+  delay: 0.5 + i * 0.25,
+  repeatDelay: 0.8 + (i * 3 % 5) * 0.15,
+}));
+
 export const GardenScene = ({ 
   weatherMood, 
   growthStage, 
