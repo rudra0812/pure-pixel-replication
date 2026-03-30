@@ -30,6 +30,23 @@ const stageFeeling: Record<GrowthStage, string> = {
   blooming: "Absolutely radiant! 🌸",
 };
 
+// Pre-computed water droplet data for smooth animation
+const waterDroplets = Array.from({ length: 24 }).map((_, i) => ({
+  x: 38 + (i * 7.3 % 24),
+  w: 3 + (i * 3 % 4),
+  h: 10 + (i * 5 % 8),
+  driftX: (i % 2 === 0 ? 1 : -1) * (5 + (i * 3 % 15)),
+  duration: 0.9 + (i * 7 % 5) * 0.12,
+  delay: (i * 0.08) % 1.2,
+}));
+
+const waterSplashes = Array.from({ length: 6 }).map((_, i) => ({
+  x: 40 + (i * 13 % 20),
+  size: 12 + (i * 5 % 10),
+  delay: 0.5 + i * 0.25,
+  repeatDelay: 0.8 + (i * 3 % 5) * 0.15,
+}));
+
 export const GardenScene = ({ 
   weatherMood, 
   growthStage, 
@@ -73,40 +90,76 @@ export const GardenScene = ({
       <ScenePlant type="tallLeafy" x={92} bottom="7rem" size={1.6} delay={0.2} flip={-1} />
 
       {/* Water droplets when watering */}
-      {isWatering && (
-        <div className="absolute inset-0 pointer-events-none z-30">
-          {Array.from({ length: 40 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full"
-              style={{
-                left: `${35 + Math.random() * 30}%`,
-                background: `linear-gradient(180deg, hsl(200 80% 75% / 0.9), hsl(210 90% 65% / 0.7))`,
-                width: 3 + Math.random() * 4,
-                height: 8 + Math.random() * 8,
-                borderRadius: "50% 50% 50% 50% / 30% 30% 70% 70%",
-              }}
-              initial={{ top: "15%", opacity: 0, scale: 0.5 }}
-              animate={{
-                top: ["15%", "75%"],
-                opacity: [0, 1, 1, 0],
-                scale: [0.5, 1, 0.8],
-                x: [(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 40],
-              }}
-              transition={{
-                duration: 1 + Math.random() * 0.5,
-                delay: Math.random() * 1.5,
-                repeat: 2,
-                ease: "easeIn",
-              }}
-            />
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {isWatering && (
+          <motion.div
+            className="absolute inset-0 pointer-events-none z-30"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {waterDroplets.map((drop, i) => (
+              <motion.div
+                key={i}
+                className="absolute"
+                style={{
+                  left: `${drop.x}%`,
+                  background: `linear-gradient(180deg, hsl(200 85% 78% / 0.95), hsl(210 90% 68% / 0.8))`,
+                  width: drop.w,
+                  height: drop.h,
+                  borderRadius: "50% 50% 50% 50% / 30% 30% 70% 70%",
+                  filter: "blur(0.3px)",
+                }}
+                initial={{ top: "20%", opacity: 0, scale: 0.3 }}
+                animate={{
+                  top: ["20%", "68%"],
+                  opacity: [0, 0.9, 0.9, 0.4, 0],
+                  scale: [0.3, 1, 0.9, 0.6],
+                  x: [drop.driftX * 0.3, drop.driftX],
+                }}
+                transition={{
+                  duration: drop.duration,
+                  delay: drop.delay,
+                  repeat: Infinity,
+                  repeatDelay: 0.2,
+                  ease: [0.25, 0.1, 0.25, 1],
+                }}
+              />
+            ))}
+            {/* Splash ripples at ground level */}
+            {waterSplashes.map((splash, i) => (
+              <motion.div
+                key={`splash-${i}`}
+                className="absolute rounded-full border"
+                style={{
+                  left: `${splash.x}%`,
+                  top: "69%",
+                  borderColor: "hsl(200 70% 75% / 0.4)",
+                }}
+                initial={{ width: 0, height: 0, opacity: 0 }}
+                animate={{
+                  width: [0, splash.size, splash.size * 1.5],
+                  height: [0, splash.size * 0.4, splash.size * 0.3],
+                  opacity: [0, 0.6, 0],
+                  x: [-splash.size * 0.5, -splash.size * 0.75],
+                }}
+                transition={{
+                  duration: 0.6,
+                  delay: splash.delay,
+                  repeat: Infinity,
+                  repeatDelay: splash.repeatDelay,
+                  ease: "easeOut",
+                }}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Plant positioned just above bottom nav (~5rem from bottom) */}
+      {/* Plant positioned on the ground layer */}
       <motion.div
-        className="absolute bottom-[7.5rem] left-0 right-0 flex justify-center z-10"
+        className="absolute bottom-[5.5rem] left-0 right-0 flex justify-center z-10"
         initial={{ opacity: 0, y: 20 }}
         animate={{ 
           opacity: 1, 
@@ -218,7 +271,7 @@ export const GardenScene = ({
               onClick={() => setShowPlantInfo(false)}
             />
             <motion.div
-              className="absolute left-1/2 bottom-[14rem] -translate-x-1/2 z-50 w-64"
+              className="absolute left-1/2 bottom-[12rem] -translate-x-1/2 z-50 w-64"
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
