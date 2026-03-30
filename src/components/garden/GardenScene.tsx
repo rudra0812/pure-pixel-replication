@@ -271,7 +271,7 @@ export const GardenScene = ({
               onClick={() => setShowPlantInfo(false)}
             />
             <motion.div
-              className="absolute left-1/2 bottom-[14rem] -translate-x-1/2 z-50 w-64"
+              className="absolute left-1/2 bottom-[12rem] -translate-x-1/2 z-50 w-64"
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
