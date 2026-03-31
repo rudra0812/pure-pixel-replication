@@ -410,7 +410,6 @@ export const GardenBackground = React.forwardRef<HTMLDivElement, GardenBackgroun
       )}
     </div>
   );
-};
 
 // Fluffy cloud component - drifts across screen at random intervals
 const Cloud = ({ className, size, speed, opacity, startOffset }: { 
