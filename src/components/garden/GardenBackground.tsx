@@ -17,9 +17,7 @@ const grassBlades = Array.from({ length: 60 }).map((_, i) => ({
   sw: 1.5 + (i % 3) * 0.5,
 }));
 
-import React from "react";
-
-export const GardenBackground = React.forwardRef<HTMLDivElement, GardenBackgroundProps>(({ weatherMood }, ref) => {
+export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
   // Day/night cycle based on actual time
   const getTimeOfDay = () => {
     const hour = new Date().getHours();
