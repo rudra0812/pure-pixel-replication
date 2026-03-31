@@ -561,3 +561,6 @@ const ForegroundPlant = ({ x, type }: { x: number; type: "bush" | "fern" }) => (
     )}
   </motion.div>
 );
+});
+
+GardenBackground.displayName = "GardenBackground";
