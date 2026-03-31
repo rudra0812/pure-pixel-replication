@@ -408,6 +408,7 @@ export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
       )}
     </div>
   );
+};
 
 // Fluffy cloud component - drifts across screen at random intervals
 const Cloud = ({ className, size, speed, opacity, startOffset }: { 
