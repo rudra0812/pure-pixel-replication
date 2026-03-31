@@ -641,7 +641,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenPro
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">
-                {entries.length === 0 ? "Start your journey" : `Stage ${entries.length < 3 ? 1 : entries.length < 7 ? 2 : entries.length < 15 ? 3 : 4} of 4`}
+                {entries.length === 0 ? "Start your journey" : `Stage ${entries.length < 1 ? 1 : entries.length < 3 ? 2 : entries.length < 7 ? 3 : entries.length < 15 ? 4 : 5} of 5`}
               </p>
               <p className="text-xs text-muted-foreground">
                 {entries.length === 0 ? "Plant your first seed" : `${15 - entries.length > 0 ? 15 - entries.length : 0} more to bloom`}
