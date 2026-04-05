@@ -57,8 +57,8 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays }: ProfileScre
               <User className="h-8 w-8 text-primary-foreground" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Journal User</h2>
-              <p className="text-sm text-muted-foreground">Journaling since today</p>
+              <h2 className="text-lg font-semibold text-foreground">{displayName}</h2>
+              <p className="text-sm text-muted-foreground">Journaling since {joinDate}</p>
             </div>
           </div>
 
