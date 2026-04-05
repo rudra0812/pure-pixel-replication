@@ -3,6 +3,7 @@ import { User, Settings, Bell, Moon, LogOut, ChevronRight, Feather } from "lucid
 import { Switch } from "./ui/switch";
 import { useState } from "react";
 import { AnimatedGradient } from "./AnimatedGradient";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProfileScreenProps {
   onLogout: () => void;
@@ -11,6 +12,9 @@ interface ProfileScreenProps {
 }
 
 export const ProfileScreen = ({ onLogout, totalEntries, totalDays }: ProfileScreenProps) => {
+  const { user } = useAuth();
+  const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Journal User";
+  const joinDate = user?.created_at ? new Date(user.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" }) : "today";
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(() => {
     return document.documentElement.classList.contains("dark");
@@ -53,8 +57,8 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays }: ProfileScre
               <User className="h-8 w-8 text-primary-foreground" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Journal User</h2>
-              <p className="text-sm text-muted-foreground">Journaling since today</p>
+              <h2 className="text-lg font-semibold text-foreground">{displayName}</h2>
+              <p className="text-sm text-muted-foreground">Journaling since {joinDate}</p>
             </div>
           </div>
 
