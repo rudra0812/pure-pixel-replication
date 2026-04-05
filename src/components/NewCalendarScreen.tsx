@@ -22,6 +22,7 @@ import {
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, differenceInDays, startOfDay, isToday } from "date-fns";
 import { EntryEditor } from "./EntryEditor";
 import { AnimatedGradient } from "./AnimatedGradient";
+import { useAI } from "@/hooks/useAI";
 
 interface Entry {
   id: string;
