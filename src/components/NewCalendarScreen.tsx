@@ -209,16 +209,23 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, o
     }
   };
 
-  const handleSaveEntry = (entry: { title: string; content: string }) => {
+  const handleSaveEntry = useCallback(async (entry: { title: string; content: string }) => {
     if (selectedDate) {
-      const mood = detectMood(entry.content, entry.title);
+      // Try AI mood detection first, fall back to keyword detection
+      let mood: Entry["mood"];
+      const aiResult = await analyzeMood(entry.content, entry.title);
+      if (aiResult) {
+        mood = aiResult.mood;
+      } else {
+        mood = detectMood(entry.content, entry.title);
+      }
       const entryId = viewingEntry?.id;
       onSaveEntry({ ...entry, mood }, selectedDate, entryId);
       setShowEditor(false);
       setViewingEntry(null);
       setSelectedDate(null);
     }
-  };
+  }, [selectedDate, viewingEntry, onSaveEntry, analyzeMood]);
 
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const today = new Date();
