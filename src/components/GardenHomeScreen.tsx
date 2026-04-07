@@ -175,7 +175,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
   const currentWeather = weatherConfig[weatherMood];
   const WeatherIcon = currentWeather.icon;
 
-  const handleSeedPlanted = (seedTypeStr: string, name: string) => {
+  const handleSeedPlanted = async (seedTypeStr: string, name: string, profileInfo?: { displayName: string; bio: string }) => {
     localStorage.setItem("garden_seed_planted", "true");
     localStorage.setItem("garden_seed_type", seedTypeStr);
     localStorage.setItem("garden_plant_name", name);
@@ -183,6 +183,18 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
     setPlantName(name);
     setSeedType(seedTypeStr);
     setHasPlantedSeed(true);
+
+    // Save profile info if provided
+    if (user && profileInfo && (profileInfo.displayName || profileInfo.bio)) {
+      await supabase
+        .from("profiles")
+        .update({
+          display_name: profileInfo.displayName || undefined,
+          bio: profileInfo.bio || undefined,
+          seed_theme: seedTypeStr,
+        })
+        .eq("user_id", user.id);
+    }
   };
 
   // Hold-to-drizzle: start on long press anywhere on garden
