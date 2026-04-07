@@ -1,10 +1,11 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { User, Settings, Bell, Moon, LogOut, ChevronRight, Feather, Sparkles, Brain } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { useState, useEffect } from "react";
 import { AnimatedGradient } from "./AnimatedGradient";
 import { useAuth } from "@/hooks/useAuth";
 import { useAI } from "@/hooks/useAI";
+import { AccountSettings } from "./AccountSettings";
 
 interface Entry {
   id: string;
