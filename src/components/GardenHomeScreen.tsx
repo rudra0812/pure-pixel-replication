@@ -1,4 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
+// @ts-ignore - supabase import for profile updates
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { 
   Plus, 
