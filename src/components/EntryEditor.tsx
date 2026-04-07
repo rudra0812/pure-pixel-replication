@@ -34,6 +34,7 @@ declare global {
 }
 
 export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: EntryEditorProps) => {
+  const { user } = useAuth();
   const [title, setTitle] = useState(initialEntry?.title || "");
   const [content, setContent] = useState(initialEntry?.content || "");
   const [isRecording, setIsRecording] = useState(false);
@@ -42,10 +43,13 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
   const [isEditMode, setIsEditMode] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [attachedImage, setAttachedImage] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   
   const recognitionRef = useRef<SpeechRecognitionType | null>(null);
   const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioLevelIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const dateToShow = selectedDate || new Date();
   const formattedDate = dateToShow.toLocaleDateString("en-US", {
