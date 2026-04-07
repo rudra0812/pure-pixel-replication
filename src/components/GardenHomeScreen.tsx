@@ -145,7 +145,7 @@ const filterEntriesByPeriod = (entries: Entry[], period: AnalysisPeriod): Entry[
   });
 };
 
-export const GardenHomeScreen = ({ entries, onRecordEntry }: GardenHomeScreenProps) => {
+export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPrompts, onPromptTap }: GardenHomeScreenProps) => {
   const [weatherMood, setWeatherMood] = useState<WeatherMood>("cloudy");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isWatering, setIsWatering] = useState(false);
