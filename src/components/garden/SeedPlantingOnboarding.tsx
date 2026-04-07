@@ -44,16 +44,18 @@ const seedOptions: SeedOption[] = [
 ];
 
 interface SeedPlantingOnboardingProps {
-  onComplete: (seedType: string, seedName: string) => void;
+  onComplete: (seedType: string, seedName: string, profileInfo?: { displayName: string; bio: string }) => void;
 }
 
-type Step = "select" | "name" | "plant";
+type Step = "select" | "name" | "profile" | "plant";
 
 export const SeedPlantingOnboarding = ({ onComplete }: SeedPlantingOnboardingProps) => {
   const [step, setStep] = useState<Step>("select");
   const [selectedSeed, setSelectedSeed] = useState<SeedOption | null>(null);
   const [seedName, setSeedName] = useState("");
   const [isPlanting, setIsPlanting] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [profileBio, setProfileBio] = useState("");
 
   const handleSelectSeed = (seed: SeedOption) => {
     setSelectedSeed(seed);
