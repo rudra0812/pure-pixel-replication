@@ -635,13 +635,6 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
         </motion.button>
       </div>
 
-      {/* Bottom Info Bar */}
-      <motion.div
-        className="absolute bottom-24 left-6 z-40"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-      >
       {/* AI Writing Prompts */}
       {aiPrompts && aiPrompts.length > 0 && (
         <motion.div
