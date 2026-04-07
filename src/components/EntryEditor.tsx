@@ -1,8 +1,11 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { ArrowLeft, Image, Mic, Check, Square, Edit3, Volume2 } from "lucide-react";
+import { ArrowLeft, Image, Mic, Check, Square, Edit3, Volume2, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface EntryEditorProps {
   onBack: () => void;
