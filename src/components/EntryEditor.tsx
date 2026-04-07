@@ -174,9 +174,34 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const handleImagePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setUploadingImage(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("journal-media")
+        .upload(path, file);
+      if (error) throw error;
+      const { data: urlData } = supabase.storage
+        .from("journal-media")
+        .getPublicUrl(path);
+      setAttachedImage(urlData.publicUrl);
+      toast.success("Image attached!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSave = () => {
     if (content.trim() || title.trim()) {
-      onSave({ title: title.trim(), content: content.trim() });
+      onSave({ title: title.trim(), content: content.trim(), mediaUrl: attachedImage || undefined });
     }
   };
 
