@@ -32,6 +32,7 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
     return document.documentElement.classList.contains("dark");
   });
   const [insights, setInsights] = useState<any>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (entries.length >= 3 && !insights) {
