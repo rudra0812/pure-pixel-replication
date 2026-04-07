@@ -688,6 +688,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
             </div>
           </div>
         </motion.div>
+      )}
 
       {/* Hold-to-drizzle indicator */}
       <AnimatePresence>
