@@ -319,6 +319,80 @@ export const SeedPlantingOnboarding = ({ onComplete }: SeedPlantingOnboardingPro
           </motion.div>
         )}
 
+        {/* Step 2.5: Profile Info */}
+        {step === "profile" && (
+          <motion.div
+            key="profile"
+            className="relative z-10 px-6 w-full max-w-md"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.h1
+              className="text-2xl font-bold text-center mb-2 text-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              Tell us about you
+            </motion.h1>
+            <motion.p
+              className="text-center text-muted-foreground mb-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              You can always update this later
+            </motion.p>
+
+            <motion.div
+              className="space-y-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Your Name</label>
+                <Input
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  placeholder="What should we call you?"
+                  className="h-14 text-lg rounded-2xl bg-card/85 backdrop-blur-md border-border/50"
+                  autoFocus
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">About You <span className="text-muted-foreground">(optional)</span></label>
+                <Textarea
+                  value={profileBio}
+                  onChange={(e) => setProfileBio(e.target.value)}
+                  placeholder="A few words about yourself..."
+                  className="min-h-[80px] rounded-2xl bg-card/85 backdrop-blur-md border-border/50 resize-none"
+                  maxLength={300}
+                />
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep("plant")}
+                  className="flex-1 h-14 text-lg rounded-2xl bg-card/85 backdrop-blur-md"
+                >
+                  Skip
+                </Button>
+                <Button
+                  onClick={() => setStep("plant")}
+                  className="flex-1 h-14 text-lg rounded-2xl shadow-lg"
+                  style={{
+                    background: "linear-gradient(135deg, hsl(130 50% 40%), hsl(140 45% 35%))",
+                  }}
+                >
+                  Continue
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
         {/* Step 3: Enhanced Plant Animation */}
         {step === "plant" && selectedSeed && (
           <motion.div
