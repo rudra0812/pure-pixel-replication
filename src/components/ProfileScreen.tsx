@@ -1,10 +1,11 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { User, Settings, Bell, Moon, LogOut, ChevronRight, Feather, Sparkles, Brain } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { useState, useEffect } from "react";
 import { AnimatedGradient } from "./AnimatedGradient";
 import { useAuth } from "@/hooks/useAuth";
 import { useAI } from "@/hooks/useAI";
+import { AccountSettings } from "./AccountSettings";
 
 interface Entry {
   id: string;
@@ -31,6 +32,7 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
     return document.documentElement.classList.contains("dark");
   });
   const [insights, setInsights] = useState<any>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (entries.length >= 3 && !insights) {
@@ -48,6 +50,10 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
       localStorage.setItem("theme", "light");
     }
   };
+
+  if (showSettings) {
+    return <AccountSettings onBack={() => setShowSettings(false)} />;
+  }
 
   return (
     <AnimatedGradient variant="calm" className="min-h-screen">
@@ -181,7 +187,10 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
             </div>
 
             {/* Account Settings */}
-            <button className="w-full flex items-center justify-between p-4 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:bg-muted/50 transition-colors">
+            <button
+              onClick={() => setShowSettings(true)}
+              className="w-full flex items-center justify-between p-4 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:bg-muted/50 transition-colors"
+            >
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                   <Settings className="h-5 w-5 text-primary" />

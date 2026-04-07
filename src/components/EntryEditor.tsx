@@ -1,12 +1,15 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { ArrowLeft, Image, Mic, Check, Square, Edit3, Volume2 } from "lucide-react";
+import { ArrowLeft, Image, Mic, Check, Square, Edit3, Volume2, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface EntryEditorProps {
   onBack: () => void;
-  onSave: (entry: { title: string; content: string }) => void;
+  onSave: (entry: { title: string; content: string; mediaUrl?: string }) => void;
   initialEntry?: { title?: string; content: string };
   selectedDate?: Date | null;
 }
@@ -31,6 +34,7 @@ declare global {
 }
 
 export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: EntryEditorProps) => {
+  const { user } = useAuth();
   const [title, setTitle] = useState(initialEntry?.title || "");
   const [content, setContent] = useState(initialEntry?.content || "");
   const [isRecording, setIsRecording] = useState(false);
@@ -39,10 +43,13 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
   const [isEditMode, setIsEditMode] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [attachedImage, setAttachedImage] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   
   const recognitionRef = useRef<SpeechRecognitionType | null>(null);
   const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioLevelIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const dateToShow = selectedDate || new Date();
   const formattedDate = dateToShow.toLocaleDateString("en-US", {
@@ -167,9 +174,34 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const handleImagePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setUploadingImage(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("journal-media")
+        .upload(path, file);
+      if (error) throw error;
+      const { data: urlData } = supabase.storage
+        .from("journal-media")
+        .getPublicUrl(path);
+      setAttachedImage(urlData.publicUrl);
+      toast.success("Image attached!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSave = () => {
     if (content.trim() || title.trim()) {
-      onSave({ title: title.trim(), content: content.trim() });
+      onSave({ title: title.trim(), content: content.trim(), mediaUrl: attachedImage || undefined });
     }
   };
 
@@ -303,7 +335,7 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
           placeholder={isRecording ? "Recording... speak now!" : "What's on your mind today?"}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className={`min-h-[60vh] resize-none border-0 bg-transparent p-0 text-body placeholder:text-muted-foreground/50 focus-visible:ring-0 ${
+          className={`min-h-[40vh] resize-none border-0 bg-transparent p-0 text-body placeholder:text-muted-foreground/50 focus-visible:ring-0 ${
             isRecording ? "opacity-50" : ""
           }`}
           style={{ lineHeight: "1.4" }}
@@ -311,8 +343,36 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
           readOnly={isRecording}
         />
 
-        {/* Voice Input Hint - Positioned above toolbar */}
-        {!content && !isRecording && (
+        {/* Attached Image Preview */}
+        {attachedImage && (
+          <motion.div
+            className="mt-4 relative inline-block"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <img src={attachedImage} alt="Attached" className="max-h-48 rounded-2xl object-cover" />
+            <button
+              onClick={() => setAttachedImage(null)}
+              className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </motion.div>
+        )}
+
+        {uploadingImage && (
+          <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+            <motion.div
+              className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+            Uploading image...
+          </div>
+        )}
+
+        {/* Voice Input Hint */}
+        {!content && !isRecording && !attachedImage && (
           <motion.div
             className="mt-8 text-center"
             initial={{ opacity: 0, y: 10 }}
@@ -331,7 +391,15 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* Image Button */}
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImagePick}
+            />
             <motion.button
+              onClick={() => imageInputRef.current?.click()}
               className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-muted touch-target"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
