@@ -51,6 +51,10 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
     }
   };
 
+  if (showSettings) {
+    return <AccountSettings onBack={() => setShowSettings(false)} />;
+  }
+
   return (
     <AnimatedGradient variant="calm" className="min-h-screen">
       <motion.div
