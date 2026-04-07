@@ -391,7 +391,15 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* Image Button */}
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImagePick}
+            />
             <motion.button
+              onClick={() => imageInputRef.current?.click()}
               className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-muted touch-target"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
