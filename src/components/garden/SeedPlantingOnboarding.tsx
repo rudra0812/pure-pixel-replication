@@ -72,7 +72,7 @@ export const SeedPlantingOnboarding = ({ onComplete }: SeedPlantingOnboardingPro
   const handlePlant = async () => {
     setIsPlanting(true);
     await new Promise(resolve => setTimeout(resolve, 3200));
-    onComplete(selectedSeed!.id, seedName);
+    onComplete(selectedSeed!.id, seedName, { displayName: profileName.trim(), bio: profileBio.trim() });
   };
 
   return (
