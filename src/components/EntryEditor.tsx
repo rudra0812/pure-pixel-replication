@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 
 interface EntryEditorProps {
   onBack: () => void;
-  onSave: (entry: { title: string; content: string }) => void;
+  onSave: (entry: { title: string; content: string; mediaUrl?: string }) => void;
   initialEntry?: { title?: string; content: string };
   selectedDate?: Date | null;
 }
