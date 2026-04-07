@@ -26,9 +26,17 @@ interface Entry {
   hasMedia?: boolean;
 }
 
+interface AIPrompt {
+  text: string;
+  category: string;
+}
+
 interface GardenHomeScreenProps {
   entries: Entry[];
   onRecordEntry: () => void;
+  aiPrompts?: AIPrompt[];
+  loadingPrompts?: boolean;
+  onPromptTap?: (prompt: string) => void;
 }
 
 type WeatherMood = "sunny" | "cloudy" | "rainy" | "clearing";
