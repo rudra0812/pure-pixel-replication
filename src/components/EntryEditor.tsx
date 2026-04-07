@@ -335,7 +335,7 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
           placeholder={isRecording ? "Recording... speak now!" : "What's on your mind today?"}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className={`min-h-[60vh] resize-none border-0 bg-transparent p-0 text-body placeholder:text-muted-foreground/50 focus-visible:ring-0 ${
+          className={`min-h-[40vh] resize-none border-0 bg-transparent p-0 text-body placeholder:text-muted-foreground/50 focus-visible:ring-0 ${
             isRecording ? "opacity-50" : ""
           }`}
           style={{ lineHeight: "1.4" }}
@@ -343,8 +343,36 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
           readOnly={isRecording}
         />
 
-        {/* Voice Input Hint - Positioned above toolbar */}
-        {!content && !isRecording && (
+        {/* Attached Image Preview */}
+        {attachedImage && (
+          <motion.div
+            className="mt-4 relative inline-block"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <img src={attachedImage} alt="Attached" className="max-h-48 rounded-2xl object-cover" />
+            <button
+              onClick={() => setAttachedImage(null)}
+              className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-destructive text-destructive-foreground"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </motion.div>
+        )}
+
+        {uploadingImage && (
+          <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+            <motion.div
+              className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            />
+            Uploading image...
+          </div>
+        )}
+
+        {/* Voice Input Hint */}
+        {!content && !isRecording && !attachedImage && (
           <motion.div
             className="mt-8 text-center"
             initial={{ opacity: 0, y: 10 }}
