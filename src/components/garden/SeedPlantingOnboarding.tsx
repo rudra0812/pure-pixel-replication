@@ -64,7 +64,8 @@ export const SeedPlantingOnboarding = ({ onComplete }: SeedPlantingOnboardingPro
 
   const handleNameSeed = () => {
     if (seedName.trim()) {
-      setStep("plant");
+      setStep("profile");
+    }
     }
   };
 
