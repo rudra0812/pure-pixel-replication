@@ -187,7 +187,10 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
             </div>
 
             {/* Account Settings */}
-            <button className="w-full flex items-center justify-between p-4 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:bg-muted/50 transition-colors">
+            <button
+              onClick={() => setShowSettings(true)}
+              className="w-full flex items-center justify-between p-4 rounded-2xl bg-card/50 backdrop-blur-sm border border-border/50 hover:bg-muted/50 transition-colors"
+            >
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
                   <Settings className="h-5 w-5 text-primary" />
