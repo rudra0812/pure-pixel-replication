@@ -31,13 +31,13 @@ const stageFeeling: Record<GrowthStage, string> = {
 };
 
 // Pre-computed water droplet data for smooth animation
-const waterDroplets = Array.from({ length: 24 }).map((_, i) => ({
-  x: 38 + (i * 7.3 % 24),
-  w: 3 + (i * 3 % 4),
-  h: 10 + (i * 5 % 8),
-  driftX: (i % 2 === 0 ? 1 : -1) * (5 + (i * 3 % 15)),
-  duration: 0.9 + (i * 7 % 5) * 0.12,
-  delay: (i * 0.08) % 1.2,
+const waterDroplets = Array.from({ length: 14 }).map((_, i) => ({
+  x: 44 + (i * 5.3 % 12),
+  w: 2 + (i * 3 % 3),
+  h: 8 + (i * 5 % 6),
+  driftX: (i % 2 === 0 ? 1 : -1) * (2 + (i * 3 % 8)),
+  duration: 0.7 + (i * 7 % 5) * 0.1,
+  delay: (i * 0.1) % 1.0,
 }));
 
 const waterSplashes = Array.from({ length: 6 }).map((_, i) => ({
