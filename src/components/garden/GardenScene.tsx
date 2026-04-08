@@ -40,11 +40,11 @@ const waterDroplets = Array.from({ length: 14 }).map((_, i) => ({
   delay: (i * 0.1) % 1.0,
 }));
 
-const waterSplashes = Array.from({ length: 6 }).map((_, i) => ({
-  x: 40 + (i * 13 % 20),
-  size: 12 + (i * 5 % 10),
-  delay: 0.5 + i * 0.25,
-  repeatDelay: 0.8 + (i * 3 % 5) * 0.15,
+const waterSplashes = Array.from({ length: 4 }).map((_, i) => ({
+  x: 46 + (i * 5 % 8),
+  size: 8 + (i * 4 % 6),
+  delay: 0.4 + i * 0.2,
+  repeatDelay: 0.6 + (i * 3 % 5) * 0.12,
 }));
 
 export const GardenScene = ({ 
