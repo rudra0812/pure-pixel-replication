@@ -111,9 +111,9 @@ export const GardenScene = ({
                   borderRadius: "50% 50% 50% 50% / 30% 30% 70% 70%",
                   filter: "blur(0.3px)",
                 }}
-                initial={{ top: "20%", opacity: 0, scale: 0.3 }}
+                initial={{ top: "40%", opacity: 0, scale: 0.3 }}
                 animate={{
-                  top: ["20%", "68%"],
+                  top: ["40%", "68%"],
                   opacity: [0, 0.9, 0.9, 0.4, 0],
                   scale: [0.3, 1, 0.9, 0.6],
                   x: [drop.driftX * 0.3, drop.driftX],
