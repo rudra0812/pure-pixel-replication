@@ -15,7 +15,8 @@ import {
   Heart,
   BookOpen,
   ChevronRight,
-  X
+  X,
+  MessageCircle
 } from "lucide-react";
 import { GardenScene } from "./garden/GardenScene";
 import { GrowthStage } from "./garden/Plant";
@@ -40,6 +41,7 @@ interface GardenHomeScreenProps {
   aiPrompts?: AIPrompt[];
   loadingPrompts?: boolean;
   onPromptTap?: (prompt: string) => void;
+  onOpenChat?: () => void;
 }
 
 type WeatherMood = "sunny" | "cloudy" | "rainy" | "clearing";
@@ -148,7 +150,7 @@ const filterEntriesByPeriod = (entries: Entry[], period: AnalysisPeriod): Entry[
   });
 };
 
-export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPrompts, onPromptTap }: GardenHomeScreenProps) => {
+export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPrompts, onPromptTap, onOpenChat }: GardenHomeScreenProps) => {
   const { user } = useAuth();
   const [weatherMood, setWeatherMood] = useState<WeatherMood>("cloudy");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -658,6 +660,22 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* AI Chat Button - Bottom Left, minimalist */}
+      <motion.button
+        className="absolute bottom-28 left-6 z-50 w-11 h-11 rounded-full backdrop-blur-xl bg-white/60 shadow-lg border border-white/40 flex items-center justify-center"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.6 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpenChat?.();
+        }}
+      >
+        <MessageCircle className="h-5 w-5 text-primary" />
+      </motion.button>
 
       {/* Floating Action Button (FAB) */}
       <div className="absolute bottom-24 right-6 z-50">

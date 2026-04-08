@@ -4,6 +4,7 @@ import { GardenHomeScreen } from "./GardenHomeScreen";
 import { NewCalendarScreen } from "./NewCalendarScreen";
 import { ProfileScreen } from "./ProfileScreen";
 import { BottomNav, NavTab } from "./BottomNav";
+import { AIChatScreen } from "./AIChatScreen";
 import { useEntries } from "@/hooks/useEntries";
 import { useAuth } from "@/hooks/useAuth";
 import { useAI } from "@/hooks/useAI";
@@ -21,8 +22,8 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
   const [openEditorForToday, setOpenEditorForToday] = useState(false);
   const [aiPrompts, setAiPrompts] = useState<{ text: string; category: string }[]>([]);
   const [insights, setInsights] = useState<any>(null);
+  const [showChat, setShowChat] = useState(false);
 
-  // Fetch AI prompts when entries change
   useEffect(() => {
     if (entries.length > 0) {
       getPrompts(entries.slice(0, 5)).then(setAiPrompts);
@@ -48,7 +49,7 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
           <motion.div key="mood" className="absolute inset-0"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
-            <GardenHomeScreen entries={entries} onRecordEntry={handleRecordEntry} aiPrompts={aiPrompts} loadingPrompts={loadingPrompts} onPromptTap={handlePromptTap} />
+            <GardenHomeScreen entries={entries} onRecordEntry={handleRecordEntry} aiPrompts={aiPrompts} loadingPrompts={loadingPrompts} onPromptTap={handlePromptTap} onOpenChat={() => setShowChat(true)} />
           </motion.div>
         )}
         {activeTab === "calendar" && (
@@ -68,6 +69,8 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
       </AnimatePresence>
 
       {!isEditorOpen && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />}
+
+      <AIChatScreen isOpen={showChat} onClose={() => setShowChat(false)} entries={entries} />
     </div>
   );
 };

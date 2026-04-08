@@ -31,20 +31,20 @@ const stageFeeling: Record<GrowthStage, string> = {
 };
 
 // Pre-computed water droplet data for smooth animation
-const waterDroplets = Array.from({ length: 24 }).map((_, i) => ({
-  x: 38 + (i * 7.3 % 24),
-  w: 3 + (i * 3 % 4),
-  h: 10 + (i * 5 % 8),
-  driftX: (i % 2 === 0 ? 1 : -1) * (5 + (i * 3 % 15)),
-  duration: 0.9 + (i * 7 % 5) * 0.12,
-  delay: (i * 0.08) % 1.2,
+const waterDroplets = Array.from({ length: 14 }).map((_, i) => ({
+  x: 44 + (i * 5.3 % 12),
+  w: 2 + (i * 3 % 3),
+  h: 8 + (i * 5 % 6),
+  driftX: (i % 2 === 0 ? 1 : -1) * (2 + (i * 3 % 8)),
+  duration: 0.7 + (i * 7 % 5) * 0.1,
+  delay: (i * 0.1) % 1.0,
 }));
 
-const waterSplashes = Array.from({ length: 6 }).map((_, i) => ({
-  x: 40 + (i * 13 % 20),
-  size: 12 + (i * 5 % 10),
-  delay: 0.5 + i * 0.25,
-  repeatDelay: 0.8 + (i * 3 % 5) * 0.15,
+const waterSplashes = Array.from({ length: 4 }).map((_, i) => ({
+  x: 46 + (i * 5 % 8),
+  size: 8 + (i * 4 % 6),
+  delay: 0.4 + i * 0.2,
+  repeatDelay: 0.6 + (i * 3 % 5) * 0.12,
 }));
 
 export const GardenScene = ({ 
@@ -111,9 +111,9 @@ export const GardenScene = ({
                   borderRadius: "50% 50% 50% 50% / 30% 30% 70% 70%",
                   filter: "blur(0.3px)",
                 }}
-                initial={{ top: "20%", opacity: 0, scale: 0.3 }}
+                initial={{ top: "40%", opacity: 0, scale: 0.3 }}
                 animate={{
-                  top: ["20%", "68%"],
+                  top: ["40%", "68%"],
                   opacity: [0, 0.9, 0.9, 0.4, 0],
                   scale: [0.3, 1, 0.9, 0.6],
                   x: [drop.driftX * 0.3, drop.driftX],
