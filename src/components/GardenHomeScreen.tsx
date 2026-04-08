@@ -15,7 +15,8 @@ import {
   Heart,
   BookOpen,
   ChevronRight,
-  X
+  X,
+  MessageCircle
 } from "lucide-react";
 import { GardenScene } from "./garden/GardenScene";
 import { GrowthStage } from "./garden/Plant";
