@@ -155,6 +155,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
   const [isWatering, setIsWatering] = useState(false);
   const [showFabMenu, setShowFabMenu] = useState(false);
   const [showAnalysisPanel, setShowAnalysisPanel] = useState(false);
+  const [showPromptBubble, setShowPromptBubble] = useState(false);
   const [hasPlantedSeed, setHasPlantedSeed] = useState(() => {
     return localStorage.getItem("garden_seed_planted") === "true";
   });
