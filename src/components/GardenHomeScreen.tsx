@@ -661,6 +661,22 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
         )}
       </AnimatePresence>
 
+      {/* AI Chat Button - Bottom Left, minimalist */}
+      <motion.button
+        className="absolute bottom-28 left-6 z-50 w-11 h-11 rounded-full backdrop-blur-xl bg-white/60 shadow-lg border border-white/40 flex items-center justify-center"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.6 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpenChat?.();
+        }}
+      >
+        <MessageCircle className="h-5 w-5 text-primary" />
+      </motion.button>
+
       {/* Floating Action Button (FAB) */}
       <div className="absolute bottom-24 right-6 z-50">
         <AnimatePresence>
