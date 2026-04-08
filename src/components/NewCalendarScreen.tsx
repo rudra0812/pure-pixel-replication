@@ -608,7 +608,7 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, o
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          Write Your First Entry
+                          Write Your First Entry Today
                         </motion.button>
                       </motion.div>
                     )}
