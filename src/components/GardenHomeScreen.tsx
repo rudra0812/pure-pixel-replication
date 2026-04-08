@@ -41,6 +41,7 @@ interface GardenHomeScreenProps {
   aiPrompts?: AIPrompt[];
   loadingPrompts?: boolean;
   onPromptTap?: (prompt: string) => void;
+  onOpenChat?: () => void;
 }
 
 type WeatherMood = "sunny" | "cloudy" | "rainy" | "clearing";
