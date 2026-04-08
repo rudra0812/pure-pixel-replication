@@ -722,29 +722,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
         </motion.button>
       </div>
 
-      {/* AI Writing Prompts */}
-      {aiPrompts && aiPrompts.length > 0 && (
-        <motion.div
-          className="absolute bottom-24 left-6 right-24 z-40"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="px-4 py-3 rounded-2xl backdrop-blur-xl bg-white/70 shadow-lg border border-white/50">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <p className="text-xs font-semibold text-foreground">Writing Prompt</p>
-            </div>
-            <button
-              onClick={() => onPromptTap?.(aiPrompts[0].text)}
-              className="text-sm text-muted-foreground text-left hover:text-foreground transition-colors"
-            >
-              {aiPrompts[0].text}
-            </button>
-          </div>
-        </motion.div>
-      )}
-
+      {/* Stage Progress - Bottom Left (only when no prompts) */}
       {!aiPrompts?.length && (
         <motion.div
           className="absolute bottom-24 left-6 z-40"
