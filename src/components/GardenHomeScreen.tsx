@@ -291,7 +291,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
 
       {/* Animated Clouds - Parallax */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Cloud 1 - Slow */}
+        {/* Cloud 1 - Slow, plain */}
         <motion.div
           className="absolute top-16 left-0 pointer-events-none"
           animate={{ x: ["-20%", "120%"] }}
@@ -300,94 +300,110 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
           <div className="w-32 h-12 bg-white/60 rounded-full blur-sm" />
         </motion.div>
         
-        {/* Cloud 2 - Medium - AI Prompt Cloud */}
-        {aiPrompts && aiPrompts.length > 0 ? (
-          <div className="absolute top-20 right-[15%] z-30">
-            {/* Cloud shape with prompt icon */}
-            <motion.button
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowPromptBubble(!showPromptBubble);
-              }}
-              className="relative cursor-pointer"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <div className="w-36 h-14 bg-white/70 rounded-full shadow-md flex items-center justify-center gap-1.5 backdrop-blur-sm border border-white/40">
-                <Sparkles className="h-4 w-4 text-primary" />
-                <span className="text-xs font-medium text-primary">Prompt</span>
-              </div>
-              {/* Small pulsing dot indicator */}
-              <motion.div
-                className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-primary shadow-md"
-                animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </motion.button>
-
-            {/* Expanded prompt bubble */}
-            <AnimatePresence>
-              {showPromptBubble && (
-                <motion.div
-                  className="absolute top-16 right-0 w-72 z-50"
-                  initial={{ opacity: 0, y: -10, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.9 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="p-4 rounded-2xl backdrop-blur-xl bg-white/85 shadow-2xl border border-white/50">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <Sparkles className="h-4 w-4 text-primary" />
-                        <p className="text-xs font-semibold text-foreground">Writing Prompt</p>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowPromptBubble(false);
-                        }}
-                        className="p-1 rounded-full hover:bg-muted/50 transition-colors"
-                      >
-                        <X className="h-3.5 w-3.5 text-muted-foreground" />
-                      </button>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowPromptBubble(false);
-                        onPromptTap?.(aiPrompts[0].text);
-                      }}
-                      className="text-sm text-muted-foreground text-left hover:text-foreground transition-colors leading-relaxed"
-                    >
-                      {aiPrompts[0].text}
-                    </button>
-                  </div>
-                  {/* Speech bubble triangle */}
-                  <div className="absolute -top-2 right-10 w-4 h-4 bg-white/85 border-l border-t border-white/50 rotate-45" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        ) : (
-          <motion.div
-            className="absolute top-24 left-0 pointer-events-none"
-            animate={{ x: ["-10%", "110%"] }}
-            transition={{ duration: 45, repeat: Infinity, ease: "linear", delay: 5 }}
-          >
-            <div className="w-40 h-14 bg-white/40 rounded-full blur-md" />
-          </motion.div>
-        )}
-        
-        {/* Cloud 3 - Fast, small */}
+        {/* Cloud 2 - Medium, carries AI sparkle icon sometimes */}
         <motion.div
-          className="absolute top-8 left-0 pointer-events-none"
+          className="absolute top-24 left-0"
+          animate={{ x: ["-10%", "110%"] }}
+          transition={{ duration: 45, repeat: Infinity, ease: "linear", delay: 5 }}
+        >
+          <div className="relative">
+            <div className="w-40 h-14 bg-white/50 rounded-full blur-[2px]" />
+            {/* Sparkle icon that fades in/out intermittently inside the cloud */}
+            {aiPrompts && aiPrompts.length > 0 && (
+              <motion.button
+                className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                style={{ filter: "none" }}
+                animate={{ opacity: [0, 0, 1, 1, 1, 0, 0, 0, 0, 0] }}
+                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowPromptBubble(true);
+                }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Sparkles className="h-5 w-5 text-primary/70 drop-shadow-sm" />
+              </motion.button>
+            )}
+          </div>
+        </motion.div>
+        
+        {/* Cloud 3 - Fast, small, also carries sparkle sometimes (offset timing) */}
+        <motion.div
+          className="absolute top-8 left-0"
           animate={{ x: ["-15%", "115%"] }}
           transition={{ duration: 35, repeat: Infinity, ease: "linear", delay: 10 }}
         >
-          <div className="w-24 h-8 bg-white/50 rounded-full blur-sm" />
+          <div className="relative">
+            <div className="w-28 h-10 bg-white/50 rounded-full blur-sm" />
+            {aiPrompts && aiPrompts.length > 0 && (
+              <motion.button
+                className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                style={{ filter: "none" }}
+                animate={{ opacity: [0, 0, 0, 0, 0, 0, 1, 1, 0, 0] }}
+                transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 6 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowPromptBubble(true);
+                }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Sparkles className="h-4 w-4 text-primary/60 drop-shadow-sm" />
+              </motion.button>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Cloud 4 - Extra slow, high */}
+        <motion.div
+          className="absolute top-12 left-0 pointer-events-none"
+          animate={{ x: ["110%", "-20%"] }}
+          transition={{ duration: 55, repeat: Infinity, ease: "linear", delay: 15 }}
+        >
+          <div className="w-36 h-12 bg-white/45 rounded-full blur-md" />
         </motion.div>
       </div>
+
+      {/* AI Prompt Expanded Bubble */}
+      <AnimatePresence>
+        {showPromptBubble && aiPrompts && aiPrompts.length > 0 && (
+          <motion.div
+            className="absolute top-36 left-1/2 -translate-x-1/2 w-[85%] max-w-80 z-50"
+            initial={{ opacity: 0, y: -15, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -15, scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 rounded-2xl backdrop-blur-xl bg-white/85 shadow-2xl border border-white/50">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <p className="text-xs font-semibold text-foreground">Writing Prompt</p>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowPromptBubble(false);
+                  }}
+                  className="p-1 rounded-full hover:bg-muted/50 transition-colors"
+                >
+                  <X className="h-3.5 w-3.5 text-muted-foreground" />
+                </button>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowPromptBubble(false);
+                  onPromptTap?.(aiPrompts[0].text);
+                }}
+                className="text-sm text-muted-foreground text-left hover:text-foreground transition-colors leading-relaxed"
+              >
+                {aiPrompts[0].text}
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Weather Effects */}
       <AnimatePresence mode="wait">
