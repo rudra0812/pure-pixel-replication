@@ -66,7 +66,6 @@ export const SeedPlantingOnboarding = ({ onComplete }: SeedPlantingOnboardingPro
     if (seedName.trim()) {
       setStep("profile");
     }
-    }
   };
 
   const handlePlant = async () => {
