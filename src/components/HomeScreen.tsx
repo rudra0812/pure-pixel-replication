@@ -14,7 +14,7 @@ interface HomeScreenProps {
 }
 
 export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
-  const { entries, saveEntry } = useEntries();
+  const { entries, saveEntry, deleteEntry } = useEntries();
   const { user } = useAuth();
   const { getPrompts, loadingPrompts, getInsights, loadingInsights } = useAI();
   const [activeTab, setActiveTab] = useState<NavTab>("mood");
@@ -27,6 +27,12 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
   useEffect(() => {
     if (entries.length > 0) {
       getPrompts(entries.slice(0, 5)).then(setAiPrompts);
+    }
+  }, [entries.length]);
+
+  useEffect(() => {
+    if (entries.length >= 3 && !insights) {
+      getInsights(entries.slice(0, 20), "week").then(setInsights);
     }
   }, [entries.length]);
 
@@ -56,7 +62,7 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
           <motion.div key="calendar" className="absolute inset-0 overflow-y-auto"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}>
-            <NewCalendarScreen entries={entries} onSaveEntry={saveEntry} onEditorStateChange={setIsEditorOpen} openEditorForToday={openEditorForToday} onOpenEditorForTodayHandled={() => setOpenEditorForToday(false)} />
+            <NewCalendarScreen entries={entries} onSaveEntry={saveEntry} onDeleteEntry={deleteEntry} onEditorStateChange={setIsEditorOpen} openEditorForToday={openEditorForToday} onOpenEditorForTodayHandled={() => setOpenEditorForToday(false)} insights={insights} loadingInsights={loadingInsights} />
           </motion.div>
         )}
         {activeTab === "profile" && (
