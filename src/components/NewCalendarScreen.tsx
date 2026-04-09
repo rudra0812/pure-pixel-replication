@@ -756,23 +756,31 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, o
                           {format(day, "d")}
                         </span>
                         
-                        <div className="flex gap-0.5">
-                          {entries.slice(0, 3).map((entry, i) => {
-                            const mood = entry.mood || "neutral";
-                            return (
-                              <motion.div
-                                key={i}
-                                className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${moodConfig[mood].gradient}`}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: 0.3 + i * 0.1 }}
-                              />
-                            );
-                          })}
-                          {entries.length > 3 && (
-                            <span className="text-[8px] text-muted-foreground">+</span>
-                          )}
-                        </div>
+                        {hasEntry && (
+                          <div className="flex gap-0.5 items-center">
+                            {entries.length === 1 ? (
+                              <span className="text-[10px] leading-none">{moodConfig[entries[0].mood || "neutral"].icon}</span>
+                            ) : (
+                              <>
+                                {entries.slice(0, 3).map((entry, i) => {
+                                  const mood = entry.mood || "neutral";
+                                  return (
+                                    <motion.div
+                                      key={i}
+                                      className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${moodConfig[mood].gradient}`}
+                                      initial={{ scale: 0 }}
+                                      animate={{ scale: 1 }}
+                                      transition={{ delay: 0.3 + i * 0.1 }}
+                                    />
+                                  );
+                                })}
+                                {entries.length > 3 && (
+                                  <span className="text-[8px] text-muted-foreground">+</span>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        )}
 
                         {isTodayDate && !hasEntry && (
                           <motion.div
