@@ -64,7 +64,23 @@ export const GardenScene = ({
   const age = plantedDate
     ? Math.max(1, Math.floor((Date.now() - new Date(plantedDate).getTime()) / 86400000))
     : 1;
-  const isThirsty = !isWatering && weatherMood !== "rainy";
+  // Track last watered time to avoid showing thirsty right after watering
+  const [lastWatered, setLastWatered] = useState<number>(() => {
+    const stored = localStorage.getItem("garden_last_watered");
+    return stored ? parseInt(stored) : 0;
+  });
+
+  // Update lastWatered when watering starts
+  useEffect(() => {
+    if (isWatering) {
+      const now = Date.now();
+      setLastWatered(now);
+      localStorage.setItem("garden_last_watered", now.toString());
+    }
+  }, [isWatering]);
+
+  const hoursSinceWatered = (Date.now() - lastWatered) / (1000 * 60 * 60);
+  const isThirsty = !isWatering && hoursSinceWatered > 12 && weatherMood !== "rainy";
 
   return (
     <div className="relative w-full h-full min-h-[60vh]">

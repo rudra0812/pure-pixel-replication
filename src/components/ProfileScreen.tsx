@@ -1,11 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Settings, Bell, Moon, LogOut, ChevronRight, Feather, Sparkles, Brain } from "lucide-react";
+import { User, Settings, Bell, Moon, LogOut, ChevronRight, Feather, Sparkles, Brain, Camera } from "lucide-react";
 import { Switch } from "./ui/switch";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatedGradient } from "./AnimatedGradient";
 import { useAuth } from "@/hooks/useAuth";
 import { useAI } from "@/hooks/useAI";
 import { AccountSettings } from "./AccountSettings";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Entry {
   id: string;
@@ -33,6 +35,46 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
   });
   const [insights, setInsights] = useState<any>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from("profiles")
+        .select("avatar_url, display_name")
+        .eq("user_id", user.id)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            setAvatarUrl(data.avatar_url);
+            if (data.display_name) setProfileName(data.display_name);
+          }
+        });
+    }
+  }, [user]);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${user.id}/avatar.${ext}`;
+      const { error: uploadError } = await supabase.storage.from("journal-media").upload(path, file, { upsert: true });
+      if (uploadError) throw uploadError;
+      const { data: urlData } = supabase.storage.from("journal-media").getPublicUrl(path);
+      setAvatarUrl(urlData.publicUrl);
+      await supabase.from("profiles").update({ avatar_url: urlData.publicUrl }).eq("user_id", user.id);
+      toast.success("Avatar updated!");
+    } catch {
+      toast.error("Failed to upload avatar");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     if (entries.length >= 3 && !insights) {
