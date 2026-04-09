@@ -174,13 +174,14 @@ const getEntriesWithMood = (entries: Entry[]): Entry[] => {
   }));
 };
 
-export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, openEditorForToday, onOpenEditorForTodayHandled }: NewCalendarScreenProps) => {
+export const NewCalendarScreen = ({ entries, onSaveEntry, onDeleteEntry, onEditorStateChange, openEditorForToday, onOpenEditorForTodayHandled, insights, loadingInsights }: NewCalendarScreenProps) => {
   const { analyzeMood, analyzingMood } = useAI();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [viewingEntry, setViewingEntry] = useState<Entry | null>(null);
   const [viewMode, setViewMode] = useState<"calendar" | "today">("today");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Notify parent when editor state changes
   useEffect(() => {
