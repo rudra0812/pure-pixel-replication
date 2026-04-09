@@ -17,12 +17,24 @@ import {
   Unlock,
   Target,
   Trophy,
-  Edit3
+  Edit3,
+  Trash2,
+  Brain
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, differenceInDays, startOfDay, isToday } from "date-fns";
 import { EntryEditor } from "./EntryEditor";
 import { AnimatedGradient } from "./AnimatedGradient";
 import { useAI } from "@/hooks/useAI";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 
 interface Entry {
   id: string;
