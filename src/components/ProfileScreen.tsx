@@ -1,10 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Settings, Bell, Moon, LogOut, ChevronRight, Feather, Sparkles, Brain, Camera } from "lucide-react";
+import { User, Settings, Bell, Moon, LogOut, ChevronRight, Feather, Camera } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { useState, useEffect, useRef } from "react";
 import { AnimatedGradient } from "./AnimatedGradient";
 import { useAuth } from "@/hooks/useAuth";
-import { useAI } from "@/hooks/useAI";
 import { AccountSettings } from "./AccountSettings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
