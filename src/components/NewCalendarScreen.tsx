@@ -45,12 +45,22 @@ interface Entry {
   mood?: "happy" | "calm" | "sad" | "excited" | "grateful" | "neutral";
 }
 
+interface InsightsResult {
+  summary: string;
+  dominantMood?: string;
+  insights?: string[];
+  encouragement?: string;
+}
+
 interface NewCalendarScreenProps {
   entries: Entry[];
   onSaveEntry: (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date, entryId?: string) => void;
+  onDeleteEntry?: (entryId: string) => void;
   onEditorStateChange?: (isOpen: boolean) => void;
   openEditorForToday?: boolean;
   onOpenEditorForTodayHandled?: () => void;
+  insights?: InsightsResult | null;
+  loadingInsights?: boolean;
 }
 
 // Enhanced mood colors with gradients
