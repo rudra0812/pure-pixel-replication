@@ -151,50 +151,6 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
           </div>
         </motion.div>
 
-        {/* AI Insights */}
-        {insights && (
-          <motion.div
-            className="mt-6 mx-6 p-5 rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.15 }}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <Brain className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold text-foreground">Weekly Insights</h3>
-            </div>
-            <p className="text-sm text-muted-foreground mb-3">{insights.summary}</p>
-            {insights.insights?.length > 0 && (
-              <div className="space-y-2">
-                {insights.insights.slice(0, 3).map((insight: string, i: number) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <Sparkles className="h-3 w-3 text-primary mt-1 shrink-0" />
-                    <p className="text-xs text-muted-foreground">{insight}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-            {insights.encouragement && (
-              <p className="mt-3 text-sm font-medium text-primary">{insights.encouragement}</p>
-            )}
-          </motion.div>
-        )}
-
-        {loadingInsights && (
-          <motion.div
-            className="mt-6 mx-6 p-5 rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-          >
-            <div className="flex items-center gap-2">
-              <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
-                <Brain className="h-5 w-5 text-primary" />
-              </motion.div>
-              <p className="text-sm text-muted-foreground">Generating insights...</p>
-            </div>
-          </motion.div>
-        )}
-
         {/* Settings Section */}
         <motion.div
           className="mt-8 px-6"
