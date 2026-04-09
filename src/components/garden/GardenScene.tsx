@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GardenBackground } from "./GardenBackground";
 import { Plant, GrowthStage } from "./Plant";
 import { X, Droplets, Sprout, Clock, Heart } from "lucide-react";
