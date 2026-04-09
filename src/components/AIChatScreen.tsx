@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
-import { X, Send, Sparkles } from "lucide-react";
+import { X, Send, Sparkles, Mic, MicOff, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -15,6 +15,7 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
+  imageUrl?: string;
 }
 
 interface AIChatScreenProps {
@@ -28,7 +29,10 @@ export const AIChatScreen = ({ isOpen, onClose, entries }: AIChatScreenProps) =>
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -43,6 +47,84 @@ export const AIChatScreen = ({ isOpen, onClose, entries }: AIChatScreenProps) =>
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
+
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setMessages(prev => [...prev, { id: Date.now().toString(), role: "assistant", content: "Speech recognition isn't supported in your browser. Try Chrome or Safari." }]);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(prev => prev ? `${prev} ${transcript}` : transcript);
+      setIsListening(false);
+    };
+
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsListening(true);
+  };
+
+  const handleImageAttach = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: input.trim() || "What do you think about this?",
+      imageUrl: url,
+    };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+    setIsLoading(true);
+
+    try {
+      const recentEntries = entries.slice(0, 10).map(e => ({
+        date: new Date(e.date).toLocaleDateString(),
+        title: e.title || "Untitled",
+        content: e.content.slice(0, 300),
+      }));
+
+      const conversationHistory = messages.map(m => ({
+        role: m.role,
+        content: m.content,
+      }));
+
+      const { data } = await supabase.functions.invoke("journal-chat", {
+        body: {
+          message: `[User attached an image] ${userMsg.content}`,
+          entries: recentEntries,
+          history: conversationHistory,
+        },
+      });
+
+      const reply = data?.reply || "I see you shared an image! While I can't view images directly, I'm here to chat about your journal entries and feelings.";
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: "assistant", content: reply }]);
+    } catch {
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: "assistant", content: "Something went wrong. Please try again." }]);
+    } finally {
+      setIsLoading(false);
+    }
+
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -121,6 +203,9 @@ export const AIChatScreen = ({ isOpen, onClose, entries }: AIChatScreenProps) =>
                       : "bg-muted/60 text-foreground rounded-bl-md"
                   }`}
                 >
+                  {msg.imageUrl && (
+                    <img src={msg.imageUrl} alt="Attached" className="rounded-xl mb-2 max-h-48 w-auto" />
+                  )}
                   {msg.content}
                 </div>
               </motion.div>
@@ -141,6 +226,35 @@ export const AIChatScreen = ({ isOpen, onClose, entries }: AIChatScreenProps) =>
           {/* Input */}
           <div className="px-4 pb-6 pt-2 border-t border-border/40 safe-area-bottom">
             <div className="flex items-center gap-2">
+              {/* Gallery button */}
+              <motion.button
+                onClick={() => fileInputRef.current?.click()}
+                className="p-2.5 rounded-full hover:bg-muted/50 transition-colors"
+                whileTap={{ scale: 0.9 }}
+              >
+                <ImageIcon className="h-5 w-5 text-muted-foreground" />
+              </motion.button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageAttach}
+              />
+
+              {/* Mic button */}
+              <motion.button
+                onClick={toggleListening}
+                className={`p-2.5 rounded-full transition-colors ${isListening ? "bg-destructive/10" : "hover:bg-muted/50"}`}
+                whileTap={{ scale: 0.9 }}
+              >
+                {isListening ? (
+                  <MicOff className="h-5 w-5 text-destructive" />
+                ) : (
+                  <Mic className="h-5 w-5 text-muted-foreground" />
+                )}
+              </motion.button>
+
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

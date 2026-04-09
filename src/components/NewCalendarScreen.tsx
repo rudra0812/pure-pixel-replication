@@ -345,7 +345,7 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, o
               <div className="grid grid-cols-3 gap-3">
                 {/* Streak Card */}
                 <motion.div
-                  className={`relative overflow-hidden rounded-2xl p-3 ${streak > 0 ? 'bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500' : 'bg-gradient-to-br from-slate-400 to-slate-500'}`}
+                  className={`relative overflow-hidden rounded-2xl p-3 ${streak > 0 ? 'bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500' : 'bg-gradient-to-br from-rose-500 via-pink-500 to-orange-400'}`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -756,23 +756,31 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, o
                           {format(day, "d")}
                         </span>
                         
-                        <div className="flex gap-0.5">
-                          {entries.slice(0, 3).map((entry, i) => {
-                            const mood = entry.mood || "neutral";
-                            return (
-                              <motion.div
-                                key={i}
-                                className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${moodConfig[mood].gradient}`}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: 0.3 + i * 0.1 }}
-                              />
-                            );
-                          })}
-                          {entries.length > 3 && (
-                            <span className="text-[8px] text-muted-foreground">+</span>
-                          )}
-                        </div>
+                        {hasEntry && (
+                          <div className="flex gap-0.5 items-center">
+                            {entries.length === 1 ? (
+                              <span className="text-[10px] leading-none">{moodConfig[entries[0].mood || "neutral"].icon}</span>
+                            ) : (
+                              <>
+                                {entries.slice(0, 3).map((entry, i) => {
+                                  const mood = entry.mood || "neutral";
+                                  return (
+                                    <motion.div
+                                      key={i}
+                                      className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${moodConfig[mood].gradient}`}
+                                      initial={{ scale: 0 }}
+                                      animate={{ scale: 1 }}
+                                      transition={{ delay: 0.3 + i * 0.1 }}
+                                    />
+                                  );
+                                })}
+                                {entries.length > 3 && (
+                                  <span className="text-[8px] text-muted-foreground">+</span>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        )}
 
                         {isTodayDate && !hasEntry && (
                           <motion.div

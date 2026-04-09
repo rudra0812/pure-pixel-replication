@@ -35,7 +35,7 @@ export const useEntries = () => {
       setEntries(
         (data || []).map((e) => ({
           id: e.id,
-          date: new Date(e.entry_date),
+          date: new Date(e.entry_date + "T12:00:00"),
           title: e.title || undefined,
           content: e.content,
           mood: (e.mood as MoodType) || undefined,

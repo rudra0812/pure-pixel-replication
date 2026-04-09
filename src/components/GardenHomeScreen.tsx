@@ -663,7 +663,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
 
       {/* AI Chat Button - Bottom Left, minimalist */}
       <motion.button
-        className="absolute bottom-28 left-6 z-50 w-11 h-11 rounded-full backdrop-blur-xl bg-white/60 shadow-lg border border-white/40 flex items-center justify-center"
+        className="absolute bottom-28 left-6 z-50 w-14 h-14 rounded-full backdrop-blur-xl bg-white/60 shadow-lg border border-white/40 flex items-center justify-center"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.6 }}
@@ -747,7 +747,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
         {/* Main FAB */}
         <motion.button
           onClick={() => setShowFabMenu(!showFabMenu)}
-          className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-foreground shadow-2xl flex items-center justify-center"
+          className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-foreground shadow-2xl flex items-center justify-center"
           animate={{ rotate: showFabMenu ? 45 : 0 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
