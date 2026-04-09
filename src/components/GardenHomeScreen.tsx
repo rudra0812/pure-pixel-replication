@@ -747,7 +747,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
         {/* Main FAB */}
         <motion.button
           onClick={() => setShowFabMenu(!showFabMenu)}
-          className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-foreground shadow-2xl flex items-center justify-center"
+          className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-foreground shadow-2xl flex items-center justify-center"
           animate={{ rotate: showFabMenu ? 45 : 0 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}

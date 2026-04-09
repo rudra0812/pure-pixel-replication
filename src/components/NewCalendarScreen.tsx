@@ -345,7 +345,7 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, o
               <div className="grid grid-cols-3 gap-3">
                 {/* Streak Card */}
                 <motion.div
-                  className={`relative overflow-hidden rounded-2xl p-3 ${streak > 0 ? 'bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500' : 'bg-gradient-to-br from-slate-400 to-slate-500'}`}
+                  className={`relative overflow-hidden rounded-2xl p-3 ${streak > 0 ? 'bg-gradient-to-br from-orange-500 via-amber-500 to-yellow-500' : 'bg-gradient-to-br from-rose-500 via-pink-500 to-orange-400'}`}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
