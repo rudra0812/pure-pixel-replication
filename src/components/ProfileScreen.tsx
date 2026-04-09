@@ -119,12 +119,25 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
           transition={{ delay: 0.1 }}
         >
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary">
-              <User className="h-8 w-8 text-primary-foreground" />
-            </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="relative flex h-16 w-16 items-center justify-center rounded-full bg-primary overflow-hidden shrink-0"
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+              ) : (
+                <User className="h-8 w-8 text-primary-foreground" />
+              )}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 hover:opacity-100 transition-opacity">
+                <Camera className="h-5 w-5 text-white" />
+              </div>
+            </button>
+            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             <div>
-              <h2 className="text-lg font-semibold text-foreground">{displayName}</h2>
-              <p className="text-sm text-muted-foreground">Journaling since {joinDate}</p>
+              <h2 className="text-lg font-semibold text-foreground">{profileName || displayName}</h2>
+              <p className="text-sm text-muted-foreground">
+                {uploading ? "Uploading..." : `Journaling since ${joinDate}`}
+              </p>
             </div>
           </div>
 
