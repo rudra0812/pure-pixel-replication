@@ -26,14 +26,12 @@ interface ProfileScreenProps {
 
 export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] }: ProfileScreenProps) => {
   const { user } = useAuth();
-  const { getInsights, loadingInsights } = useAI();
   const displayName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Journal User";
   const joinDate = user?.created_at ? new Date(user.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" }) : "today";
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(() => {
     return document.documentElement.classList.contains("dark");
   });
-  const [insights, setInsights] = useState<any>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string | null>(null);
@@ -75,12 +73,6 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
       setUploading(false);
     }
   };
-
-  useEffect(() => {
-    if (entries.length >= 3 && !insights) {
-      getInsights(entries.slice(0, 20), "week").then(setInsights);
-    }
-  }, [entries.length]);
 
   const handleDarkModeToggle = (checked: boolean) => {
     setDarkMode(checked);
