@@ -661,9 +661,9 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
         )}
       </AnimatePresence>
 
-      {/* AI Chat Button - Bottom Left, minimalist */}
+      {/* AI Chat Button - Bottom Left */}
       <motion.button
-        className="absolute bottom-28 left-6 z-50 w-14 h-14 rounded-full backdrop-blur-xl bg-white/60 shadow-lg border border-white/40 flex items-center justify-center"
+        className="absolute bottom-[6.5rem] left-6 z-50 w-12 h-12 rounded-full backdrop-blur-xl bg-white/60 shadow-lg border border-white/40 flex items-center justify-center"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.6 }}
@@ -678,11 +678,10 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
       </motion.button>
 
       {/* Floating Action Button (FAB) */}
-      <div className="absolute bottom-24 right-6 z-50">
+      <div className="absolute bottom-[6.5rem] right-6 z-50">
         <AnimatePresence>
           {showFabMenu && (
             <>
-              {/* Backdrop */}
               <motion.div
                 className="fixed inset-0 bg-black/20 backdrop-blur-sm"
                 initial={{ opacity: 0 }}
@@ -690,15 +689,12 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
                 exit={{ opacity: 0 }}
                 onClick={() => setShowFabMenu(false)}
               />
-              
-              {/* FAB Menu Items */}
               <motion.div
-                className="absolute bottom-20 right-0 flex flex-col gap-3"
+                className="absolute bottom-16 right-0 flex flex-col gap-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
               >
-                {/* Water Button */}
                 <motion.button
                   onClick={handleWater}
                   disabled={isWatering}
@@ -719,8 +715,6 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
                     <Droplets className="h-5 w-5 text-white" />
                   </motion.div>
                 </motion.button>
-
-                {/* Record Button */}
                 <motion.button
                   onClick={() => {
                     setShowFabMenu(false);
@@ -747,12 +741,12 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
         {/* Main FAB */}
         <motion.button
           onClick={() => setShowFabMenu(!showFabMenu)}
-          className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-foreground shadow-2xl flex items-center justify-center"
+          className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary-foreground shadow-2xl flex items-center justify-center"
           animate={{ rotate: showFabMenu ? 45 : 0 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
         >
-          <Plus className="h-7 w-7 text-white" />
+          <Plus className="h-6 w-6 text-white" />
         </motion.button>
       </div>
 

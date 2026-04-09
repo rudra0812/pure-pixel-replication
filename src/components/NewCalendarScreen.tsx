@@ -17,12 +17,24 @@ import {
   Unlock,
   Target,
   Trophy,
-  Edit3
+  Edit3,
+  Trash2,
+  Brain
 } from "lucide-react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, differenceInDays, startOfDay, isToday } from "date-fns";
 import { EntryEditor } from "./EntryEditor";
 import { AnimatedGradient } from "./AnimatedGradient";
 import { useAI } from "@/hooks/useAI";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 
 interface Entry {
   id: string;
@@ -33,12 +45,22 @@ interface Entry {
   mood?: "happy" | "calm" | "sad" | "excited" | "grateful" | "neutral";
 }
 
+interface InsightsResult {
+  summary: string;
+  dominantMood?: string;
+  insights?: string[];
+  encouragement?: string;
+}
+
 interface NewCalendarScreenProps {
   entries: Entry[];
   onSaveEntry: (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date, entryId?: string) => void;
+  onDeleteEntry?: (entryId: string) => void;
   onEditorStateChange?: (isOpen: boolean) => void;
   openEditorForToday?: boolean;
   onOpenEditorForTodayHandled?: () => void;
+  insights?: InsightsResult | null;
+  loadingInsights?: boolean;
 }
 
 // Enhanced mood colors with gradients
@@ -152,13 +174,14 @@ const getEntriesWithMood = (entries: Entry[]): Entry[] => {
   }));
 };
 
-export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, openEditorForToday, onOpenEditorForTodayHandled }: NewCalendarScreenProps) => {
+export const NewCalendarScreen = ({ entries, onSaveEntry, onDeleteEntry, onEditorStateChange, openEditorForToday, onOpenEditorForTodayHandled, insights, loadingInsights }: NewCalendarScreenProps) => {
   const { analyzeMood, analyzingMood } = useAI();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [viewingEntry, setViewingEntry] = useState<Entry | null>(null);
   const [viewMode, setViewMode] = useState<"calendar" | "today">("today");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Notify parent when editor state changes
   useEffect(() => {
@@ -281,14 +304,24 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, o
               <span className="text-sm font-medium text-muted-foreground">
                 {format(new Date(viewingEntry.date), "EEEE, MMMM d")}
               </span>
-              <motion.button
-                onClick={() => setShowEditor(true)}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground touch-target"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Edit3 className="h-5 w-5" />
-              </motion.button>
+              <div className="flex items-center gap-2">
+                <motion.button
+                  onClick={() => setShowEditor(true)}
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground touch-target"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Edit3 className="h-5 w-5" />
+                </motion.button>
+                <motion.button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-destructive/10 text-destructive touch-target"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Trash2 className="h-5 w-5" />
+                </motion.button>
+              </div>
             </header>
 
             <div className="flex-1 px-6 py-4">
@@ -523,6 +556,50 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, o
                     </div>
                   )}
                 </motion.div>
+
+                {/* AI Insights Section */}
+                {insights && (
+                  <motion.div
+                    className="mb-6 p-5 rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.25 }}
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <Brain className="h-5 w-5 text-primary" />
+                      <h3 className="font-semibold text-foreground">Weekly Insights</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">{insights.summary}</p>
+                    {insights.insights && insights.insights.length > 0 && (
+                      <div className="space-y-2">
+                        {insights.insights.slice(0, 3).map((insight: string, i: number) => (
+                          <div key={i} className="flex items-start gap-2">
+                            <Sparkles className="h-3 w-3 text-primary mt-1 shrink-0" />
+                            <p className="text-xs text-muted-foreground">{insight}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {insights.encouragement && (
+                      <p className="mt-3 text-sm font-medium text-primary">{insights.encouragement}</p>
+                    )}
+                  </motion.div>
+                )}
+
+                {loadingInsights && (
+                  <motion.div
+                    className="mb-6 p-5 rounded-3xl bg-card/50 backdrop-blur-sm border border-border/50"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
+                        <Brain className="h-5 w-5 text-primary" />
+                      </motion.div>
+                      <p className="text-sm text-muted-foreground">Generating insights...</p>
+                    </div>
+                  </motion.div>
+                )}
 
                 {/* Today's Entries Section */}
                 <motion.div
@@ -828,6 +905,34 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onEditorStateChange, o
           </motion.div>
         </AnimatedGradient>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Entry</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this journal entry? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (viewingEntry && onDeleteEntry) {
+                  onDeleteEntry(viewingEntry.id);
+                  setViewingEntry(null);
+                  setSelectedDate(null);
+                }
+                setShowDeleteConfirm(false);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AnimatePresence>
   );
 };
