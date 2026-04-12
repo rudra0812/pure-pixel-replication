@@ -750,31 +750,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
         </motion.button>
       </div>
 
-      {/* Stage Progress - Bottom Left (only when no prompts) */}
-      {!aiPrompts?.length && (
-        <motion.div
-          className="absolute bottom-24 left-6 z-40"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="px-4 py-3 rounded-2xl backdrop-blur-xl bg-white/70 shadow-lg border border-white/50">
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-xl bg-gradient-to-br ${currentWeather.gradient}`}>
-                <TrendingUp className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-foreground">
-                  {entries.length === 0 ? "Start your journey" : `Stage ${entries.length < 1 ? 1 : entries.length < 3 ? 2 : entries.length < 7 ? 3 : entries.length < 15 ? 4 : 5} of 5`}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {entries.length === 0 ? "Plant your first seed" : `${15 - entries.length > 0 ? 15 - entries.length : 0} more to bloom`}
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
+      {/* Stage progress removed - now shown in plant info card */}
 
       {/* Hold-to-drizzle indicator */}
       <AnimatePresence>
