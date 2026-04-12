@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { GardenBackground } from "./GardenBackground";
 import { Plant, GrowthStage } from "./Plant";
-import { X, Droplets, Sprout, Clock, Heart } from "lucide-react";
+import { X, Droplets, Sprout, Clock, Heart, TrendingUp } from "lucide-react";
 
 interface GardenSceneProps {
   weatherMood: "sunny" | "cloudy" | "rainy" | "clearing";
@@ -12,6 +12,7 @@ interface GardenSceneProps {
   isAnalyzing?: boolean;
   isWatering?: boolean;
   waterGrowthPulse?: boolean;
+  entryCount?: number;
 }
 
 const stageLabels: Record<GrowthStage, string> = {
@@ -30,7 +31,6 @@ const stageFeeling: Record<GrowthStage, string> = {
   blooming: "Absolutely radiant! 🌸",
 };
 
-// Pre-computed water droplet data for smooth animation
 const waterDroplets = Array.from({ length: 14 }).map((_, i) => ({
   x: 44 + (i * 5.3 % 12),
   w: 2 + (i * 3 % 3),
@@ -47,6 +47,26 @@ const waterSplashes = Array.from({ length: 4 }).map((_, i) => ({
   repeatDelay: 0.6 + (i * 3 % 5) * 0.12,
 }));
 
+// Different plant type pools for left and right sides
+const plantTypePool: Array<"tallLeafy" | "roundBush" | "pine" | "fern" | "flowerPlant" | "bamboo" | "cactus" | "willow" | "palm" | "succulent"> = [
+  "tallLeafy", "roundBush", "pine", "fern", "flowerPlant", "bamboo", "cactus", "willow", "palm", "succulent"
+];
+
+// Bird species
+const birdSpecies = [
+  { name: "robin", body: "hsl(15 60% 45%)", wing: "hsl(25 50% 35%)", size: 1 },
+  { name: "bluebird", body: "hsl(210 70% 55%)", wing: "hsl(220 60% 45%)", size: 0.9 },
+  { name: "sparrow", body: "hsl(30 40% 50%)", wing: "hsl(25 35% 40%)", size: 0.8 },
+  { name: "goldfinch", body: "hsl(50 80% 55%)", wing: "hsl(0 0% 15%)", size: 0.85 },
+  { name: "cardinal", body: "hsl(0 70% 50%)", wing: "hsl(0 60% 40%)", size: 1.1 },
+];
+
+// Seeded random for consistent but different plants
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed * 9301 + 49297) * 49297;
+  return x - Math.floor(x);
+};
+
 export const GardenScene = ({ 
   weatherMood, 
   growthStage, 
@@ -54,7 +74,8 @@ export const GardenScene = ({
   seedType,
   isAnalyzing,
   isWatering,
-  waterGrowthPulse
+  waterGrowthPulse,
+  entryCount = 0,
 }: GardenSceneProps) => {
   const [showPlantInfo, setShowPlantInfo] = useState(false);
 
@@ -64,13 +85,12 @@ export const GardenScene = ({
   const age = plantedDate
     ? Math.max(1, Math.floor((Date.now() - new Date(plantedDate).getTime()) / 86400000))
     : 1;
-  // Track last watered time to avoid showing thirsty right after watering
+
   const [lastWatered, setLastWatered] = useState<number>(() => {
     const stored = localStorage.getItem("garden_last_watered");
     return stored ? parseInt(stored) : 0;
   });
 
-  // Update lastWatered when watering starts
   useEffect(() => {
     if (isWatering) {
       const now = Date.now();
@@ -82,28 +102,64 @@ export const GardenScene = ({
   const hoursSinceWatered = (Date.now() - lastWatered) / (1000 * 60 * 60);
   const isThirsty = !isWatering && hoursSinceWatered > 12 && weatherMood !== "rainy";
 
+  // Generate randomized plants for left and right - different species each side
+  const scenePlants = useMemo(() => {
+    const leftPlants = Array.from({ length: 5 }).map((_, i) => ({
+      type: plantTypePool[Math.floor(seededRandom(i * 3 + 1) * plantTypePool.length)],
+      x: 2 + i * 8 + seededRandom(i * 7) * 4,
+      size: 0.8 + seededRandom(i * 11) * 0.9,
+      delay: 0.2 + seededRandom(i * 5) * 0.5,
+      flip: 1 as const,
+    }));
+    const rightPlants = Array.from({ length: 5 }).map((_, i) => ({
+      type: plantTypePool[Math.floor(seededRandom(i * 3 + 50) * plantTypePool.length)],
+      x: 62 + i * 8 + seededRandom(i * 7 + 50) * 4,
+      size: 0.8 + seededRandom(i * 11 + 50) * 0.9,
+      delay: 0.2 + seededRandom(i * 5 + 50) * 0.5,
+      flip: -1 as const,
+    }));
+    return [...leftPlants, ...rightPlants];
+  }, []);
+
+  // Generate birds
+  const birds = useMemo(() => {
+    return Array.from({ length: 4 }).map((_, i) => ({
+      species: birdSpecies[i % birdSpecies.length],
+      startX: -10 - i * 15,
+      startY: 15 + seededRandom(i * 13) * 25,
+      flyDuration: 18 + seededRandom(i * 7) * 20,
+      delay: i * 8 + seededRandom(i * 9) * 10,
+      sitsOnBranch: i < 2, // first 2 birds will sit on branches
+      branchX: i === 0 ? 18 : 78,
+      branchY: 38,
+      sitDuration: 4 + seededRandom(i * 3) * 3,
+    }));
+  }, []);
+
+  const stageNum = entryCount < 1 ? 1 : entryCount < 3 ? 2 : entryCount < 7 ? 3 : entryCount < 15 ? 4 : 5;
+  const toBloom = Math.max(0, 15 - entryCount);
+
   return (
     <div className="relative w-full h-full min-h-[60vh]">
       <GardenBackground weatherMood={weatherMood} />
       
-      {/* Spread-out decorative vegetation across the full width */}
-      {/* Far left */}
-      <ScenePlant type="tallLeafy" x={2} bottom="7rem" size={1.6} delay={0.2} flip={1} />
-      <ScenePlant type="roundBush" x={8} bottom="6.5rem" size={1.2} delay={0.4} flip={1} />
-      {/* Left-center */}
-      <ScenePlant type="pine" x={18} bottom="7rem" size={1.0} delay={0.5} flip={1} />
-      <ScenePlant type="fern" x={24} bottom="6.5rem" size={1.1} delay={0.7} flip={1} />
-      {/* Center-left */}
-      <ScenePlant type="flowerPlant" x={33} bottom="6.8rem" size={0.9} delay={0.3} flip={1} />
-      
-      {/* Center-right */}
-      <ScenePlant type="flowerPlant" x={65} bottom="6.8rem" size={0.9} delay={0.4} flip={-1} />
-      {/* Right-center */}
-      <ScenePlant type="fern" x={72} bottom="6.5rem" size={1.1} delay={0.6} flip={-1} />
-      <ScenePlant type="pine" x={78} bottom="7rem" size={1.0} delay={0.5} flip={-1} />
-      {/* Far right */}
-      <ScenePlant type="roundBush" x={86} bottom="6.5rem" size={1.2} delay={0.3} flip={-1} />
-      <ScenePlant type="tallLeafy" x={92} bottom="7rem" size={1.6} delay={0.2} flip={-1} />
+      {/* Randomized decorative vegetation */}
+      {scenePlants.map((plant, i) => (
+        <ScenePlant
+          key={i}
+          type={plant.type}
+          x={plant.x}
+          bottom="6.5rem"
+          size={plant.size}
+          delay={plant.delay}
+          flip={plant.flip}
+        />
+      ))}
+
+      {/* Flying Birds */}
+      {birds.map((bird, i) => (
+        <FlyingBird key={i} {...bird} />
+      ))}
 
       {/* Water droplets when watering */}
       <AnimatePresence>
@@ -143,7 +199,6 @@ export const GardenScene = ({
                 }}
               />
             ))}
-            {/* Splash ripples at ground level */}
             {waterSplashes.map((splash, i) => (
               <motion.div
                 key={`splash-${i}`}
@@ -190,7 +245,6 @@ export const GardenScene = ({
           scale: { duration: waterGrowthPulse ? 1.5 : 1, repeat: (isAnalyzing || isWatering) && !waterGrowthPulse ? Infinity : 0 }
         }}
       >
-        {/* Clickable Plant Container */}
         <motion.div
           className="relative cursor-pointer"
           whileTap={{ scale: 0.96 }}
@@ -198,7 +252,6 @@ export const GardenScene = ({
         >
           <Plant stage={growthStage} name={plantName} seedType={seedType} />
           
-          {/* Subtle breathing aura - no ring */}
           <motion.div
             className="absolute inset-0 -z-10 pointer-events-none"
             style={{
@@ -222,7 +275,6 @@ export const GardenScene = ({
           />
         </motion.div>
         
-        {/* Glow effect when watering */}
         {isWatering && (
           <motion.div
             className="absolute inset-0 -z-10"
@@ -235,7 +287,6 @@ export const GardenScene = ({
           />
         )}
         
-        {/* Growth pulse glow */}
         {waterGrowthPulse && (
           <motion.div
             className="absolute inset-0 -z-10"
@@ -251,7 +302,6 @@ export const GardenScene = ({
           />
         )}
         
-        {/* Sparkle particles on growth */}
         {waterGrowthPulse && Array.from({ length: 8 }).map((_, i) => (
           <motion.div
             key={`growth-sparkle-${i}`}
@@ -275,7 +325,7 @@ export const GardenScene = ({
         ))}
       </motion.div>
 
-      {/* Plant Info Card - shows on tap */}
+      {/* Plant Info Card - shows on tap - now includes stage progress */}
       <AnimatePresence>
         {showPlantInfo && (
           <>
@@ -287,14 +337,13 @@ export const GardenScene = ({
               onClick={() => setShowPlantInfo(false)}
             />
             <motion.div
-              className="absolute left-1/2 bottom-[12rem] -translate-x-1/2 z-50 w-64"
+              className="absolute left-1/2 bottom-[12rem] -translate-x-1/2 z-50 w-72"
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
               <div className="rounded-3xl backdrop-blur-xl bg-card/90 shadow-2xl border border-border/50 p-4 relative overflow-hidden">
-                {/* Decorative top gradient */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-green-500 to-teal-400 rounded-t-3xl" />
                 
                 <button
@@ -305,7 +354,6 @@ export const GardenScene = ({
                 </button>
 
                 <div className="space-y-3">
-                  {/* Name & Type */}
                   <div>
                     <h3 className="text-lg font-bold text-foreground">{plantName || "My Plant"}</h3>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -313,7 +361,27 @@ export const GardenScene = ({
                     </p>
                   </div>
 
-                  {/* Stats grid */}
+                  {/* Stage Progress */}
+                  <div className="rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 p-2.5">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
+                      <span className="text-xs font-semibold text-foreground">
+                        {entryCount === 0 ? "Start your journey" : `Stage ${stageNum} of 5`}
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-muted/50 overflow-hidden">
+                      <motion.div
+                        className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-teal-400"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(stageNum / 5) * 100}%` }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      {entryCount === 0 ? "Write your first entry 🌱" : toBloom > 0 ? `${toBloom} more entries to full bloom` : "In full bloom! 🌸"}
+                    </p>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-2">
                     <div className="rounded-2xl bg-muted/40 p-2.5">
                       <div className="flex items-center gap-1.5 mb-1">
@@ -331,7 +399,6 @@ export const GardenScene = ({
                     </div>
                   </div>
 
-                  {/* Feeling */}
                   <div className="rounded-2xl bg-muted/40 p-2.5">
                     <div className="flex items-center gap-1.5 mb-1">
                       <Heart className="h-3.5 w-3.5 text-rose-400" />
@@ -354,11 +421,11 @@ export const GardenScene = ({
               key={i}
               className="absolute rounded-full"
               style={{
-                left: `${15 + Math.random() * 70}%`,
-                top: `${15 + Math.random() * 45}%`,
-                width: 3 + Math.random() * 3,
-                height: 3 + Math.random() * 3,
-                background: `hsl(${45 + Math.random() * 15} 90% ${75 + Math.random() * 10}%)`,
+                left: `${15 + seededRandom(i * 17) * 70}%`,
+                top: `${15 + seededRandom(i * 23) * 45}%`,
+                width: 3 + seededRandom(i * 31) * 3,
+                height: 3 + seededRandom(i * 31) * 3,
+                background: `hsl(${45 + seededRandom(i * 41) * 15} 90% ${75 + seededRandom(i * 53) * 10}%)`,
               }}
               animate={{
                 y: [0, -25, 0],
@@ -366,9 +433,9 @@ export const GardenScene = ({
                 scale: [0.8, 1.3, 0.8],
               }}
               transition={{
-                duration: 3 + Math.random() * 2,
+                duration: 3 + seededRandom(i * 19) * 2,
                 repeat: Infinity,
-                delay: Math.random() * 2,
+                delay: seededRandom(i * 29) * 2,
               }}
             />
           ))}
@@ -393,11 +460,16 @@ const plantNames: Record<string, string> = {
   pine: "Little Pine",
   fern: "Wild Fern",
   flowerPlant: "Meadow Bloom",
+  bamboo: "Lucky Bamboo",
+  cactus: "Desert Rose",
+  willow: "Weeping Willow",
+  palm: "Mini Palm",
+  succulent: "Jade Plant",
 };
 
-// Unified scene plant component with multiple varieties - now interactive
+// Scene plant component with many varieties
 const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
-  type: "tallLeafy" | "roundBush" | "pine" | "fern" | "flowerPlant";
+  type: string;
   x: number;
   bottom: string;
   size: number;
@@ -415,7 +487,6 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
       transition={{ delay }}
       onClick={() => { setTapped(true); setTimeout(() => setTapped(false), 1800); }}
     >
-      {/* Name tooltip */}
       <AnimatePresence>
         {tapped && (
           <motion.div
@@ -426,7 +497,7 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
           >
             <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-card/90 backdrop-blur-sm shadow-md text-foreground border border-border/30">
-              {plantNames[type]}
+              {plantNames[type] || "Wild Plant"}
             </span>
           </motion.div>
         )}
@@ -518,8 +589,227 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
           <circle cx="20" cy="18" r="4" fill="hsl(45 90% 60%)" />
         </motion.svg>
       )}
+      {type === "bamboo" && (
+        <motion.svg
+          width={25 * size} height={90 * size} viewBox="0 0 25 90"
+          style={{ transform: `scaleX(${flip})` }}
+          animate={{ rotate: [-1, 1.5, -1] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <rect x="10" y="10" width="5" height="80" fill="hsl(80 45% 45%)" rx="2" />
+          <rect x="10" y="25" width="5" height="2" fill="hsl(80 30% 35%)" />
+          <rect x="10" y="45" width="5" height="2" fill="hsl(80 30% 35%)" />
+          <rect x="10" y="65" width="5" height="2" fill="hsl(80 30% 35%)" />
+          <ellipse cx="5" cy="20" rx="6" ry="3" fill="hsl(120 50% 45%)" transform="rotate(-45 5 20)" />
+          <ellipse cx="20" cy="40" rx="6" ry="3" fill="hsl(118 48% 42%)" transform="rotate(40 20 40)" />
+          <ellipse cx="6" cy="58" rx="5" ry="2.5" fill="hsl(122 52% 48%)" transform="rotate(-35 6 58)" />
+        </motion.svg>
+      )}
+      {type === "cactus" && (
+        <motion.svg
+          width={30 * size} height={55 * size} viewBox="0 0 30 55"
+          style={{ transform: `scaleX(${flip})` }}
+          animate={{ scale: [1, 1.02, 1] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <rect x="11" y="10" width="8" height="45" fill="hsl(140 40% 40%)" rx="4" />
+          <rect x="3" y="20" width="6" height="20" fill="hsl(138 38% 42%)" rx="3" />
+          <rect x="21" y="15" width="6" height="25" fill="hsl(142 42% 38%)" rx="3" />
+          <line x1="3" y1="20" x2="11" y2="25" stroke="hsl(140 40% 40%)" strokeWidth="4" strokeLinecap="round" />
+          <line x1="27" y1="15" x2="19" y2="20" stroke="hsl(140 40% 40%)" strokeWidth="4" strokeLinecap="round" />
+          <circle cx="15" cy="8" r="3" fill="hsl(350 70% 65%)" />
+        </motion.svg>
+      )}
+      {type === "willow" && (
+        <motion.svg
+          width={60 * size} height={100 * size} viewBox="0 0 60 100"
+          style={{ transform: `scaleX(${flip})` }}
+          animate={{ rotate: [-0.5, 0.5, -0.5] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <path d="M30 100 Q28 60 30 30" stroke="hsl(25 35% 32%)" strokeWidth="6" fill="none" strokeLinecap="round" />
+          <ellipse cx="30" cy="25" rx="22" ry="16" fill="hsl(130 40% 38%)" />
+          {[0, 1, 2, 3, 4].map((i) => (
+            <motion.path
+              key={i}
+              d={`M${15 + i * 8} 28 Q${15 + i * 8 + (i % 2 ? 3 : -3)} 55 ${15 + i * 8 + (i % 2 ? 6 : -6)} 75`}
+              stroke="hsl(128 45% 42%)"
+              strokeWidth="1.5"
+              fill="none"
+              animate={{ d: [
+                `M${15 + i * 8} 28 Q${15 + i * 8 + 3} 55 ${15 + i * 8 + 6} 75`,
+                `M${15 + i * 8} 28 Q${15 + i * 8 - 3} 55 ${15 + i * 8 - 6} 75`,
+                `M${15 + i * 8} 28 Q${15 + i * 8 + 3} 55 ${15 + i * 8 + 6} 75`,
+              ]}}
+              transition={{ duration: 3 + i * 0.3, repeat: Infinity, ease: "easeInOut" }}
+            />
+          ))}
+        </motion.svg>
+      )}
+      {type === "palm" && (
+        <motion.svg
+          width={45 * size} height={85 * size} viewBox="0 0 45 85"
+          style={{ transform: `scaleX(${flip})` }}
+          animate={{ rotate: [-1.5, 1.5, -1.5] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <path d="M22 85 Q20 55 22 20" stroke="hsl(30 35% 35%)" strokeWidth="5" fill="none" strokeLinecap="round" />
+          {[0, 1, 2, 3, 4].map((i) => (
+            <motion.path
+              key={i}
+              d={`M22 20 Q${22 + (i - 2) * 12} ${15 - i} ${22 + (i - 2) * 20} ${25 + Math.abs(i - 2) * 5}`}
+              stroke="hsl(130 50% 40%)"
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+              animate={{ rotate: [-2, 2, -2] }}
+              transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: "easeInOut" }}
+            />
+          ))}
+        </motion.svg>
+      )}
+      {type === "succulent" && (
+        <motion.svg
+          width={40 * size} height={35 * size} viewBox="0 0 40 35"
+          style={{ transform: `scaleX(${flip})` }}
+          animate={{ scale: [1, 1.03, 1] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        >
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+            <ellipse
+              key={i}
+              cx="20" cy="18" rx="4" ry="10"
+              fill={`hsl(${150 + i * 3} ${45 + i * 2}% ${40 + i * 2}%)`}
+              transform={`rotate(${angle} 20 18)`}
+            />
+          ))}
+          <circle cx="20" cy="18" r="5" fill="hsl(155 50% 50%)" />
+        </motion.svg>
+      )}
       </motion.div>
     </motion.div>
+  );
+};
+
+// Flying bird component
+const FlyingBird = ({ species, startX, startY, flyDuration, delay, sitsOnBranch, branchX, branchY, sitDuration }: {
+  species: typeof birdSpecies[number];
+  startX: number;
+  startY: number;
+  flyDuration: number;
+  delay: number;
+  sitsOnBranch: boolean;
+  branchX: number;
+  branchY: number;
+  sitDuration: number;
+}) => {
+  const [phase, setPhase] = useState<"flying" | "sitting" | "flyingAway">("flying");
+
+  useEffect(() => {
+    const timer1 = setTimeout(() => {
+      if (sitsOnBranch) {
+        setPhase("sitting");
+        setTimeout(() => {
+          setPhase("flyingAway");
+          setTimeout(() => setPhase("flying"), flyDuration * 1000);
+        }, sitDuration * 1000);
+      }
+    }, (delay + flyDuration * 0.4) * 1000);
+
+    const loopTimer = setInterval(() => {
+      setPhase("flying");
+      if (sitsOnBranch) {
+        setTimeout(() => {
+          setPhase("sitting");
+          setTimeout(() => {
+            setPhase("flyingAway");
+            setTimeout(() => setPhase("flying"), flyDuration * 1000);
+          }, sitDuration * 1000);
+        }, flyDuration * 0.4 * 1000);
+      }
+    }, (flyDuration + sitDuration + 15) * 1000);
+
+    return () => {
+      clearTimeout(timer1);
+      clearInterval(loopTimer);
+    };
+  }, []);
+
+  return (
+    <>
+      {phase === "sitting" ? (
+        <motion.div
+          className="absolute z-20 pointer-events-none"
+          style={{ left: `${branchX}%`, top: `${branchY}%` }}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <svg width={20 * species.size} height={16 * species.size} viewBox="0 0 20 16">
+            <ellipse cx="10" cy="10" rx="6" ry="5" fill={species.body} />
+            <circle cx="14" cy="7" r="3" fill={species.body} />
+            <circle cx="15" cy="6.5" r="1" fill="hsl(0 0% 10%)" />
+            <polygon points="17,7 20,6.5 17,7.5" fill="hsl(35 70% 50%)" />
+            <path d="M6 10 Q3 8 4 12" fill={species.wing} />
+          </svg>
+        </motion.div>
+      ) : (
+        <motion.div
+          className="absolute z-20 pointer-events-none"
+          style={{ top: `${startY}%` }}
+          initial={{ left: `${phase === "flyingAway" ? branchX : startX}%`, opacity: 0 }}
+          animate={{
+            left: ["0%", "110%"],
+            y: [0, -30, 10, -20, 0, -15, 5],
+            opacity: [0, 1, 1, 1, 1, 1, 0],
+          }}
+          transition={{
+            duration: flyDuration,
+            delay: phase === "flyingAway" ? 0 : delay,
+            ease: "linear",
+          }}
+        >
+          <motion.svg
+            width={22 * species.size}
+            height={18 * species.size}
+            viewBox="0 0 22 18"
+          >
+            <ellipse cx="11" cy="10" rx="5" ry="4" fill={species.body} />
+            <circle cx="16" cy="8" r="2.5" fill={species.body} />
+            <circle cx="17" cy="7" r="0.8" fill="hsl(0 0% 10%)" />
+            <polygon points="19,8 22,7 19,8.5" fill="hsl(35 70% 50%)" />
+            <motion.path
+              d="M8 8 Q5 2 2 6"
+              stroke={species.wing}
+              strokeWidth="1.5"
+              fill={species.wing}
+              animate={{
+                d: [
+                  "M8 8 Q5 2 2 6",
+                  "M8 8 Q5 12 2 10",
+                  "M8 8 Q5 2 2 6",
+                ],
+              }}
+              transition={{ duration: 0.3, repeat: Infinity }}
+            />
+            <motion.path
+              d="M14 8 Q17 2 20 6"
+              stroke={species.wing}
+              strokeWidth="1.5"
+              fill={species.wing}
+              animate={{
+                d: [
+                  "M14 8 Q17 2 20 6",
+                  "M14 8 Q17 12 20 10",
+                  "M14 8 Q17 2 20 6",
+                ],
+              }}
+              transition={{ duration: 0.3, repeat: Infinity }}
+            />
+          </motion.svg>
+        </motion.div>
+      )}
+    </>
   );
 };
 
