@@ -591,6 +591,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
           isAnalyzing={isAnalyzing}
           isWatering={isWatering}
           waterGrowthPulse={waterGrowthPulse}
+          entryCount={entries.length}
         />
       </div>
 
