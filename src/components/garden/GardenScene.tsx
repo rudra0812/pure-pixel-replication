@@ -47,10 +47,18 @@ const waterSplashes = Array.from({ length: 4 }).map((_, i) => ({
   repeatDelay: 0.6 + (i * 3 % 5) * 0.12,
 }));
 
-// Different plant type pools for left and right sides
-// Forest-appropriate plant species (no bamboo, cactus, palm, succulent)
+// Forest-appropriate plant species with weighted variety
 const plantTypePool: Array<"tallLeafy" | "roundBush" | "pine" | "fern" | "flowerPlant" | "willow" | "oakTree" | "birch"> = [
-  "tallLeafy", "roundBush", "pine", "fern", "flowerPlant", "willow", "oakTree", "birch"
+  "oakTree", "pine", "birch", "tallLeafy", "roundBush", "fern", "flowerPlant", "willow",
+  "oakTree", "pine", "birch", "fern", // extra weight for forest staples
+];
+
+// Frog species for rainy weather
+const frogSpecies = [
+  { body: "hsl(120 45% 35%)", belly: "hsl(80 40% 55%)", spots: "hsl(130 50% 25%)", size: 1 },
+  { body: "hsl(90 40% 40%)", belly: "hsl(60 45% 60%)", spots: "hsl(100 45% 30%)", size: 0.85 },
+  { body: "hsl(140 35% 30%)", belly: "hsl(100 30% 50%)", spots: "hsl(150 40% 22%)", size: 1.1 },
+  { body: "hsl(110 50% 38%)", belly: "hsl(70 40% 58%)", spots: "hsl(120 55% 28%)", size: 0.9 },
 ];
 
 // Bird species
@@ -103,22 +111,37 @@ export const GardenScene = ({
   const hoursSinceWatered = (Date.now() - lastWatered) / (1000 * 60 * 60);
   const isThirsty = !isWatering && hoursSinceWatered > 12 && weatherMood !== "rainy";
 
-  // Generate randomized plants for left and right - different species each side
+  // Generate randomized plants - ensure no adjacent duplicates and natural spacing
   const scenePlants = useMemo(() => {
-    const leftPlants = Array.from({ length: 5 }).map((_, i) => ({
-      type: plantTypePool[Math.floor(seededRandom(i * 3 + 1) * plantTypePool.length)],
-      x: 2 + i * 8 + seededRandom(i * 7) * 4,
-      size: 0.8 + seededRandom(i * 11) * 0.9,
-      delay: 0.2 + seededRandom(i * 5) * 0.5,
-      flip: 1 as const,
-    }));
-    const rightPlants = Array.from({ length: 5 }).map((_, i) => ({
-      type: plantTypePool[Math.floor(seededRandom(i * 3 + 50) * plantTypePool.length)],
-      x: 62 + i * 8 + seededRandom(i * 7 + 50) * 4,
-      size: 0.8 + seededRandom(i * 11 + 50) * 0.9,
-      delay: 0.2 + seededRandom(i * 5 + 50) * 0.5,
-      flip: -1 as const,
-    }));
+    const pickUnique = (seed: number, avoid?: string) => {
+      let type = plantTypePool[Math.floor(seededRandom(seed) * plantTypePool.length)];
+      if (type === avoid) type = plantTypePool[Math.floor(seededRandom(seed + 99) * plantTypePool.length)];
+      return type;
+    };
+    let lastLeft = "";
+    const leftPlants = Array.from({ length: 6 }).map((_, i) => {
+      const type = pickUnique(i * 3 + 1, lastLeft);
+      lastLeft = type;
+      return {
+        type,
+        x: 1 + i * 7 + seededRandom(i * 7) * 3,
+        size: 0.7 + seededRandom(i * 11) * 0.8,
+        delay: 0.1 + i * 0.12,
+        flip: 1 as const,
+      };
+    });
+    let lastRight = "";
+    const rightPlants = Array.from({ length: 6 }).map((_, i) => {
+      const type = pickUnique(i * 3 + 50, lastRight);
+      lastRight = type;
+      return {
+        type,
+        x: 58 + i * 7 + seededRandom(i * 7 + 50) * 3,
+        size: 0.7 + seededRandom(i * 11 + 50) * 0.8,
+        delay: 0.1 + i * 0.12,
+        flip: -1 as const,
+      };
+    });
     return [...leftPlants, ...rightPlants];
   }, []);
 
