@@ -253,77 +253,15 @@ export const GardenScene = ({
         >
           <Plant stage={growthStage} name={plantName} seedType={seedType} />
           
-          <motion.div
-            className="absolute inset-0 -z-10 pointer-events-none"
-            style={{
-              background: `radial-gradient(circle, ${
-                weatherMood === "sunny" ? "hsl(45 100% 70% / 0.15)" :
-                weatherMood === "rainy" ? "hsl(200 80% 60% / 0.1)" :
-                weatherMood === "clearing" ? "hsl(170 60% 65% / 0.15)" :
-                "hsl(210 40% 70% / 0.1)"
-              } 0%, transparent 70%)`,
-              transform: "scale(2.5)",
-            }}
-            animate={{
-              scale: [2, 2.5, 2],
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-        </motion.div>
-        
-        {isWatering && (
-          <motion.div
-            className="absolute inset-0 -z-10"
-            style={{
-              background: "radial-gradient(circle, hsl(200 70% 60% / 0.3) 0%, transparent 70%)",
-              transform: "scale(2)",
-            }}
-            animate={{ opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 1, repeat: Infinity }}
-          />
-        )}
-        
-        {waterGrowthPulse && (
-          <motion.div
-            className="absolute inset-0 -z-10"
-            initial={{ opacity: 0, scale: 1 }}
-            animate={{ 
-              opacity: [0, 0.8, 0],
-              scale: [1, 2.5, 3],
-            }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            style={{
-              background: "radial-gradient(circle, hsl(120 70% 55% / 0.5) 0%, hsl(50 80% 60% / 0.3) 40%, transparent 70%)",
-            }}
-          />
-        )}
-        
-        {waterGrowthPulse && Array.from({ length: 8 }).map((_, i) => (
-          <motion.div
-            key={`growth-sparkle-${i}`}
-            className="absolute rounded-full"
-            style={{
-              width: 4,
-              height: 4,
-              background: "hsl(50 100% 70%)",
-              left: "50%",
-              top: "50%",
-            }}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{
-              scale: [0, 1.5, 0],
-              opacity: [0, 1, 0],
-              x: Math.cos(i * Math.PI / 4) * 50,
-              y: Math.sin(i * Math.PI / 4) * 50,
-            }}
-            transition={{ duration: 1, delay: i * 0.05 }}
-          />
-        ))}
+          {/* Subtle ground highlight only */}
+          {isWatering && (
+            <motion.div
+              className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-4 rounded-full"
+              style={{ background: "hsl(200 50% 70% / 0.25)" }}
+              animate={{ opacity: [0.2, 0.4, 0.2] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+          )}
       </motion.div>
 
       {/* Plant Info Card - shows on tap - now includes stage progress */}

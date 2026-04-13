@@ -45,7 +45,24 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
   const [audioLevel, setAudioLevel] = useState(0);
   const [attachedImage, setAttachedImage] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [selectedFont, setSelectedFont] = useState(() => {
+    return localStorage.getItem("journal_font") || "default";
+  });
   
+  const fontOptions = [
+    { id: "default", name: "Default", family: "inherit" },
+    { id: "serif", name: "Serif", family: "Georgia, 'Times New Roman', serif" },
+    { id: "mono", name: "Mono", family: "'Courier New', monospace" },
+    { id: "cursive", name: "Cursive", family: "'Segoe Script', 'Brush Script MT', cursive" },
+    { id: "sans", name: "Sans", family: "'Helvetica Neue', Arial, sans-serif" },
+  ];
+
+  const currentFont = fontOptions.find(f => f.id === selectedFont)?.family || "inherit";
+
+  const handleFontChange = (fontId: string) => {
+    setSelectedFont(fontId);
+    localStorage.setItem("journal_font", fontId);
+  };
   const recognitionRef = useRef<SpeechRecognitionType | null>(null);
   const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioLevelIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -207,32 +224,34 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
 
   return (
     <motion.div
-      className="flex min-h-screen flex-col bg-background safe-area-top safe-area-bottom"
+      className="flex min-h-screen flex-col safe-area-top safe-area-bottom"
+      style={{
+        background: "linear-gradient(165deg, hsl(210 40% 96%) 0%, hsl(200 30% 92%) 30%, hsl(40 25% 93%) 70%, hsl(210 35% 95%) 100%)",
+      }}
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 50 }}
       transition={{ duration: 0.3 }}
     >
       {/* Header */}
-      <header className="flex items-center justify-between border-b border-border px-4 py-3">
+      <header className="flex items-center justify-between px-4 py-3 backdrop-blur-sm bg-background/40">
         <button
           onClick={onBack}
-          className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-muted touch-target"
+          className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-muted/50 touch-target"
         >
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
 
-        <span className="text-secondary text-muted-foreground">
+        <span className="text-sm text-muted-foreground font-medium">
           {formattedDate}
         </span>
 
         <div className="flex items-center gap-2">
-          {/* Edit Mode Toggle - Only show when editing existing entry */}
           {initialEntry && (
             <motion.button
               onClick={() => setIsEditMode(!isEditMode)}
               className={`flex h-11 w-11 items-center justify-center rounded-full touch-target transition-colors ${
-                isEditMode ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                isEditMode ? "bg-primary text-primary-foreground" : "hover:bg-muted/50"
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -322,23 +341,24 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
       </AnimatePresence>
 
       {/* Editor Content */}
-      <div className="flex-1 px-4 py-4">
+      <div className="flex-1 px-5 py-5">
         <Input
           type="text"
           placeholder="Title (optional)"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mb-4 border-0 bg-transparent p-0 text-2xl font-bold placeholder:text-muted-foreground/50 focus-visible:ring-0"
+          className="mb-4 border-0 bg-transparent p-0 text-2xl font-bold placeholder:text-muted-foreground/40 focus-visible:ring-0"
+          style={{ fontFamily: currentFont }}
         />
 
         <Textarea
           placeholder={isRecording ? "Recording... speak now!" : "What's on your mind today?"}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className={`min-h-[40vh] resize-none border-0 bg-transparent p-0 text-body placeholder:text-muted-foreground/50 focus-visible:ring-0 ${
+          className={`min-h-[40vh] resize-none border-0 bg-transparent p-0 text-base placeholder:text-muted-foreground/40 focus-visible:ring-0 ${
             isRecording ? "opacity-50" : ""
           }`}
-          style={{ lineHeight: "1.4" }}
+          style={{ lineHeight: "1.8", fontFamily: currentFont }}
           autoFocus
           readOnly={isRecording}
         />
@@ -387,7 +407,25 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
       </div>
 
       {/* Toolbar */}
-      <div className="border-t border-border px-4 py-3">
+      <div className="backdrop-blur-sm bg-background/40 px-4 py-3">
+        {/* Font Selector */}
+        <div className="flex items-center gap-1.5 mb-3 overflow-x-auto pb-1">
+          <Type className="h-4 w-4 text-muted-foreground shrink-0" />
+          {fontOptions.map((font) => (
+            <button
+              key={font.id}
+              onClick={() => handleFontChange(font.id)}
+              className={`px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors ${
+                selectedFont === font.id
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
+              }`}
+              style={{ fontFamily: font.family }}
+            >
+              {font.name}
+            </button>
+          ))}
+        </div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* Image Button */}
