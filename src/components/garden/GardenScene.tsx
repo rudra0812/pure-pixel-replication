@@ -185,6 +185,16 @@ export const GardenScene = ({
         <FlyingBird key={i} {...bird} />
       ))}
 
+      {/* Frogs hopping in rain */}
+      {weatherMood === "rainy" && (
+        <>
+          <HoppingFrog frog={frogSpecies[0]} startX={10} groundY={72} delay={0} />
+          <HoppingFrog frog={frogSpecies[1]} startX={75} groundY={74} delay={3} />
+          <HoppingFrog frog={frogSpecies[2]} startX={40} groundY={73} delay={6} />
+          <HoppingFrog frog={frogSpecies[3]} startX={55} groundY={71} delay={9} />
+        </>
+      )}
+
       {/* Water droplets when watering */}
       <AnimatePresence>
         {isWatering && (
