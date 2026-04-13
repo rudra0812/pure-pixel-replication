@@ -48,8 +48,9 @@ const waterSplashes = Array.from({ length: 4 }).map((_, i) => ({
 }));
 
 // Different plant type pools for left and right sides
-const plantTypePool: Array<"tallLeafy" | "roundBush" | "pine" | "fern" | "flowerPlant" | "bamboo" | "cactus" | "willow" | "palm" | "succulent"> = [
-  "tallLeafy", "roundBush", "pine", "fern", "flowerPlant", "bamboo", "cactus", "willow", "palm", "succulent"
+// Forest-appropriate plant species (no bamboo, cactus, palm, succulent)
+const plantTypePool: Array<"tallLeafy" | "roundBush" | "pine" | "fern" | "flowerPlant" | "willow" | "oakTree" | "birch"> = [
+  "tallLeafy", "roundBush", "pine", "fern", "flowerPlant", "willow", "oakTree", "birch"
 ];
 
 // Bird species
@@ -460,11 +461,9 @@ const plantNames: Record<string, string> = {
   pine: "Little Pine",
   fern: "Wild Fern",
   flowerPlant: "Meadow Bloom",
-  bamboo: "Lucky Bamboo",
-  cactus: "Desert Rose",
   willow: "Weeping Willow",
-  palm: "Mini Palm",
-  succulent: "Jade Plant",
+  oakTree: "Oak Tree",
+  birch: "Silver Birch",
 };
 
 // Scene plant component with many varieties
@@ -589,35 +588,33 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
           <circle cx="20" cy="18" r="4" fill="hsl(45 90% 60%)" />
         </motion.svg>
       )}
-      {type === "bamboo" && (
+      {type === "oakTree" && (
         <motion.svg
-          width={25 * size} height={90 * size} viewBox="0 0 25 90"
+          width={50 * size} height={80 * size} viewBox="0 0 50 80"
           style={{ transform: `scaleX(${flip})` }}
-          animate={{ rotate: [-1, 1.5, -1] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ rotate: [-0.5, 0.5, -0.5] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <rect x="10" y="10" width="5" height="80" fill="hsl(80 45% 45%)" rx="2" />
-          <rect x="10" y="25" width="5" height="2" fill="hsl(80 30% 35%)" />
-          <rect x="10" y="45" width="5" height="2" fill="hsl(80 30% 35%)" />
-          <rect x="10" y="65" width="5" height="2" fill="hsl(80 30% 35%)" />
-          <ellipse cx="5" cy="20" rx="6" ry="3" fill="hsl(120 50% 45%)" transform="rotate(-45 5 20)" />
-          <ellipse cx="20" cy="40" rx="6" ry="3" fill="hsl(118 48% 42%)" transform="rotate(40 20 40)" />
-          <ellipse cx="6" cy="58" rx="5" ry="2.5" fill="hsl(122 52% 48%)" transform="rotate(-35 6 58)" />
+          <rect x="21" y="50" width="8" height="30" fill="hsl(25 40% 28%)" rx="2" />
+          <ellipse cx="25" cy="30" rx="22" ry="20" fill="hsl(125 42% 32%)" />
+          <ellipse cx="18" cy="25" rx="12" ry="10" fill="hsl(130 45% 38%)" opacity="0.8" />
+          <ellipse cx="32" cy="28" rx="10" ry="8" fill="hsl(128 40% 36%)" opacity="0.7" />
+          <ellipse cx="25" cy="20" rx="8" ry="7" fill="hsl(132 48% 42%)" opacity="0.6" />
         </motion.svg>
       )}
-      {type === "cactus" && (
+      {type === "birch" && (
         <motion.svg
-          width={30 * size} height={55 * size} viewBox="0 0 30 55"
+          width={25 * size} height={85 * size} viewBox="0 0 25 85"
           style={{ transform: `scaleX(${flip})` }}
-          animate={{ scale: [1, 1.02, 1] }}
+          animate={{ rotate: [-1, 1, -1] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
-          <rect x="11" y="10" width="8" height="45" fill="hsl(140 40% 40%)" rx="4" />
-          <rect x="3" y="20" width="6" height="20" fill="hsl(138 38% 42%)" rx="3" />
-          <rect x="21" y="15" width="6" height="25" fill="hsl(142 42% 38%)" rx="3" />
-          <line x1="3" y1="20" x2="11" y2="25" stroke="hsl(140 40% 40%)" strokeWidth="4" strokeLinecap="round" />
-          <line x1="27" y1="15" x2="19" y2="20" stroke="hsl(140 40% 40%)" strokeWidth="4" strokeLinecap="round" />
-          <circle cx="15" cy="8" r="3" fill="hsl(350 70% 65%)" />
+          <rect x="10" y="15" width="5" height="70" fill="hsl(40 10% 85%)" rx="2" />
+          <rect x="10" y="30" width="5" height="2" fill="hsl(0 0% 25%)" opacity="0.4" />
+          <rect x="10" y="50" width="5" height="1.5" fill="hsl(0 0% 25%)" opacity="0.3" />
+          <ellipse cx="6" cy="22" rx="8" ry="6" fill="hsl(100 40% 50%)" transform="rotate(-20 6 22)" />
+          <ellipse cx="19" cy="30" rx="7" ry="5" fill="hsl(105 42% 48%)" transform="rotate(15 19 30)" />
+          <ellipse cx="8" cy="40" rx="6" ry="5" fill="hsl(95 38% 52%)" transform="rotate(-10 8 40)" />
         </motion.svg>
       )}
       {type === "willow" && (
@@ -646,53 +643,13 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
           ))}
         </motion.svg>
       )}
-      {type === "palm" && (
-        <motion.svg
-          width={45 * size} height={85 * size} viewBox="0 0 45 85"
-          style={{ transform: `scaleX(${flip})` }}
-          animate={{ rotate: [-1.5, 1.5, -1.5] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <path d="M22 85 Q20 55 22 20" stroke="hsl(30 35% 35%)" strokeWidth="5" fill="none" strokeLinecap="round" />
-          {[0, 1, 2, 3, 4].map((i) => (
-            <motion.path
-              key={i}
-              d={`M22 20 Q${22 + (i - 2) * 12} ${15 - i} ${22 + (i - 2) * 20} ${25 + Math.abs(i - 2) * 5}`}
-              stroke="hsl(130 50% 40%)"
-              strokeWidth="3"
-              fill="none"
-              strokeLinecap="round"
-              animate={{ rotate: [-2, 2, -2] }}
-              transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-          ))}
-        </motion.svg>
-      )}
-      {type === "succulent" && (
-        <motion.svg
-          width={40 * size} height={35 * size} viewBox="0 0 40 35"
-          style={{ transform: `scaleX(${flip})` }}
-          animate={{ scale: [1, 1.03, 1] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        >
-          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-            <ellipse
-              key={i}
-              cx="20" cy="18" rx="4" ry="10"
-              fill={`hsl(${150 + i * 3} ${45 + i * 2}% ${40 + i * 2}%)`}
-              transform={`rotate(${angle} 20 18)`}
-            />
-          ))}
-          <circle cx="20" cy="18" r="5" fill="hsl(155 50% 50%)" />
-        </motion.svg>
-      )}
       </motion.div>
     </motion.div>
   );
 };
 
-// Flying bird component
-const FlyingBird = ({ species, startX, startY, flyDuration, delay, sitsOnBranch, branchX, branchY, sitDuration }: {
+// Flying bird component - simplified to avoid getting stuck
+const FlyingBird = ({ species, startY, flyDuration, delay }: {
   species: typeof birdSpecies[number];
   startX: number;
   startY: number;
@@ -703,113 +660,63 @@ const FlyingBird = ({ species, startX, startY, flyDuration, delay, sitsOnBranch,
   branchY: number;
   sitDuration: number;
 }) => {
-  const [phase, setPhase] = useState<"flying" | "sitting" | "flyingAway">("flying");
-
-  useEffect(() => {
-    const timer1 = setTimeout(() => {
-      if (sitsOnBranch) {
-        setPhase("sitting");
-        setTimeout(() => {
-          setPhase("flyingAway");
-          setTimeout(() => setPhase("flying"), flyDuration * 1000);
-        }, sitDuration * 1000);
-      }
-    }, (delay + flyDuration * 0.4) * 1000);
-
-    const loopTimer = setInterval(() => {
-      setPhase("flying");
-      if (sitsOnBranch) {
-        setTimeout(() => {
-          setPhase("sitting");
-          setTimeout(() => {
-            setPhase("flyingAway");
-            setTimeout(() => setPhase("flying"), flyDuration * 1000);
-          }, sitDuration * 1000);
-        }, flyDuration * 0.4 * 1000);
-      }
-    }, (flyDuration + sitDuration + 15) * 1000);
-
-    return () => {
-      clearTimeout(timer1);
-      clearInterval(loopTimer);
-    };
-  }, []);
-
   return (
-    <>
-      {phase === "sitting" ? (
-        <motion.div
-          className="absolute z-20 pointer-events-none"
-          style={{ left: `${branchX}%`, top: `${branchY}%` }}
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <svg width={20 * species.size} height={16 * species.size} viewBox="0 0 20 16">
-            <ellipse cx="10" cy="10" rx="6" ry="5" fill={species.body} />
-            <circle cx="14" cy="7" r="3" fill={species.body} />
-            <circle cx="15" cy="6.5" r="1" fill="hsl(0 0% 10%)" />
-            <polygon points="17,7 20,6.5 17,7.5" fill="hsl(35 70% 50%)" />
-            <path d="M6 10 Q3 8 4 12" fill={species.wing} />
-          </svg>
-        </motion.div>
-      ) : (
-        <motion.div
-          className="absolute z-20 pointer-events-none"
-          style={{ top: `${startY}%` }}
-          initial={{ left: `${phase === "flyingAway" ? branchX : startX}%`, opacity: 0 }}
+    <motion.div
+      className="absolute z-20 pointer-events-none"
+      style={{ top: `${startY}%` }}
+      initial={{ left: "-10%", opacity: 0 }}
+      animate={{
+        left: ["-10%", "110%"],
+        y: [0, -25, 15, -20, 0],
+        opacity: [0, 1, 1, 1, 0],
+      }}
+      transition={{
+        duration: flyDuration,
+        delay,
+        repeat: Infinity,
+        repeatDelay: 10 + delay * 2,
+        ease: "linear",
+      }}
+    >
+      <motion.svg
+        width={22 * species.size}
+        height={18 * species.size}
+        viewBox="0 0 22 18"
+      >
+        <ellipse cx="11" cy="10" rx="5" ry="4" fill={species.body} />
+        <circle cx="16" cy="8" r="2.5" fill={species.body} />
+        <circle cx="17" cy="7" r="0.8" fill="hsl(0 0% 10%)" />
+        <polygon points="19,8 22,7 19,8.5" fill="hsl(35 70% 50%)" />
+        <motion.path
+          d="M8 8 Q5 2 2 6"
+          stroke={species.wing}
+          strokeWidth="1.5"
+          fill={species.wing}
           animate={{
-            left: ["0%", "110%"],
-            y: [0, -30, 10, -20, 0, -15, 5],
-            opacity: [0, 1, 1, 1, 1, 1, 0],
+            d: [
+              "M8 8 Q5 2 2 6",
+              "M8 8 Q5 12 2 10",
+              "M8 8 Q5 2 2 6",
+            ],
           }}
-          transition={{
-            duration: flyDuration,
-            delay: phase === "flyingAway" ? 0 : delay,
-            ease: "linear",
+          transition={{ duration: 0.3, repeat: Infinity }}
+        />
+        <motion.path
+          d="M14 8 Q17 2 20 6"
+          stroke={species.wing}
+          strokeWidth="1.5"
+          fill={species.wing}
+          animate={{
+            d: [
+              "M14 8 Q17 2 20 6",
+              "M14 8 Q17 12 20 10",
+              "M14 8 Q17 2 20 6",
+            ],
           }}
-        >
-          <motion.svg
-            width={22 * species.size}
-            height={18 * species.size}
-            viewBox="0 0 22 18"
-          >
-            <ellipse cx="11" cy="10" rx="5" ry="4" fill={species.body} />
-            <circle cx="16" cy="8" r="2.5" fill={species.body} />
-            <circle cx="17" cy="7" r="0.8" fill="hsl(0 0% 10%)" />
-            <polygon points="19,8 22,7 19,8.5" fill="hsl(35 70% 50%)" />
-            <motion.path
-              d="M8 8 Q5 2 2 6"
-              stroke={species.wing}
-              strokeWidth="1.5"
-              fill={species.wing}
-              animate={{
-                d: [
-                  "M8 8 Q5 2 2 6",
-                  "M8 8 Q5 12 2 10",
-                  "M8 8 Q5 2 2 6",
-                ],
-              }}
-              transition={{ duration: 0.3, repeat: Infinity }}
-            />
-            <motion.path
-              d="M14 8 Q17 2 20 6"
-              stroke={species.wing}
-              strokeWidth="1.5"
-              fill={species.wing}
-              animate={{
-                d: [
-                  "M14 8 Q17 2 20 6",
-                  "M14 8 Q17 12 20 10",
-                  "M14 8 Q17 2 20 6",
-                ],
-              }}
-              transition={{ duration: 0.3, repeat: Infinity }}
-            />
-          </motion.svg>
-        </motion.div>
-      )}
-    </>
+          transition={{ duration: 0.3, repeat: Infinity }}
+        />
+      </motion.svg>
+    </motion.div>
   );
 };
 
