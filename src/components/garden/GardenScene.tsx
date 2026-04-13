@@ -262,6 +262,7 @@ export const GardenScene = ({
               transition={{ duration: 1.5, repeat: Infinity }}
             />
           )}
+        </motion.div>
       </motion.div>
 
       {/* Plant Info Card - shows on tap - now includes stage progress */}
