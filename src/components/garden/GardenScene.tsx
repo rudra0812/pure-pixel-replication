@@ -47,10 +47,18 @@ const waterSplashes = Array.from({ length: 4 }).map((_, i) => ({
   repeatDelay: 0.6 + (i * 3 % 5) * 0.12,
 }));
 
-// Different plant type pools for left and right sides
-// Forest-appropriate plant species (no bamboo, cactus, palm, succulent)
+// Forest-appropriate plant species with weighted variety
 const plantTypePool: Array<"tallLeafy" | "roundBush" | "pine" | "fern" | "flowerPlant" | "willow" | "oakTree" | "birch"> = [
-  "tallLeafy", "roundBush", "pine", "fern", "flowerPlant", "willow", "oakTree", "birch"
+  "oakTree", "pine", "birch", "tallLeafy", "roundBush", "fern", "flowerPlant", "willow",
+  "oakTree", "pine", "birch", "fern", // extra weight for forest staples
+];
+
+// Frog species for rainy weather
+const frogSpecies = [
+  { body: "hsl(120 45% 35%)", belly: "hsl(80 40% 55%)", spots: "hsl(130 50% 25%)", size: 1 },
+  { body: "hsl(90 40% 40%)", belly: "hsl(60 45% 60%)", spots: "hsl(100 45% 30%)", size: 0.85 },
+  { body: "hsl(140 35% 30%)", belly: "hsl(100 30% 50%)", spots: "hsl(150 40% 22%)", size: 1.1 },
+  { body: "hsl(110 50% 38%)", belly: "hsl(70 40% 58%)", spots: "hsl(120 55% 28%)", size: 0.9 },
 ];
 
 // Bird species
@@ -103,22 +111,37 @@ export const GardenScene = ({
   const hoursSinceWatered = (Date.now() - lastWatered) / (1000 * 60 * 60);
   const isThirsty = !isWatering && hoursSinceWatered > 12 && weatherMood !== "rainy";
 
-  // Generate randomized plants for left and right - different species each side
+  // Generate randomized plants - ensure no adjacent duplicates and natural spacing
   const scenePlants = useMemo(() => {
-    const leftPlants = Array.from({ length: 5 }).map((_, i) => ({
-      type: plantTypePool[Math.floor(seededRandom(i * 3 + 1) * plantTypePool.length)],
-      x: 2 + i * 8 + seededRandom(i * 7) * 4,
-      size: 0.8 + seededRandom(i * 11) * 0.9,
-      delay: 0.2 + seededRandom(i * 5) * 0.5,
-      flip: 1 as const,
-    }));
-    const rightPlants = Array.from({ length: 5 }).map((_, i) => ({
-      type: plantTypePool[Math.floor(seededRandom(i * 3 + 50) * plantTypePool.length)],
-      x: 62 + i * 8 + seededRandom(i * 7 + 50) * 4,
-      size: 0.8 + seededRandom(i * 11 + 50) * 0.9,
-      delay: 0.2 + seededRandom(i * 5 + 50) * 0.5,
-      flip: -1 as const,
-    }));
+    const pickUnique = (seed: number, avoid?: string) => {
+      let type = plantTypePool[Math.floor(seededRandom(seed) * plantTypePool.length)];
+      if (type === avoid) type = plantTypePool[Math.floor(seededRandom(seed + 99) * plantTypePool.length)];
+      return type;
+    };
+    let lastLeft = "";
+    const leftPlants = Array.from({ length: 6 }).map((_, i) => {
+      const type = pickUnique(i * 3 + 1, lastLeft);
+      lastLeft = type;
+      return {
+        type,
+        x: 1 + i * 7 + seededRandom(i * 7) * 3,
+        size: 0.7 + seededRandom(i * 11) * 0.8,
+        delay: 0.1 + i * 0.12,
+        flip: 1 as const,
+      };
+    });
+    let lastRight = "";
+    const rightPlants = Array.from({ length: 6 }).map((_, i) => {
+      const type = pickUnique(i * 3 + 50, lastRight);
+      lastRight = type;
+      return {
+        type,
+        x: 58 + i * 7 + seededRandom(i * 7 + 50) * 3,
+        size: 0.7 + seededRandom(i * 11 + 50) * 0.8,
+        delay: 0.1 + i * 0.12,
+        flip: -1 as const,
+      };
+    });
     return [...leftPlants, ...rightPlants];
   }, []);
 
@@ -161,6 +184,16 @@ export const GardenScene = ({
       {birds.map((bird, i) => (
         <FlyingBird key={i} {...bird} />
       ))}
+
+      {/* Frogs hopping in rain */}
+      {weatherMood === "rainy" && (
+        <>
+          <HoppingFrog frog={frogSpecies[0]} startX={10} groundY={72} delay={0} />
+          <HoppingFrog frog={frogSpecies[1]} startX={75} groundY={74} delay={3} />
+          <HoppingFrog frog={frogSpecies[2]} startX={40} groundY={73} delay={6} />
+          <HoppingFrog frog={frogSpecies[3]} startX={55} groundY={71} delay={9} />
+        </>
+      )}
 
       {/* Water droplets when watering */}
       <AnimatePresence>
@@ -690,3 +723,91 @@ const Butterfly = ({ x, y, delay }: { x: number; y: number; delay: number }) => 
     </motion.svg>
   </motion.div>
 );
+
+// Hopping frog component for rainy weather
+const HoppingFrog = ({ frog, startX, groundY, delay }: {
+  frog: typeof frogSpecies[number];
+  startX: number;
+  groundY: number;
+  delay: number;
+}) => {
+  return (
+    <motion.div
+      className="absolute z-20 pointer-events-none"
+      style={{ top: `${groundY}%`, left: `${startX}%` }}
+      animate={{
+        x: [0, 60, 30, 90, -20, 50, 0],
+        y: [0, -35, 0, -40, 0, -30, 0],
+      }}
+      transition={{
+        duration: 12,
+        delay,
+        repeat: Infinity,
+        repeatDelay: 4,
+        ease: "easeInOut",
+        times: [0, 0.15, 0.3, 0.45, 0.6, 0.75, 1],
+      }}
+    >
+      <motion.svg
+        width={28 * frog.size}
+        height={22 * frog.size}
+        viewBox="0 0 28 22"
+      >
+        {/* Body */}
+        <ellipse cx="14" cy="14" rx="10" ry="7" fill={frog.body} />
+        {/* Belly */}
+        <ellipse cx="14" cy="16" rx="7" ry="4" fill={frog.belly} opacity="0.6" />
+        {/* Head */}
+        <ellipse cx="14" cy="8" rx="7" ry="5.5" fill={frog.body} />
+        {/* Eyes - big bulging frog eyes */}
+        <circle cx="9" cy="4" r="3" fill="hsl(60 80% 85%)" />
+        <circle cx="19" cy="4" r="3" fill="hsl(60 80% 85%)" />
+        <circle cx="9" cy="4" r="1.5" fill="hsl(0 0% 10%)" />
+        <circle cx="19" cy="4" r="1.5" fill="hsl(0 0% 10%)" />
+        {/* Spots */}
+        <circle cx="11" cy="12" r="1.5" fill={frog.spots} opacity="0.5" />
+        <circle cx="17" cy="13" r="1.2" fill={frog.spots} opacity="0.4" />
+        {/* Mouth line */}
+        <path d="M8 9 Q14 12 20 9" stroke={frog.spots} strokeWidth="0.5" fill="none" opacity="0.4" />
+        {/* Front legs */}
+        <motion.path
+          d="M6 16 Q3 18 4 20"
+          stroke={frog.body}
+          strokeWidth="2"
+          fill="none"
+          strokeLinecap="round"
+          animate={{ d: ["M6 16 Q3 18 4 20", "M6 16 Q2 14 3 18", "M6 16 Q3 18 4 20"] }}
+          transition={{ duration: 0.6, repeat: Infinity }}
+        />
+        <motion.path
+          d="M22 16 Q25 18 24 20"
+          stroke={frog.body}
+          strokeWidth="2"
+          fill="none"
+          strokeLinecap="round"
+          animate={{ d: ["M22 16 Q25 18 24 20", "M22 16 Q26 14 25 18", "M22 16 Q25 18 24 20"] }}
+          transition={{ duration: 0.6, repeat: Infinity }}
+        />
+        {/* Back legs */}
+        <motion.path
+          d="M7 18 Q2 20 1 22"
+          stroke={frog.body}
+          strokeWidth="2.5"
+          fill="none"
+          strokeLinecap="round"
+          animate={{ d: ["M7 18 Q2 20 1 22", "M7 18 Q0 15 2 19", "M7 18 Q2 20 1 22"] }}
+          transition={{ duration: 0.6, repeat: Infinity }}
+        />
+        <motion.path
+          d="M21 18 Q26 20 27 22"
+          stroke={frog.body}
+          strokeWidth="2.5"
+          fill="none"
+          strokeLinecap="round"
+          animate={{ d: ["M21 18 Q26 20 27 22", "M21 18 Q28 15 26 19", "M21 18 Q26 20 27 22"] }}
+          transition={{ duration: 0.6, repeat: Infinity }}
+        />
+      </motion.svg>
+    </motion.div>
+  );
+};
