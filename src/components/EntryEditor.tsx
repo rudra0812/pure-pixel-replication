@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { ArrowLeft, Image, Mic, Check, Square, Edit3, Volume2, X } from "lucide-react";
+import { ArrowLeft, Image, Mic, Check, Square, Edit3, Volume2, X, Type } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
