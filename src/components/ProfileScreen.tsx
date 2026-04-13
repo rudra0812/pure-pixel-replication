@@ -63,8 +63,9 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
       const { error: uploadError } = await supabase.storage.from("journal-media").upload(path, file, { upsert: true });
       if (uploadError) throw uploadError;
       const { data: urlData } = supabase.storage.from("journal-media").getPublicUrl(path);
-      setAvatarUrl(urlData.publicUrl);
-      await supabase.from("profiles").update({ avatar_url: urlData.publicUrl }).eq("user_id", user.id);
+      const newUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      setAvatarUrl(newUrl);
+      await supabase.from("profiles").update({ avatar_url: newUrl }).eq("user_id", user.id);
       toast.success("Avatar updated!");
     } catch {
       toast.error("Failed to upload avatar");

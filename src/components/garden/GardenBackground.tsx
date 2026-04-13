@@ -216,31 +216,47 @@ export const GardenBackground = ({ weatherMood }: GardenBackgroundProps) => {
         startOffset={45}
       />
 
-      {/* Distant mountains */}
-      <div className="absolute bottom-28 left-0 right-0 h-32 pointer-events-none">
-        <svg viewBox="0 0 400 100" className="w-full h-full" preserveAspectRatio="none">
-          {/* Far mountain range */}
+      {/* Distant mountains - stunning layered look */}
+      <div className="absolute bottom-28 left-0 right-0 h-40 pointer-events-none">
+        <svg viewBox="0 0 400 120" className="w-full h-full" preserveAspectRatio="none">
+          {/* Far mountain range - misty blue */}
           <motion.path
-            d="M-20 100 L40 45 L80 70 L130 30 L180 65 L230 25 L280 55 L340 35 L400 60 L420 100 Z"
-            fill="hsl(220 30% 75%)"
+            d="M-20 120 L20 50 L55 72 L90 35 L130 58 L165 28 L200 52 L240 22 L280 48 L320 32 L360 55 L400 40 L420 120 Z"
+            fill={isNight ? "hsl(230 30% 22%)" : isDusk ? "hsl(275 25% 55%)" : "hsl(225 35% 78%)"}
             opacity="0.5"
-            animate={{ y: [0, -2, 0] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          />
-          {/* Mid mountain range */}
-          <motion.path
-            d="M-20 100 L30 55 L70 75 L120 40 L170 70 L220 35 L270 60 L330 45 L380 70 L420 100 Z"
-            fill="hsl(200 25% 65%)"
-            opacity="0.6"
             animate={{ y: [0, -1.5, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
           />
-          {/* Near mountain range */}
+          {/* Snow caps on far mountains */}
+          {!isNight && (
+            <path
+              d="M165 28 L155 40 L175 40 Z M240 22 L228 36 L252 36 Z"
+              fill="hsl(0 0% 95%)"
+              opacity="0.4"
+            />
+          )}
+          {/* Mid mountain range - deeper blue-green */}
           <motion.path
-            d="M-20 100 L20 70 L60 85 L100 55 L150 78 L200 50 L250 72 L300 58 L350 75 L400 65 L420 100 Z"
-            fill="hsl(180 20% 55%)"
-            opacity="0.7"
+            d="M-20 120 L15 62 L50 80 L95 45 L140 68 L185 38 L225 60 L270 42 L310 58 L355 48 L400 65 L420 120 Z"
+            fill={isNight ? "hsl(220 28% 18%)" : isDusk ? "hsl(260 22% 48%)" : "hsl(210 30% 68%)"}
+            opacity="0.65"
+            animate={{ y: [0, -1, 0] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
           />
+          {/* Near mountain range - rich green-blue */}
+          <motion.path
+            d="M-20 120 L10 72 L45 88 L85 55 L130 75 L175 50 L220 68 L265 52 L310 70 L350 60 L400 72 L420 120 Z"
+            fill={isNight ? "hsl(215 25% 15%)" : isDusk ? "hsl(240 20% 42%)" : "hsl(195 28% 55%)"}
+            opacity="0.75"
+          />
+          {/* Mountain highlights - golden hour effect */}
+          {(isDusk || isDawn) && (
+            <path
+              d="M165 28 L185 38 L175 35 Z M240 22 L255 30 L248 28 Z M90 35 L110 45 L100 42 Z"
+              fill="hsl(35 80% 65%)"
+              opacity="0.35"
+            />
+          )}
         </svg>
       </div>
 
