@@ -266,9 +266,10 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
 
           <motion.button
             onClick={handleSave}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-primary touch-target"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            disabled={isSaving}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-primary touch-target disabled:opacity-60"
+            whileHover={{ scale: isSaving ? 1 : 1.05 }}
+            whileTap={{ scale: isSaving ? 1 : 0.95 }}
           >
             <Check className="h-5 w-5 text-primary-foreground" />
           </motion.button>
