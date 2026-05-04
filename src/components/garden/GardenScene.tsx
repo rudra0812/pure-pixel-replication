@@ -482,7 +482,7 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
       {type === "tallLeafy" && (
         <motion.svg
           width={50 * size} height={110 * size} viewBox="0 0 50 110"
-          style={{ transform: `scaleX(${flip})` }}
+          style={{ transform: `scaleX(${flip})`, transformOrigin: "bottom center" }}
           animate={{ rotate: [-1.5, 1.5, -1.5] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -497,7 +497,7 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
       {type === "roundBush" && (
         <motion.svg
           width={55 * size} height={45 * size} viewBox="0 0 55 45"
-          style={{ transform: `scaleX(${flip})` }}
+          style={{ transform: `scaleX(${flip})`, transformOrigin: "bottom center" }}
           animate={{ scale: [1, 1.03, 1] }}
           transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -511,7 +511,7 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
       {type === "pine" && (
         <motion.svg
           width={30 * size} height={65 * size} viewBox="0 0 30 65"
-          style={{ transform: `scaleX(${flip})` }}
+          style={{ transform: `scaleX(${flip})`, transformOrigin: "bottom center" }}
           animate={{ rotate: [-1, 1, -1] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -523,7 +523,7 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
       {type === "fern" && (
         <motion.svg
           width={35 * size} height={50 * size} viewBox="0 0 40 50"
-          style={{ transform: `scaleX(${flip})` }}
+          style={{ transform: `scaleX(${flip})`, transformOrigin: "bottom center" }}
           animate={{ rotate: [-2, 2, -2] }}
           transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -542,7 +542,7 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
       {type === "flowerPlant" && (
         <motion.svg
           width={35 * size} height={65 * size} viewBox="0 0 40 70"
-          style={{ transform: `scaleX(${flip})` }}
+          style={{ transform: `scaleX(${flip})`, transformOrigin: "bottom center" }}
           animate={{ rotate: [-2, 2, -2] }}
           transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -564,7 +564,7 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
       {type === "oakTree" && (
         <motion.svg
           width={50 * size} height={80 * size} viewBox="0 0 50 80"
-          style={{ transform: `scaleX(${flip})` }}
+          style={{ transform: `scaleX(${flip})`, transformOrigin: "bottom center" }}
           animate={{ rotate: [-0.5, 0.5, -0.5] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -578,7 +578,7 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
       {type === "birch" && (
         <motion.svg
           width={25 * size} height={85 * size} viewBox="0 0 25 85"
-          style={{ transform: `scaleX(${flip})` }}
+          style={{ transform: `scaleX(${flip})`, transformOrigin: "bottom center" }}
           animate={{ rotate: [-1, 1, -1] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
@@ -593,7 +593,7 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
       {type === "willow" && (
         <motion.svg
           width={60 * size} height={100 * size} viewBox="0 0 60 100"
-          style={{ transform: `scaleX(${flip})` }}
+          style={{ transform: `scaleX(${flip})`, transformOrigin: "bottom center" }}
           animate={{ rotate: [-0.5, 0.5, -0.5] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         >
