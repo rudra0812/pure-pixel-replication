@@ -475,6 +475,7 @@ const ScenePlant = ({ type, x, bottom, size, delay, flip }: {
       </AnimatePresence>
 
       <motion.div
+        style={{ transformOrigin: "bottom center" }}
         animate={tapped ? { scale: [1, 1.15, 0.95, 1.05, 1], rotate: [0, -5, 5, -3, 0] } : {}}
         transition={{ duration: 0.5 }}
       >
