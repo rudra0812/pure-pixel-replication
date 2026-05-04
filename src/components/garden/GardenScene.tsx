@@ -160,7 +160,7 @@ export const GardenScene = ({
     }));
   }, []);
 
-  const stageNum = entryCount < 1 ? 1 : entryCount < 3 ? 2 : entryCount < 7 ? 3 : entryCount < 15 ? 4 : 5;
+  const stageNum = entryCount < 1 ? 0 : entryCount < 3 ? 1 : entryCount < 7 ? 2 : entryCount < 15 ? 3 : entryCount < 30 ? 4 : 5;
   const toBloom = Math.max(0, 15 - entryCount);
 
   return (
