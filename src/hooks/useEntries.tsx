@@ -51,20 +51,22 @@ export const useEntries = () => {
   useEffect(() => { fetchEntries(); }, [fetchEntries]);
 
   const saveEntry = async (
-    entry: { title: string; content: string; mood?: MoodType },
+    entry: { title: string; content: string; mood?: MoodType; mediaUrl?: string },
     date: Date,
     entryId?: string
   ) => {
     if (!user) return;
 
     if (entryId) {
+      const updatePayload: any = {
+        title: entry.title || null,
+        content: entry.content,
+        mood: entry.mood || null,
+      };
+      if (entry.mediaUrl !== undefined) updatePayload.media_url = entry.mediaUrl || null;
       const { error } = await supabase
         .from("journal_entries")
-        .update({
-          title: entry.title || null,
-          content: entry.content,
-          mood: entry.mood || null,
-        })
+        .update(updatePayload)
         .eq("id", entryId)
         .eq("user_id", user.id);
 
@@ -78,6 +80,7 @@ export const useEntries = () => {
         title: entry.title || null,
         content: entry.content,
         mood: entry.mood || null,
+        media_url: entry.mediaUrl || null,
         entry_date: date.toISOString().split("T")[0],
       });
 
