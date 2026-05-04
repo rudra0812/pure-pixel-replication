@@ -42,6 +42,7 @@ interface Entry {
   title?: string;
   content: string;
   hasMedia?: boolean;
+  mediaUrl?: string;
   mood?: "happy" | "calm" | "sad" | "excited" | "grateful" | "neutral";
 }
 
@@ -54,7 +55,7 @@ interface InsightsResult {
 
 interface NewCalendarScreenProps {
   entries: Entry[];
-  onSaveEntry: (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date, entryId?: string) => void;
+  onSaveEntry: (entry: { title: string; content: string; mood?: Entry["mood"]; mediaUrl?: string }, date: Date, entryId?: string) => void;
   onDeleteEntry?: (entryId: string) => void;
   onEditorStateChange?: (isOpen: boolean) => void;
   openEditorForToday?: boolean;
