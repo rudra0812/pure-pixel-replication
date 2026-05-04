@@ -43,7 +43,7 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
   const [isEditMode, setIsEditMode] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
-  const [attachedImage, setAttachedImage] = useState<string | null>(null);
+  const [attachedImage, setAttachedImage] = useState<string | null>(initialEntry?.mediaUrl || null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [selectedFont, setSelectedFont] = useState(() => {
     return localStorage.getItem("journal_font") || "default";
