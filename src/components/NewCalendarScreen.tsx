@@ -846,21 +846,23 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onDeleteEntry, onEdito
                         </span>
                         
                         {hasEntry && (
-                          <div className="flex gap-0.5 items-center">
+                          <div className="flex gap-0.5 items-center justify-center">
                             {entries.length === 1 ? (
-                              <span className="text-[10px] leading-none">{moodConfig[entries[0].mood || "neutral"].icon}</span>
+                              <span className="text-base leading-none drop-shadow-sm">{moodConfig[entries[0].mood || "neutral"].icon}</span>
                             ) : (
                               <>
                                 {entries.slice(0, 3).map((entry, i) => {
                                   const mood = entry.mood || "neutral";
                                   return (
-                                    <motion.div
+                                    <motion.span
                                       key={i}
-                                      className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${moodConfig[mood].gradient}`}
+                                      className="text-sm leading-none"
                                       initial={{ scale: 0 }}
                                       animate={{ scale: 1 }}
                                       transition={{ delay: 0.3 + i * 0.1 }}
-                                    />
+                                    >
+                                      {moodConfig[mood].icon}
+                                    </motion.span>
                                   );
                                 })}
                                 {entries.length > 3 && (
