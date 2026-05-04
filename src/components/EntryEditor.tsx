@@ -216,10 +216,14 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
     }
   };
 
+  const [isSaving, setIsSaving] = useState(false);
   const handleSave = () => {
-    if (content.trim() || title.trim()) {
-      onSave({ title: title.trim(), content: content.trim(), mediaUrl: attachedImage || undefined });
-    }
+    if (isSaving) return;
+    if (!content.trim() && !title.trim()) return;
+    setIsSaving(true);
+    onSave({ title: title.trim(), content: content.trim(), mediaUrl: attachedImage || undefined });
+    // Reset after a short delay so subsequent re-opens still work
+    setTimeout(() => setIsSaving(false), 1500);
   };
 
   return (
