@@ -232,7 +232,7 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onDeleteEntry, onEdito
     }
   };
 
-  const handleSaveEntry = useCallback(async (entry: { title: string; content: string }) => {
+  const handleSaveEntry = useCallback(async (entry: { title: string; content: string; mediaUrl?: string }) => {
     if (selectedDate) {
       // Try AI mood detection first, fall back to keyword detection
       let mood: Entry["mood"];
