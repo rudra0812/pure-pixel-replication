@@ -10,7 +10,7 @@ import { toast } from "sonner";
 interface EntryEditorProps {
   onBack: () => void;
   onSave: (entry: { title: string; content: string; mediaUrl?: string }) => void;
-  initialEntry?: { title?: string; content: string };
+  initialEntry?: { title?: string; content: string; mediaUrl?: string };
   selectedDate?: Date | null;
 }
 
