@@ -41,6 +41,7 @@ export const useEntries = () => {
           content: e.content,
           mood: (e.mood as MoodType) || undefined,
           hasMedia: !!e.media_url,
+          mediaUrl: e.media_url || undefined,
         }))
       );
     }
