@@ -9,6 +9,7 @@ export interface Entry {
   title?: string;
   content: string;
   hasMedia?: boolean;
+  mediaUrl?: string;
   mood?: "happy" | "calm" | "sad" | "excited" | "grateful" | "neutral";
 }
 
