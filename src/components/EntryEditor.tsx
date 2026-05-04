@@ -10,7 +10,7 @@ import { toast } from "sonner";
 interface EntryEditorProps {
   onBack: () => void;
   onSave: (entry: { title: string; content: string; mediaUrl?: string }) => void;
-  initialEntry?: { title?: string; content: string };
+  initialEntry?: { title?: string; content: string; mediaUrl?: string };
   selectedDate?: Date | null;
 }
 
@@ -43,7 +43,7 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
   const [isEditMode, setIsEditMode] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
-  const [attachedImage, setAttachedImage] = useState<string | null>(null);
+  const [attachedImage, setAttachedImage] = useState<string | null>(initialEntry?.mediaUrl || null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [selectedFont, setSelectedFont] = useState(() => {
     return localStorage.getItem("journal_font") || "default";
@@ -216,10 +216,14 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
     }
   };
 
+  const [isSaving, setIsSaving] = useState(false);
   const handleSave = () => {
-    if (content.trim() || title.trim()) {
-      onSave({ title: title.trim(), content: content.trim(), mediaUrl: attachedImage || undefined });
-    }
+    if (isSaving) return;
+    if (!content.trim() && !title.trim()) return;
+    setIsSaving(true);
+    onSave({ title: title.trim(), content: content.trim(), mediaUrl: attachedImage || undefined });
+    // Reset after a short delay so subsequent re-opens still work
+    setTimeout(() => setIsSaving(false), 1500);
   };
 
   return (
@@ -262,9 +266,10 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
 
           <motion.button
             onClick={handleSave}
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-primary touch-target"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            disabled={isSaving}
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-primary touch-target disabled:opacity-60"
+            whileHover={{ scale: isSaving ? 1 : 1.05 }}
+            whileTap={{ scale: isSaving ? 1 : 0.95 }}
           >
             <Check className="h-5 w-5 text-primary-foreground" />
           </motion.button>

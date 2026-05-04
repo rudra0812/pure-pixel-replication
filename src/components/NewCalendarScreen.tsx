@@ -42,6 +42,7 @@ interface Entry {
   title?: string;
   content: string;
   hasMedia?: boolean;
+  mediaUrl?: string;
   mood?: "happy" | "calm" | "sad" | "excited" | "grateful" | "neutral";
 }
 
@@ -54,7 +55,7 @@ interface InsightsResult {
 
 interface NewCalendarScreenProps {
   entries: Entry[];
-  onSaveEntry: (entry: { title: string; content: string; mood?: Entry["mood"] }, date: Date, entryId?: string) => void;
+  onSaveEntry: (entry: { title: string; content: string; mood?: Entry["mood"]; mediaUrl?: string }, date: Date, entryId?: string) => void;
   onDeleteEntry?: (entryId: string) => void;
   onEditorStateChange?: (isOpen: boolean) => void;
   openEditorForToday?: boolean;
@@ -232,7 +233,7 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onDeleteEntry, onEdito
     }
   };
 
-  const handleSaveEntry = useCallback(async (entry: { title: string; content: string }) => {
+  const handleSaveEntry = useCallback(async (entry: { title: string; content: string; mediaUrl?: string }) => {
     if (selectedDate) {
       // Try AI mood detection first, fall back to keyword detection
       let mood: Entry["mood"];
@@ -356,6 +357,17 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onDeleteEntry, onEdito
               >
                 {viewingEntry.content}
               </motion.p>
+
+              {viewingEntry.mediaUrl && (
+                <motion.img
+                  src={viewingEntry.mediaUrl}
+                  alt="Entry attachment"
+                  className="mt-6 max-h-96 w-full object-contain rounded-2xl shadow-md"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                />
+              )}
             </div>
           </motion.div>
         </AnimatedGradient>
@@ -834,21 +846,23 @@ export const NewCalendarScreen = ({ entries, onSaveEntry, onDeleteEntry, onEdito
                         </span>
                         
                         {hasEntry && (
-                          <div className="flex gap-0.5 items-center">
+                          <div className="flex gap-0.5 items-center justify-center">
                             {entries.length === 1 ? (
-                              <span className="text-[10px] leading-none">{moodConfig[entries[0].mood || "neutral"].icon}</span>
+                              <span className="text-base leading-none drop-shadow-sm">{moodConfig[entries[0].mood || "neutral"].icon}</span>
                             ) : (
                               <>
                                 {entries.slice(0, 3).map((entry, i) => {
                                   const mood = entry.mood || "neutral";
                                   return (
-                                    <motion.div
+                                    <motion.span
                                       key={i}
-                                      className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${moodConfig[mood].gradient}`}
+                                      className="text-sm leading-none"
                                       initial={{ scale: 0 }}
                                       animate={{ scale: 1 }}
                                       transition={{ delay: 0.3 + i * 0.1 }}
-                                    />
+                                    >
+                                      {moodConfig[mood].icon}
+                                    </motion.span>
                                   );
                                 })}
                                 {entries.length > 3 && (
