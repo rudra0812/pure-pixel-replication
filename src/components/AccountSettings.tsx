@@ -8,6 +8,7 @@ import { AnimatedGradient } from "./AnimatedGradient";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { normalizeImageForUpload } from "@/lib/imageUpload";
 
 interface AccountSettingsProps {
   onBack: () => void;
