@@ -8,6 +8,7 @@ import { AnimatedGradient } from "./AnimatedGradient";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { normalizeImageForUpload } from "@/lib/imageUpload";
 
 interface AccountSettingsProps {
   onBack: () => void;
@@ -45,12 +46,12 @@ export const AccountSettings = ({ onBack }: AccountSettingsProps) => {
 
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop();
+      const { blob, ext, contentType } = await normalizeImageForUpload(file);
       const path = `${user.id}/avatar.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from("journal-media")
-        .upload(path, file, { upsert: true });
+        .upload(path, blob, { upsert: true, contentType });
 
       if (uploadError) throw uploadError;
 
@@ -58,17 +59,18 @@ export const AccountSettings = ({ onBack }: AccountSettingsProps) => {
         .from("journal-media")
         .getPublicUrl(path);
 
-      setAvatarUrl(urlData.publicUrl);
+      const newUrl = `${urlData.publicUrl}?t=${Date.now()}`;
+      setAvatarUrl(newUrl);
 
       await supabase
         .from("profiles")
-        .update({ avatar_url: urlData.publicUrl })
+        .update({ avatar_url: newUrl })
         .eq("user_id", user.id);
 
       toast.success("Avatar updated!");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Failed to upload avatar");
+      toast.error(err?.message || "Failed to upload avatar");
     } finally {
       setUploading(false);
     }

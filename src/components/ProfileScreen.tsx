@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AccountSettings } from "./AccountSettings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { normalizeImageForUpload } from "@/lib/imageUpload";
 
 interface Entry {
   id: string;
@@ -58,17 +59,19 @@ export const ProfileScreen = ({ onLogout, totalEntries, totalDays, entries = [] 
     if (!file || !user) return;
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop();
+      const { blob, ext, contentType } = await normalizeImageForUpload(file);
       const path = `${user.id}/avatar.${ext}`;
-      const { error: uploadError } = await supabase.storage.from("journal-media").upload(path, file, { upsert: true });
+      const { error: uploadError } = await supabase.storage
+        .from("journal-media")
+        .upload(path, blob, { upsert: true, contentType });
       if (uploadError) throw uploadError;
       const { data: urlData } = supabase.storage.from("journal-media").getPublicUrl(path);
       const newUrl = `${urlData.publicUrl}?t=${Date.now()}`;
       setAvatarUrl(newUrl);
       await supabase.from("profiles").update({ avatar_url: newUrl }).eq("user_id", user.id);
       toast.success("Avatar updated!");
-    } catch {
-      toast.error("Failed to upload avatar");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to upload avatar");
     } finally {
       setUploading(false);
     }
