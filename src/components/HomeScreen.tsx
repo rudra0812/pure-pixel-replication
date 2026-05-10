@@ -19,6 +19,19 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
   const { getPrompts, loadingPrompts, getInsights, loadingInsights } = useAI();
   const [activeTab, setActiveTab] = useState<NavTab>("mood");
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [hasPlantedSeed, setHasPlantedSeed] = useState(
+    () => typeof window !== "undefined" && localStorage.getItem("garden_seed_planted") === "true"
+  );
+
+  useEffect(() => {
+    const check = () => setHasPlantedSeed(localStorage.getItem("garden_seed_planted") === "true");
+    window.addEventListener("storage", check);
+    window.addEventListener("garden-seed-planted", check);
+    return () => {
+      window.removeEventListener("storage", check);
+      window.removeEventListener("garden-seed-planted", check);
+    };
+  }, []);
   const [openEditorForToday, setOpenEditorForToday] = useState(false);
   const [aiPrompts, setAiPrompts] = useState<{ text: string; category: string }[]>([]);
   const [insights, setInsights] = useState<any>(null);
@@ -74,7 +87,7 @@ export const HomeScreen = ({ onLogout }: HomeScreenProps) => {
         )}
       </AnimatePresence>
 
-      {!isEditorOpen && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />}
+      {!isEditorOpen && hasPlantedSeed && <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />}
 
       <AIChatScreen isOpen={showChat} onClose={() => setShowChat(false)} entries={entries} />
     </div>

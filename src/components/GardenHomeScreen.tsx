@@ -187,6 +187,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
     setPlantName(name);
     setSeedType(seedTypeStr);
     setHasPlantedSeed(true);
+    window.dispatchEvent(new Event("garden-seed-planted"));
 
     // Save profile info if provided
     if (user && profileInfo && (profileInfo.displayName || profileInfo.bio)) {
