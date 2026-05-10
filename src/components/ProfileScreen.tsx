@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AccountSettings } from "./AccountSettings";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { normalizeImageForUpload } from "@/lib/imageUpload";
 
 interface Entry {
   id: string;
