@@ -687,7 +687,7 @@ const EnhancedPlantingAnimation = ({ seedEmoji, seedName }: { seedEmoji: string;
 
       {/* Success text */}
       <motion.div
-        className="absolute top-[16%] left-0 right-0 text-center px-6"
+        className="absolute top-[12%] left-0 right-0 text-center px-6"
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ delay: 3.3, duration: 0.6, type: "spring", stiffness: 180, damping: 18 }}
