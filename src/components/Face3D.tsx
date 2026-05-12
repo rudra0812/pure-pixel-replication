@@ -401,7 +401,7 @@ export const Face3D = ({ mood, isAnalyzing = false }: Face3DProps) => {
 };
 
 // Local helper for crossfading mood label without layout shift
-import { AnimatePresence } from "framer-motion";
+// (AnimatePresence imported at top)
 const AnimatePresenceLabel = ({ moodKey, color, label }: { moodKey: string; color: string; label: string }) => (
   <AnimatePresence mode="wait">
     <motion.span
