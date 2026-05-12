@@ -488,7 +488,7 @@ const EnhancedPlantingAnimation = ({ seedEmoji, seedName }: { seedEmoji: string;
   }));
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+    <div className="absolute inset-0 overflow-hidden">
       {/* Soft vignette to focus attention center */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -501,8 +501,11 @@ const EnhancedPlantingAnimation = ({ seedEmoji, seedName }: { seedEmoji: string;
         transition={{ duration: 1.2 }}
       />
 
-      {/* Centered planting stage */}
-      <div className="relative" style={{ width: 280, height: 280 }}>
+      {/* Planting stage anchored to the ground line (ground is h-32 = 128px) */}
+      <div
+        className="absolute left-1/2 -translate-x-1/2"
+        style={{ width: 280, height: 280, bottom: 96 }}
+      >
         {/* Soil patch */}
         <motion.div
           className="absolute left-1/2 -translate-x-1/2"
