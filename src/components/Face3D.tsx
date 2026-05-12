@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { RoundedBox } from "@react-three/drei";
 import * as THREE from "three";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export type MoodType = "neutral" | "happy" | "sad" | "excited" | "anxious" | "calm";
 
@@ -342,14 +342,21 @@ export const Face3D = ({ mood, isAnalyzing = false }: Face3DProps) => {
   const colors = moodColors[mood];
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-6 w-full">
       <motion.div
         ref={containerRef}
-        className="relative"
+        className="relative mx-auto"
         style={{ width: 280, height: 240 }}
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        initial={{ scale: 0.85, opacity: 0 }}
+        animate={{
+          scale: isAnalyzing ? [1, 1.04, 1] : 1,
+          opacity: 1,
+        }}
+        transition={
+          isAnalyzing
+            ? { scale: { duration: 1.6, repeat: Infinity, ease: "easeInOut" }, opacity: { duration: 0.4 } }
+            : { type: "spring", stiffness: 180, damping: 22 }
+        }
         onTouchStart={handleTouchStart}
       >
         <Canvas
@@ -370,34 +377,43 @@ export const Face3D = ({ mood, isAnalyzing = false }: Face3DProps) => {
         </Canvas>
 
         {/* Glow effect behind the face */}
-        <div 
-          className="absolute inset-0 -z-10 rounded-full blur-3xl opacity-40"
-          style={{ backgroundColor: colors.glow }}
+        <motion.div
+          className="absolute inset-0 -z-10 rounded-full blur-3xl"
+          animate={{
+            backgroundColor: colors.glow,
+            opacity: isAnalyzing ? [0.35, 0.6, 0.35] : 0.4,
+          }}
+          transition={{
+            backgroundColor: { duration: 0.5 },
+            opacity: isAnalyzing
+              ? { duration: 1.6, repeat: Infinity, ease: "easeInOut" }
+              : { duration: 0.5 },
+          }}
         />
       </motion.div>
 
-      {/* Mood label */}
-      <motion.div
-        className="text-center"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        <motion.span
-          className="px-6 py-2 rounded-full text-lg font-medium"
-          style={{
-            backgroundColor: `${colors.glow}20`,
-            color: colors.glow,
-          }}
-          animate={{ 
-            backgroundColor: `${colors.glow}20`, 
-            color: colors.glow 
-          }}
-          transition={{ duration: 0.5 }}
-        >
-          {moodLabels[mood]}
-        </motion.span>
-      </motion.div>
+      {/* Mood label - fixed-width container so swaps don't shift layout */}
+      <div className="h-10 flex items-center justify-center">
+        <AnimatePresenceLabel moodKey={mood} color={colors.glow} label={moodLabels[mood]} />
+      </div>
     </div>
   );
 };
+
+// Local helper for crossfading mood label without layout shift
+// (AnimatePresence imported at top)
+const AnimatePresenceLabel = ({ moodKey, color, label }: { moodKey: string; color: string; label: string }) => (
+  <AnimatePresence mode="wait">
+    <motion.span
+      key={moodKey}
+      className="px-6 py-2 rounded-full text-lg font-medium whitespace-nowrap"
+      style={{ backgroundColor: `${color}20`, color }}
+      initial={{ opacity: 0, y: 6, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -6, scale: 0.96 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+    >
+      {label}
+    </motion.span>
+  </AnimatePresence>
+);

@@ -107,9 +107,9 @@ export const NewMoodScreen = ({ entries }: NewMoodScreenProps) => {
     setHasAnalyzed(false);
     
     // Cycle through all moods during analysis
-    const cycleDuration = 300; // ms per mood
+    const cycleDuration = 420; // ms per mood — slower for smoother visual swaps
     const totalCycles = 2;
-    
+
     for (let cycle = 0; cycle < totalCycles; cycle++) {
       for (const moodOption of allMoods) {
         setMood(moodOption);
