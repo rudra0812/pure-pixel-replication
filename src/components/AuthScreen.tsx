@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { AnimatedGradient } from "./AnimatedGradient";
-import { ArrowLeft, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -10,40 +10,60 @@ interface AuthScreenProps {
   onBack: () => void;
 }
 
+type TabKey = "signin" | "signup" | "forgot";
+
 export const AuthScreen = ({ onBack }: AuthScreenProps) => {
-  const [isSignUp, setIsSignUp] = useState(true);
+  const [tab, setTab] = useState<TabKey>("signin");
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotSent, setForgotSent] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { signUp, signIn, resetPassword } = useAuth();
   const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const switchTab = (next: TabKey) => {
+    setTab(next);
+    setForgotSent(false);
+  };
+
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       toast({ title: "Please fill in all fields", variant: "destructive" });
       return;
     }
     setIsLoading(true);
-
-    const result = isSignUp
-      ? await signUp(email, password, name)
-      : await signIn(email, password);
-
-    if (result.error) {
-      toast({ title: "Authentication Error", description: result.error, variant: "destructive" });
-    } else if (isSignUp) {
-      toast({ title: "Account created!", description: "Check your email to confirm your account." });
+    const { error } = await signIn(email, password);
+    if (error) {
+      toast({ title: "Couldn't sign in", description: error, variant: "destructive" });
     }
     setIsLoading(false);
   };
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !email || !password) {
+      toast({ title: "Please fill in all fields", variant: "destructive" });
+      return;
+    }
+    if (password.length < 8) {
+      toast({ title: "Password too short", description: "Use at least 8 characters.", variant: "destructive" });
+      return;
+    }
+    setIsLoading(true);
+    const { error } = await signUp(email, password, name);
+    if (error) {
+      toast({ title: "Couldn't create account", description: error, variant: "destructive" });
+    } else {
+      toast({ title: `Welcome, ${name}!`, description: "Your garden is ready to grow." });
+    }
+    setIsLoading(false);
+  };
+
+  const handleForgot = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!forgotEmail) {
       toast({ title: "Please enter your email", variant: "destructive" });
@@ -59,6 +79,12 @@ export const AuthScreen = ({ onBack }: AuthScreenProps) => {
     setIsLoading(false);
   };
 
+  const tabs: { key: TabKey; label: string }[] = [
+    { key: "signin", label: "Sign In" },
+    { key: "signup", label: "Sign Up" },
+    { key: "forgot", label: "Reset" },
+  ];
+
   return (
     <AnimatedGradient variant="calm">
       <div className="flex min-h-screen flex-col safe-area-top safe-area-bottom">
@@ -69,7 +95,7 @@ export const AuthScreen = ({ onBack }: AuthScreenProps) => {
           transition={{ duration: 0.4 }}
         >
           <button
-            onClick={showForgot ? () => { setShowForgot(false); setForgotSent(false); } : onBack}
+            onClick={onBack}
             className="flex h-11 w-11 items-center justify-center rounded-full bg-white/20 backdrop-blur touch-target"
           >
             <ArrowLeft className="h-5 w-5 text-white" />
@@ -81,148 +107,204 @@ export const AuthScreen = ({ onBack }: AuthScreenProps) => {
             className="w-full max-w-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            key={showForgot ? "forgot" : "auth"}
+            transition={{ delay: 0.15, duration: 0.4 }}
           >
-            {showForgot ? (
-              forgotSent ? (
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto">
-                    <Mail className="h-8 w-8 text-white" />
-                  </div>
-                  <h1 className="text-title text-white">Check your email</h1>
-                  <p className="text-body text-white/70">
-                    We've sent a password reset link to <strong className="text-white">{forgotEmail}</strong>
-                  </p>
-                  <button
-                    onClick={() => { setShowForgot(false); setForgotSent(false); }}
-                    className="text-white underline underline-offset-2 text-sm mt-4"
-                  >
-                    Back to sign in
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <h1 className="mb-2 text-title text-white text-center">Forgot Password</h1>
-                  <p className="mb-8 text-body text-white/70 text-center">
-                    Enter your email and we'll send you a reset link
-                  </p>
-                  <form onSubmit={handleForgotPassword} className="space-y-4">
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                      <Input
-                        type="email"
-                        placeholder="Email"
-                        value={forgotEmail}
-                        onChange={(e) => setForgotEmail(e.target.value)}
-                        className="h-12 rounded-xl border-white/20 bg-white/95 pl-10 text-foreground placeholder:text-muted-foreground"
-                      />
+            {/* Tabs */}
+            <div className="mb-6 flex gap-1 rounded-2xl bg-white/15 p-1 backdrop-blur">
+              {tabs.map((t) => (
+                <button
+                  key={t.key}
+                  onClick={() => switchTab(t.key)}
+                  className={`relative flex-1 rounded-xl py-2.5 text-sm font-medium transition-colors ${
+                    tab === t.key ? "text-foreground" : "text-white/80 hover:text-white"
+                  }`}
+                >
+                  {tab === t.key && (
+                    <motion.span
+                      layoutId="auth-tab-pill"
+                      className="absolute inset-0 rounded-xl bg-white shadow-sm"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10">{t.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <AnimatePresence mode="wait">
+              {tab === "signin" && (
+                <motion.div
+                  key="signin"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <h1 className="mb-1 text-title text-white text-center">Welcome back</h1>
+                  <p className="mb-6 text-body text-white/70 text-center">Sign in to continue your journey</p>
+                  <form onSubmit={handleSignIn} className="space-y-3">
+                    <FieldEmail value={email} onChange={setEmail} />
+                    <FieldPassword value={password} onChange={setPassword} show={showPassword} onToggle={() => setShowPassword(!showPassword)} />
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => { setForgotEmail(email); switchTab("forgot"); }}
+                        className="text-xs text-white/80 hover:text-white underline underline-offset-2"
+                      >
+                        Forgot password?
+                      </button>
                     </div>
-                    <motion.button
-                      type="submit"
-                      disabled={isLoading}
-                      className="auth-button-primary w-full font-semibold disabled:opacity-50"
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                    >
-                      {isLoading ? "Sending..." : "Send Reset Link"}
-                    </motion.button>
+                    <SubmitButton loading={isLoading} label="Sign In" loadingLabel="Signing in..." />
                   </form>
-                </>
-              )
-            ) : (
-              <>
-                <h1 className="mb-2 text-title text-white text-center">
-                  {isSignUp ? "Create Account" : "Welcome Back"}
-                </h1>
-                <p className="mb-8 text-body text-white/70 text-center">
-                  {isSignUp ? "Start your journaling journey today" : "Sign in to continue"}
-                </p>
+                  <p className="mt-5 text-center text-secondary text-white/70">
+                    New here?{" "}
+                    <button onClick={() => switchTab("signup")} className="font-medium text-white underline underline-offset-2">
+                      Create an account
+                    </button>
+                  </p>
+                </motion.div>
+              )}
 
-                <div className="mb-6 flex items-center gap-4">
-                  <div className="h-px flex-1 bg-white/30" />
-                  <span className="text-secondary text-white/60">email</span>
-                  <div className="h-px flex-1 bg-white/30" />
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {isSignUp && (
+              {tab === "signup" && (
+                <motion.div
+                  key="signup"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <h1 className="mb-1 text-title text-white text-center">Create your garden</h1>
+                  <p className="mb-6 text-body text-white/70 text-center">Plant your first seed in seconds</p>
+                  <form onSubmit={handleSignUp} className="space-y-3">
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         type="text"
-                        placeholder="Full Name"
+                        placeholder="Your name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         className="h-12 rounded-xl border-white/20 bg-white/95 pl-10 text-foreground placeholder:text-muted-foreground"
                       />
                     </div>
-                  )}
-
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      type="email"
-                      placeholder="Email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-12 rounded-xl border-white/20 bg-white/95 pl-10 text-foreground placeholder:text-muted-foreground"
-                    />
-                  </div>
-
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="h-12 rounded-xl border-white/20 bg-white/95 pl-10 pr-10 text-foreground placeholder:text-muted-foreground"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground touch-target"
-                    >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    <FieldEmail value={email} onChange={setEmail} />
+                    <FieldPassword value={password} onChange={setPassword} show={showPassword} onToggle={() => setShowPassword(!showPassword)} />
+                    <p className="text-xs text-white/60 px-1">At least 8 characters. Mix letters and numbers for safety.</p>
+                    <SubmitButton loading={isLoading} label="Create Account" loadingLabel="Creating..." />
+                  </form>
+                  <p className="mt-5 text-center text-secondary text-white/70">
+                    Already have an account?{" "}
+                    <button onClick={() => switchTab("signin")} className="font-medium text-white underline underline-offset-2">
+                      Sign In
                     </button>
-                  </div>
+                  </p>
+                </motion.div>
+              )}
 
-                  {!isSignUp && (
-                    <button
-                      type="button"
-                      onClick={() => { setShowForgot(true); setForgotEmail(email); }}
-                      className="text-sm text-white/70 hover:text-white underline underline-offset-2 transition-colors"
-                    >
-                      Forgot password?
-                    </button>
+              {tab === "forgot" && (
+                <motion.div
+                  key="forgot"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {forgotSent ? (
+                    <div className="text-center space-y-4">
+                      <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto">
+                        <CheckCircle2 className="h-8 w-8 text-white" />
+                      </div>
+                      <h1 className="text-title text-white">Check your email</h1>
+                      <p className="text-body text-white/80">
+                        If an account exists for <strong className="text-white">{forgotEmail}</strong>, a reset link is on its way.
+                      </p>
+                      <p className="text-xs text-white/60">
+                        Didn't get it? Check spam, or try again in a minute.
+                      </p>
+                      <button
+                        onClick={() => switchTab("signin")}
+                        className="text-white underline underline-offset-2 text-sm"
+                      >
+                        Back to sign in
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <h1 className="mb-1 text-title text-white text-center">Reset password</h1>
+                      <p className="mb-6 text-body text-white/70 text-center">
+                        Enter your email and we'll send a reset link
+                      </p>
+                      <form onSubmit={handleForgot} className="space-y-3">
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                          <Input
+                            type="email"
+                            placeholder="Email"
+                            value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)}
+                            className="h-12 rounded-xl border-white/20 bg-white/95 pl-10 text-foreground placeholder:text-muted-foreground"
+                          />
+                        </div>
+                        <SubmitButton loading={isLoading} label="Send Reset Link" loadingLabel="Sending..." />
+                      </form>
+                      <p className="mt-5 text-center text-secondary text-white/70">
+                        Remembered it?{" "}
+                        <button onClick={() => switchTab("signin")} className="font-medium text-white underline underline-offset-2">
+                          Sign In
+                        </button>
+                      </p>
+                    </>
                   )}
-
-                  <motion.button
-                    type="submit"
-                    disabled={isLoading}
-                    className="auth-button-primary w-full font-semibold disabled:opacity-50"
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                  >
-                    {isLoading ? "Please wait..." : isSignUp ? "Create Account" : "Sign In"}
-                  </motion.button>
-                </form>
-
-                <p className="mt-6 text-center text-secondary text-white/70">
-                  {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-                  <button
-                    onClick={() => setIsSignUp(!isSignUp)}
-                    className="font-medium text-white underline underline-offset-2 touch-target"
-                  >
-                    {isSignUp ? "Sign In" : "Sign Up"}
-                  </button>
-                </p>
-              </>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </div>
     </AnimatedGradient>
   );
 };
+
+const FieldEmail = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => (
+  <div className="relative">
+    <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+    <Input
+      type="email"
+      placeholder="Email"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="h-12 rounded-xl border-white/20 bg-white/95 pl-10 text-foreground placeholder:text-muted-foreground"
+    />
+  </div>
+);
+
+const FieldPassword = ({ value, onChange, show, onToggle }: { value: string; onChange: (v: string) => void; show: boolean; onToggle: () => void }) => (
+  <div className="relative">
+    <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+    <Input
+      type={show ? "text" : "password"}
+      placeholder="Password"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="h-12 rounded-xl border-white/20 bg-white/95 pl-10 pr-10 text-foreground placeholder:text-muted-foreground"
+    />
+    <button
+      type="button"
+      onClick={onToggle}
+      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground touch-target"
+    >
+      {show ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+    </button>
+  </div>
+);
+
+const SubmitButton = ({ loading, label, loadingLabel }: { loading: boolean; label: string; loadingLabel: string }) => (
+  <motion.button
+    type="submit"
+    disabled={loading}
+    className="auth-button-primary w-full font-semibold disabled:opacity-50"
+    whileHover={{ scale: 1.01 }}
+    whileTap={{ scale: 0.99 }}
+  >
+    {loading ? loadingLabel : label}
+  </motion.button>
+);
