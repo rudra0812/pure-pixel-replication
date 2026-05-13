@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { AnimatedGradient } from "./AnimatedGradient";
-import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Mail, Lock, User, Eye, EyeOff, CheckCircle2, LogIn, UserPlus, KeyRound, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -79,10 +79,10 @@ export const AuthScreen = ({ onBack }: AuthScreenProps) => {
     setIsLoading(false);
   };
 
-  const tabs: { key: TabKey; label: string }[] = [
-    { key: "signin", label: "Sign In" },
-    { key: "signup", label: "Sign Up" },
-    { key: "forgot", label: "Reset" },
+  const tabs: { key: TabKey; label: string; icon: typeof LogIn }[] = [
+    { key: "signin", label: "Sign In", icon: LogIn },
+    { key: "signup", label: "Sign Up", icon: UserPlus },
+    { key: "forgot", label: "Reset", icon: KeyRound },
   ];
 
   return (
@@ -102,33 +102,47 @@ export const AuthScreen = ({ onBack }: AuthScreenProps) => {
           </button>
         </motion.header>
 
-        <div className="flex flex-1 flex-col items-center justify-center px-6">
+        <div className="flex flex-1 flex-col items-center justify-center px-6 py-6">
           <motion.div
             className="w-full max-w-sm"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, duration: 0.4 }}
           >
-            {/* Tabs */}
-            <div className="mb-6 flex gap-1 rounded-2xl bg-white/15 p-1 backdrop-blur">
-              {tabs.map((t) => (
-                <button
-                  key={t.key}
-                  onClick={() => switchTab(t.key)}
-                  className={`relative flex-1 rounded-xl py-2.5 text-sm font-medium transition-colors ${
-                    tab === t.key ? "text-foreground" : "text-white/80 hover:text-white"
-                  }`}
-                >
-                  {tab === t.key && (
-                    <motion.span
-                      layoutId="auth-tab-pill"
-                      className="absolute inset-0 rounded-xl bg-white shadow-sm"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10">{t.label}</span>
-                </button>
-              ))}
+            {/* Brand mark */}
+            <div className="mb-6 flex flex-col items-center gap-2">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-xl ring-1 ring-white/30 shadow-lg">
+                <Sparkles className="h-7 w-7 text-white" />
+              </div>
+            </div>
+
+            {/* Segmented tabs */}
+            <div className="mb-6 flex gap-1 rounded-2xl bg-white/10 p-1.5 backdrop-blur-xl ring-1 ring-white/20 shadow-lg">
+              {tabs.map((t) => {
+                const Icon = t.icon;
+                const isActive = tab === t.key;
+                return (
+                  <button
+                    key={t.key}
+                    onClick={() => switchTab(t.key)}
+                    className={`relative flex-1 rounded-xl py-2.5 text-sm font-semibold transition-colors ${
+                      isActive ? "text-primary" : "text-white/80 hover:text-white"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.span
+                        layoutId="auth-tab-pill"
+                        className="absolute inset-0 rounded-xl bg-white shadow-md"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                    <span className="relative z-10 flex items-center justify-center gap-1.5">
+                      <Icon className="h-4 w-4" />
+                      <span>{t.label}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             <AnimatePresence mode="wait">
