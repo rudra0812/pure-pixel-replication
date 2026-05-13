@@ -377,7 +377,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-4 rounded-2xl backdrop-blur-xl bg-white/85 shadow-2xl border border-white/50">
+            <div className="p-4 rounded-2xl backdrop-blur-xl bg-card/85 shadow-2xl border border-border/50">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
                   <Sparkles className="h-4 w-4 text-primary" />
@@ -523,7 +523,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
       >
         <motion.button
           onClick={() => setShowAnalysisPanel(!showAnalysisPanel)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-xl bg-white/70 shadow-lg border border-white/50"
+          className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-xl bg-card/70 shadow-lg border border-border/50"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -544,7 +544,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.3 }}
       >
-        <div className="px-4 py-2 rounded-full backdrop-blur-xl bg-white/70 shadow-lg border border-white/50">
+        <div className="px-4 py-2 rounded-full backdrop-blur-xl bg-card/70 shadow-lg border border-border/50">
           <p className="text-sm font-semibold text-foreground">{plantName}</p>
           <p className="text-xs text-muted-foreground">{stageLabel}</p>
         </div>
@@ -559,7 +559,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
       >
         <div className="flex gap-3 justify-center">
           <motion.div 
-            className="px-4 py-2 rounded-2xl backdrop-blur-xl bg-white/60 shadow-md"
+            className="px-4 py-2 rounded-2xl backdrop-blur-xl bg-card/70 shadow-md"
             whileHover={{ scale: 1.05, y: -2 }}
           >
             <div className="flex items-center gap-2">
@@ -570,7 +570,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
           </motion.div>
           
           <motion.div 
-            className="px-4 py-2 rounded-2xl backdrop-blur-xl bg-white/60 shadow-md"
+            className="px-4 py-2 rounded-2xl backdrop-blur-xl bg-card/70 shadow-md"
             whileHover={{ scale: 1.05, y: -2 }}
           >
             <div className="flex items-center gap-2">
@@ -605,7 +605,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 20, scale: 0.9 }}
           >
-            <div className="p-4 rounded-3xl backdrop-blur-xl bg-white/80 shadow-2xl border border-white/50">
+            <div className="p-4 rounded-3xl backdrop-blur-xl bg-card/85 shadow-2xl border border-border/50">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-foreground">Analysis</h3>
                 <button 
@@ -665,7 +665,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
 
       {/* AI Chat Button - Bottom Left */}
       <motion.button
-        className="absolute bottom-[6.5rem] left-6 z-50 w-12 h-12 rounded-full backdrop-blur-xl bg-white/60 shadow-lg border border-white/40 flex items-center justify-center"
+        className="absolute bottom-[6.5rem] left-6 z-50 w-12 h-12 rounded-full backdrop-blur-xl bg-card/70 shadow-lg border border-border/50 flex items-center justify-center"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.6 }}
@@ -706,7 +706,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
                   exit={{ x: 20, opacity: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <span className="text-sm font-medium text-foreground bg-white/80 backdrop-blur px-3 py-1 rounded-full shadow-lg">
+                  <span className="text-sm font-medium text-foreground bg-card/85 backdrop-blur px-3 py-1 rounded-full shadow-lg">
                     Water Plant
                   </span>
                   <motion.div
@@ -728,7 +728,7 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
                   exit={{ x: 20, opacity: 0 }}
                   transition={{ delay: 0 }}
                 >
-                  <span className="text-sm font-medium text-foreground bg-white/80 backdrop-blur px-3 py-1 rounded-full shadow-lg">
+                  <span className="text-sm font-medium text-foreground bg-card/85 backdrop-blur px-3 py-1 rounded-full shadow-lg">
                     New Entry
                   </span>
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-xl flex items-center justify-center">
