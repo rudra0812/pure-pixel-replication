@@ -107,6 +107,15 @@
     --sidebar-accent-foreground: 240 5% 96%;
     --sidebar-border: 240 4% 16%;
     --sidebar-ring: 217 91% 60%;
+
+    /* Dark gradient palette - deep midnight, easy on the eyes */
+    --gradient-start: 230 45% 10%;
+    --gradient-mid: 222 50% 14%;
+    --gradient-end: 215 55% 18%;
+
+    --gradient-calm-start: 225 40% 9%;
+    --gradient-calm-mid: 220 45% 13%;
+    --gradient-calm-end: 215 50% 17%;
   }
 }
 
