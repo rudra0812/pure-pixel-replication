@@ -116,30 +116,26 @@ export const AuthScreen = ({ onBack }: AuthScreenProps) => {
               </div>
             </div>
 
-            {/* Segmented tabs */}
-            <div className="mb-6 flex gap-1 rounded-2xl bg-white/10 p-1.5 backdrop-blur-xl ring-1 ring-white/20 shadow-lg">
+            {/* Minimal underline tabs */}
+            <div className="mb-8 flex items-center justify-center gap-8 border-b border-white/10">
               {tabs.map((t) => {
-                const Icon = t.icon;
                 const isActive = tab === t.key;
                 return (
                   <button
                     key={t.key}
                     onClick={() => switchTab(t.key)}
-                    className={`relative flex-1 rounded-xl py-2.5 text-sm font-semibold transition-colors ${
-                      isActive ? "text-primary" : "text-white/80 hover:text-white"
+                    className={`relative pb-3 text-sm font-medium tracking-wide transition-colors ${
+                      isActive ? "text-white" : "text-white/40 hover:text-white/70"
                     }`}
                   >
+                    {t.label}
                     {isActive && (
                       <motion.span
-                        layoutId="auth-tab-pill"
-                        className="absolute inset-0 rounded-xl bg-white shadow-md"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        layoutId="auth-tab-underline"
+                        className="absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-gradient-to-r from-primary via-white to-accent shadow-[0_0_12px_hsl(var(--primary)/0.6)]"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
                       />
                     )}
-                    <span className="relative z-10 flex items-center justify-center gap-1.5">
-                      <Icon className="h-4 w-4" />
-                      <span>{t.label}</span>
-                    </span>
                   </button>
                 );
               })}
