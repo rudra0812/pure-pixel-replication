@@ -116,30 +116,7 @@ export const AuthScreen = ({ onBack }: AuthScreenProps) => {
               </div>
             </div>
 
-            {/* Minimal underline tabs */}
-            <div className="mb-8 flex items-center justify-center gap-8 border-b border-white/10">
-              {tabs.map((t) => {
-                const isActive = tab === t.key;
-                return (
-                  <button
-                    key={t.key}
-                    onClick={() => switchTab(t.key)}
-                    className={`relative pb-3 text-sm font-medium tracking-wide transition-colors ${
-                      isActive ? "text-white" : "text-white/40 hover:text-white/70"
-                    }`}
-                  >
-                    {t.label}
-                    {isActive && (
-                      <motion.span
-                        layoutId="auth-tab-underline"
-                        className="absolute -bottom-px left-0 right-0 h-0.5 rounded-full bg-gradient-to-r from-primary via-white to-accent shadow-[0_0_12px_hsl(var(--primary)/0.6)]"
-                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+
 
             <AnimatePresence mode="wait">
               {tab === "signin" && (
