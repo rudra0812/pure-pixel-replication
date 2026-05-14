@@ -455,7 +455,11 @@ export const SeedPlantingOnboarding = ({ onComplete }: SeedPlantingOnboardingPro
                 </motion.div>
               </motion.div>
             ) : (
-              <EnhancedPlantingAnimation seedEmoji={selectedSeed.emoji} seedName={seedName} />
+              <GuidedPlantingFlow
+                seedEmoji={selectedSeed.emoji}
+                seedName={seedName}
+                onFinish={handleFinish}
+              />
             )}
           </motion.div>
         )}
