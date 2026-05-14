@@ -737,16 +737,16 @@ const HoppingFrog = ({ frog, startX, groundY, delay }: {
       className="absolute z-20 pointer-events-none"
       style={{ top: `${groundY}%`, left: `${startX}%` }}
       animate={{
-        x: [0, 60, 30, 90, -20, 50, 0],
-        y: [0, -35, 0, -40, 0, -30, 0],
+        x: [0, 6, 12, 8, 14, 10, 4, 0],
+        y: [0, -10, 0, -8, 0, -9, 0, 0],
       }}
       transition={{
-        duration: 12,
+        duration: 16,
         delay,
         repeat: Infinity,
-        repeatDelay: 4,
+        repeatDelay: 6,
         ease: "easeInOut",
-        times: [0, 0.15, 0.3, 0.45, 0.6, 0.75, 1],
+        times: [0, 0.1, 0.2, 0.35, 0.5, 0.65, 0.85, 1],
       }}
     >
       <motion.svg
