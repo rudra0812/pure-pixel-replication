@@ -246,16 +246,13 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
   };
 
   const handleAnalyze = async () => {
+    if (isAnalyzing) return;
     setIsAnalyzing(true);
-    
-    const weatherStates: WeatherMood[] = ["cloudy", "rainy", "clearing", "sunny"];
-    for (const state of weatherStates) {
-      setWeatherMood(state);
-      await new Promise(resolve => setTimeout(resolve, 400));
-    }
-    
+    // Smooth, single-pass scan — no rapid weather cycling that yanks frogs/rain in and out
+    await new Promise(resolve => setTimeout(resolve, 2200));
     const detectedMood = analyzeSentiment(filteredEntries);
     setWeatherMood(detectedMood);
+    await new Promise(resolve => setTimeout(resolve, 600));
     setIsAnalyzing(false);
   };
 
@@ -289,8 +286,46 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
             "hsl(210, 30%, 85%), hsl(210, 25%, 92%)"
           })`
         }}
-        transition={{ duration: 1.5 }}
+        transition={{ duration: 2.2, ease: "easeInOut" }}
       />
+
+      {/* Analysing scan overlay — calm, cinematic sweep instead of weather flicker */}
+      <AnimatePresence>
+        {isAnalyzing && (
+          <motion.div
+            key="scan"
+            className="absolute inset-0 z-[35] pointer-events-none overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            {/* Soft tint */}
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-primary/10" />
+            {/* Vertical sweep band */}
+            <motion.div
+              className="absolute inset-x-0 h-40 -top-40"
+              style={{
+                background:
+                  "linear-gradient(180deg, transparent 0%, hsl(var(--primary) / 0.18) 50%, transparent 100%)",
+                filter: "blur(6px)",
+              }}
+              animate={{ top: ["-20%", "100%"] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            />
+            {/* Pulse rings from center */}
+            {[0, 0.6, 1.2].map((d) => (
+              <motion.div
+                key={d}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary/40"
+                initial={{ width: 60, height: 60, opacity: 0 }}
+                animate={{ width: 360, height: 360, opacity: [0, 0.5, 0] }}
+                transition={{ duration: 1.8, delay: d, repeat: Infinity, ease: "easeOut" }}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Animated Clouds - Parallax */}
       <div className="absolute inset-0 overflow-hidden">
