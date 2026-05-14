@@ -246,16 +246,13 @@ export const GardenHomeScreen = ({ entries, onRecordEntry, aiPrompts, loadingPro
   };
 
   const handleAnalyze = async () => {
+    if (isAnalyzing) return;
     setIsAnalyzing(true);
-    
-    const weatherStates: WeatherMood[] = ["cloudy", "rainy", "clearing", "sunny"];
-    for (const state of weatherStates) {
-      setWeatherMood(state);
-      await new Promise(resolve => setTimeout(resolve, 400));
-    }
-    
+    // Smooth, single-pass scan — no rapid weather cycling that yanks frogs/rain in and out
+    await new Promise(resolve => setTimeout(resolve, 2200));
     const detectedMood = analyzeSentiment(filteredEntries);
     setWeatherMood(detectedMood);
+    await new Promise(resolve => setTimeout(resolve, 600));
     setIsAnalyzing(false);
   };
 
