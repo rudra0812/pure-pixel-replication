@@ -228,10 +228,7 @@ export const EntryEditor = ({ onBack, onSave, initialEntry, selectedDate }: Entr
 
   return (
     <motion.div
-      className="flex min-h-screen flex-col safe-area-top safe-area-bottom"
-      style={{
-        background: "linear-gradient(165deg, hsl(210 40% 96%) 0%, hsl(200 30% 92%) 30%, hsl(40 25% 93%) 70%, hsl(210 35% 95%) 100%)",
-      }}
+      className="flex min-h-screen flex-col safe-area-top safe-area-bottom bg-background"
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 50 }}
